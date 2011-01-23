@@ -1,0 +1,22 @@
+GUISTARTUP=c0w32.obj
+LIBS=import32.lib cw32mt.lib
+CFLAGS=-c -tWM -w-par -y -v
+LFLAGS=-aa -v -L$(LIBPATH)
+
+# the first rule will be made by default
+all: handyftp.exe
+
+handyftp.obj: handyftp.c
+        bcc32 $(CFLAGS) handyftp.c
+
+compat.obj: compat.c
+        bcc32 $(CFLAGS) compat.c
+
+dw.obj: win\dw.c
+        bcc32 $(CFLAGS) win\dw.c
+
+handyftpw.res: handyftpw.rc
+        brcc32 handyftpw.rc
+
+handyftp.exe: handyftp.obj dw.obj compat.obj handyftpw.res
+        ilink32 $(LFLAGS) $(GUISTARTUP) handyftp.obj dw.obj compat.obj,handyftp.exe,,$(LIBS),,handyftpw.res

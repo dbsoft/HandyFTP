@@ -1,0 +1,44 @@
+# HandyFTP Makefile
+
+# Edit this as necessary.
+DWLIBPATH=..\..\dwindows\lib
+DWINCPATH=..\..\dwindows
+
+TARGET=handyftp
+
+.SUFFIXES: \
+	.c .obj
+
+CFLAGS = /Ti /Tm+ /DOS2 /DTCPV40HDRS /D__TARGET__=\"$(TARGET)\" /I. /I$(DWINCPATH) /Sm /Ss /Q /Gm /Gt /C
+LDFLAGS = /DE /optfunc
+
+
+OBJECTS = handyftp.obj datetime.obj
+
+SOURCES = handyftp.c datetime.c
+
+all: handyftp.exe
+
+$(OBJECTS):
+	icc $(CFLAGS) %s	
+
+handyftp.exe:  $(OBJECTS)
+	rc -r handyftp.rc
+	icc @<<
+	 /B" $(LDFLAGS)"
+	 /Fehandyftp.exe
+	 so32dll.lib tcp32dll.lib $(DWLIBPATH)\dw.lib $(DWLIBPATH)\dwcompat.lib
+	 $(OBJECTS)
+	 handyftp.def
+<<
+	rc -x2 handyftp.res handyftp.exe
+#	lxlite sfx.exe
+
+clean: 
+	rm $(OBJECTS) handyftp.exe handyftp.res
+
+
+handyftp.obj: handyftp.c handyftp.h hftpextr.h site.h
+datetime.obj: datetime.c datetime.h
+handyftp.res: handyftp.rc handyftp.h hftpextr.h
+

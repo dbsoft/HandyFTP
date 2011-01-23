@@ -1,0 +1,8 @@
+
+[Desktop Entry]
+Name=Readme
+Exec=vi /usr/local/handyftp/readme.txt 
+Icon=/usr/share/pixmaps/gnome-default.png
+Terminal=true
+MultipleArgs=false
+Type=Application

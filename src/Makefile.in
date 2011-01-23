@@ -1,0 +1,62 @@
+# $Id: Makefile.in,v 1.19 2003/12/11 21:34:01 bsmith Exp $ 
+
+# HandyFTP Makefile
+
+CC = @CC@
+RM = @RM@
+CP = @CP@
+MAKE = @MAKE@
+MKDIR = @MKDIR@
+INSTALL = @INSTALL@
+PREFIX = @prefix@
+TARGET = handyftp
+DISPLAYNAME = HandyFTP
+
+LIBS = @LIBS@
+INCLUDES = @INCLUDES@
+
+CFLAGS = @CFLAGS@ -DDW_RESOURCES -DINSTALL_PREFIX=\"$(PREFIX)\" -D__TARGET__=\"$(TARGET)\"
+LDFLAGS = @LDFLAGS@
+
+
+OBJECTS = handyftp.o datetime.o
+
+SOURCES = handyftp.c datetime.c
+
+all: $(TARGET)
+
+$(OBJECTS):
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<
+
+resources.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c gtk/resources.c
+
+$(TARGET):  $(OBJECTS) resources.o
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(TARGET) $(OBJECTS) resources.o $(LDFLAGS) $(LIBS)
+
+clean: 
+	$(RM) $(OBJECTS) resources.o $(TARGET)
+
+distclean: 
+	$(RM) $(OBJECTS) resources.o $(TARGET) *~ os2/*~ win/*~ gtk/*~ config.cache config.log config.status Makefile config.h
+
+install:
+	$(RM) -rf $(PREFIX)/$(TARGET)
+	$(MKDIR)  $(PREFIX)/$(TARGET)
+	$(CP) -f ../config/*.typ $(PREFIX)/$(TARGET)
+	$(CP) -f ../config/handyftp.msg $(PREFIX)/$(TARGET)
+	$(CP) -f ../help/*.html $(PREFIX)/$(TARGET)
+	$(MKDIR)  $(PREFIX)/$(TARGET)/images
+	$(CP) -f ../help/images/*.gif $(PREFIX)/$(TARGET)/images
+	$(INSTALL) $(TARGET) $(PREFIX)/bin
+	$(CP) -f gtk/*.png /usr/share/pixmaps
+	$(MKDIR) -p /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(INSTALL) gtk/HandyFTP.desktop /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(INSTALL) gtk/HandyFTP.desktop /usr/share/applications/
+	$(INSTALL) gtk/Readme.desktop /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(INSTALL) ../readme.txt $(PREFIX)/$(TARGET)
+        
+resources.o: gtk/resources.c
+handyftp.o: handyftp.c handyftp.h hftpextr.h site.h config.h
+datetime.o: datetime.c datetime.h
+

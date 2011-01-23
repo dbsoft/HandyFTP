@@ -1,0 +1,39 @@
+/* $Id: handyftp.Rc,v 1.10 2004/04/11 08:23:00 bsmith Exp $ */
+
+
+/* OS/2 Warp Resource Script File - Created by Universal Resource Editor */
+
+#define INCL_WINSYS
+#define INCL_WINSTDDLGS
+#define INCL_WINSTDSPIN
+#define INCL_NLS
+#define INCL_SW
+
+#include <os2.h>
+
+#include "handyftp.h"
+
+
+ICON NEWTAB          "os2\\newtab.ico"
+ICON REMOVETAB       "os2\\remtab.ico"
+ICON CONNECT         "os2\\connect.ico"
+ICON DISCONNECT      "os2\\disconnect.ico"
+ICON IDM_EXIT        "os2\\exit.ico"
+ICON ADDTOQ          "os2\\queue.ico"
+ICON REMOVEFROMQ     "os2\\unqueue.ico"
+ICON FLUSHQ          "os2\\flush.ico"
+ICON SAVETITLE       "os2\\save.ico"
+ICON UNSAVETITLE     "os2\\unsave.ico"
+ICON ADMIN           "os2\\admin.ico"
+ICON PB_CHANGE       "os2\\change.ico"
+ICON IDM_PREFERENCES "os2\\preferences.ico"
+ICON IDM_GENERALHELP "os2\\help.ico"
+ICON IDM_ABOUT       "os2\\about.ico"
+
+BITMAP      LOGO "os2\\handyftp.bmp"
+
+ICON MAIN_FRAME "os2\\handyftp.ico"
+ICON FILEICON   "os2\\FILE.ICO"
+ICON FOLDERICON "os2\\FOLDER.ICO"
+ICON LINKICON "os2\\LINK.ICO"
+

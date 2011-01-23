@@ -1,0 +1,42 @@
+# $Id: makefile.emx,v 1.5 2004/03/20 01:21:35 bsmith Exp $ 
+
+# HandyFTP Makefile
+
+DWINCDIR = d:/work/netlabs/dwindows
+DWLIBDIR = d:/work/netlabs/dwindows/lib
+
+CC = gcc
+RM = rm -f
+RC = rc
+MAKE = make
+COMPRESS = lxlite
+
+DEFS =
+LIBS =
+
+CFLAGS = -O -g -Zomf -Zmt -D__ST_MT_ERRNO__ -I. -Wall -I$(DWINCDIR) -o $(@)
+LDFLAGS = -lsocket -ldw -ldwcompat -L$(DWLIBDIR)
+RCFLAGS = -r
+
+
+OBJECTS = handyftp.obj datetime.obj
+
+SOURCES = handyftp.c datetime.c
+
+all: handyftp.exe
+
+$(OBJECTS):
+	$(CC) $(CFLAGS) -c $<	
+
+handyftp.exe:  $(OBJECTS)
+	$(RC) $(RCFLAGS) handyftp.rc
+	$(CC) $(CFLAGS) $(DEFS) -o handyftp.exe $(OBJECTS) $(LDFLAGS) handyftp.def handyftp.res
+#	$(COMPRESS) handyftp.exe
+
+clean: 
+	$(RM) $(OBJECTS) handyftp.exe handyftp.res
+
+handyftp.obj: handyftp.c handyftp.h hftpextr.h site.h
+datetime.obj: datetime.c datetime.h
+handyftp.res: handyftp.rc handyftp.h hftpextr.h
+

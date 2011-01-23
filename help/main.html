@@ -1,0 +1,221 @@
+<HTML>
+<Title>Tutorial</Title>
+<body>
+<A Name="Tutorial"><Font Color="Blue"><h1>Tutorial</h1></Font></A>
+<IMG SRC="images/handyFTP.gif" ALT="HandyFTP" BORDER="0">
+<p>Think of it like this.  Each site is a tab.  You have a source tab and
+a destination tab. So to do a transfer you need at least two connected tabs.
+</p>
+<p>
+One can be local and one remote.  Or both remote.  Or both local
+(although I don't see much of a point ;)).
+</p>
+<p>
+If you want to download a file from a remote site to a local dir.
+<ol>
+<li>Have a local tab open.
+</li><li>Browse to the directory you want to download to.
+</li><li>Go to the remote tab
+</li><li>Use the destination combobox to choose your local tab.
+</li><li>Select the file(s) you want to download
+</li><li>Use the add to queue button or double click on the
+filename.
+ They will appear in the queue on the right
+</li><li>Click the flush queue button.
+   It will transfer all the queued files from one tab (site) to the other.
+</ol>
+<A Name="FileMenu"><Font Color="Blue"><h2>File Menu</h2></Font></A>
+<IMG SRC="images/FileMenu.gif" ALT="File Menu" BORDER="0">
+<p>
+<A Name="NewConnectionTab"><h4>New Connection Tab</h4></A>
+Open a new site tab in the notebook.
+</p>
+<p>
+<A Name="RemoveConnectionTab"><h4>Remove Connection Tab</h4></A>
+Remove the current site tab in the notebook (cannot remove the last tab).
+</p>
+<p>
+<A Name="ConnectFileMenu"><h4>Connect</h4></A>
+Attempt to establish a connection to the currently visible site.
+</p>
+<p>
+<A Name="DisconnectFileMenu"><h4>Disconnect</h4></A>
+Close the current connection to the currently visible site.
+</p>
+<p>
+<A Name="SaveHost"><h4>Save Host</h4></A>
+Save the current host title and coresponding information to the configuration file
+for later quick access.
+</p>
+<p>
+<A Name="UnsaveHost"><h4>Unsave Host</h4></A>
+Remove the current host title from the configuration file.
+</p>
+<p>
+<A Name="ExitFileMenu"><h4>Exit</h4></A>
+Exit HandyFTP closing all active connections.
+</p>
+<A Name="OptionsMenu"><Font Color="Blue"><h2>Options Menu</h2></Font></A>
+<IMG SRC="images/OptionsMenu.gif" ALT="Options Menu" BORDER="0">
+<A Name="PreferencesOptionsMenu"><h4>Preferences</h4></A>
+Open the preferences dialog.
+
+<A Name="AdministrateSiteOptionsMenu"><h4>Administrate Site</h4></A>
+Open the Administration dialog where a list of administratable servers is selectable.
+
+<A Name="Autoconnect"><h4>Autoconnect</h4></A>
+As soon as a host is selected from the host list a connection is immediately established.
+
+<A Name="NoFail"><h4>No Fail</h4></A>
+Never give up on a request even if the retry maximum is reached.
+
+<A Name="DefaultSort"><h4>Default Sort</h4></A>
+Allows you to select the default sort method for the directory listings.  The choices are File, Date, Size and None.
+
+<A Name="HelpMenu"><Font Color="Blue"><h2>Help Menu</h2></Font></A>
+<IMG SRC="images/HelpMenu.gif" ALT="Help Menu" BORDER="0"> <A Name="HelpIndex"><h4>Help Index</h4></A>
+Open the help subsystem (browser) to view a list of help topics.
+
+<A Name="GeneralHelpMenu"><h4>General Help</h4></A>
+Open the help subsystem (browser) to view the HandyFTP tutorial and other general help.
+
+<A Name="SystemInfo"><h4>System Info</h4></A>
+Open the system information dialog.
+
+<A Name="HandyFTPHome"><h4>HandyFTP Home</h4></A>
+Opens a browser to the HandyFTP homepage at the OS/2 Netlabs.
+
+<A Name="AboutHelpMenu"><h4>About</h4></A>
+Opens the about box with copyright information and special thanks.
+
+<A Name="Preferences"><Font Color="Blue"><h2>Preferences</h2></Font></A>
+<IMG SRC="images/Preferences.gif" ALT="Preferences" BORDER="0">
+<A Name="OpenAllServers"><h4>Open All Servers</h4></A>
+Opens a tab for each server in your server list at startup. (will connect also if autoconnect)
+
+<A Name="ReverseFXP"><h4>Reverse FXP</h4></A>
+Switch which site is in Passive mode and which is in active mode.  Also, causes this reversal
+in normal FTP mode also.
+
+<A Name="Showpassword"><h4>Show password</h4></A>
+Will not show *'s in the password field when enabled.
+
+<A Name="SaveURLs"><h4>Save URLs</h4></A>
+On OS/2 a EA .comments will be saved on the file which contains the ftp:// style URL to the
+source location.  On Windows and Unix the same information will be saved in a file called
+"handyftp.url" which is located in the HandyFTP directory.
+
+<A Name="OptimizeColumns"><h4>Optimize Columns</h4></A>
+This option will cause HandyFTP to automatically position the column separators so that all the text is visible.
+
+<A Name="Timeout"><h4>Timeout</h4></A>
+The time limit (in seconds) of how long HandyFTP will wait for IO without checking timers.
+
+<A Name="Retries"><h4>Retries</h4></A>
+How many times HandyFTP will attempt an action before giving up when no fail is not enabled.
+
+<A Name="CacheLimit"><h4>Cache Limit</h4></A>
+How many directories per site are cached in memory, so it will not automatically read the
+directory from the remote server.  To force reload of a cache directory click the refresh
+button on the toolbar.
+
+<A Name="BandwidthLimit"><h4>Bandwidth Limit</h4></A>
+How many kilobytes per second each FTP connection can consume.  This option allows you to conserve bandwidth for other applications.
+
+<A Name="Locale"><h4>Locale</h4></A>
+Allows you to select languages other than english.  English (Locale 0) is built into the program, additional languages are provided in the message file.  Currently only German (Locale 1) is available.
+
+<A Name="IPSAdministration"><Font Color="Blue"><h2>IPS Administration</h2></Font></A>
+<IMG SRC="images/IPSAdmin.gif" ALT="IPS Administration" BORDER="0">
+<A Name="Close"><h4>Close</h4></A>
+Closes the IPS Administration dialog.
+
+<A Name="Kill"><h4>Kill</h4></A>
+Disconnects the user selected in the list on the right immediately.
+
+<A Name="Shutdown"><h4>Shutdown</h4></A>
+Close the server remotely.
+
+<A Name="Restart"><h4>Restart</h4></A>
+Restart the server remotely, causing the configuration to be reread.
+
+<A Name="SystemInformation"><Font Color="Blue"><h2>System Information</h2></Font></A>
+<IMG SRC="images/SysInfo.gif" ALT="System Information" BORDER="0">
+<P>
+Shows a list of the current operating system stats, as well has HandyFTP
+build information.  When reporting bugs please also include this information
+with the bug report.
+</p>
+
+<A Name="Toolbar"><Font Color="Blue"><h2>Toolbar</h2></Font></A>
+<IMG SRC="images/toolbar.gif" ALT="Toolbar" BORDER="0"><Br>
+
+<A Name="NewTab"><h4>New Tab</h4></A>
+<IMG SRC="images/newtab.gif" ALT="New Tab" BORDER="0">
+Add a new site tab.
+
+<A Name="RemoveTab"><h4>Remove Tab</h4></A>
+<IMG SRC="images/RemoveTab.gif" ALT="Remove Tab" BORDER="0">
+Remove the current site tab.
+
+<A Name="ConnectToolbar"><h4>Connect</h4></A>
+<IMG SRC="images/connect.gif" ALT="Connect" BORDER="0">
+Connect the currently visible tab's host.
+
+<A Name="DisconnectToolbar"><h4>Disconnect</h4></A>
+<IMG SRC="images/disconnect.gif" ALT="disconnect" BORDER="0">
+Disconnect the currently visible tab's host connection.
+
+<A Name="ExitToolbar"><h4>Exit</h4></A>
+<IMG SRC="images/exit.gif" ALT="Exit" BORDER="0">
+Exit HandyFTP closing all connections.
+
+<A Name="RemovefromQueue"><h4>Remove from Queue</h4></A>
+<IMG SRC="images/RemoveQueue.gif" ALT="Remove from Queue" BORDER="0">
+Remove the currently select queue item.
+
+<A Name="AddtoQueue"><h4>Add to Queue</h4></A>
+<IMG SRC="images/AddQueue.gif" ALT="Add to Queue" BORDER="0">
+Add currently selected file to the queue.
+
+<A Name="FlushQueue"><h4>Flush Queue</h4></A>
+<IMG SRC="images/FlushQueue.gif" ALT="Flush Queue" BORDER="0">
+Begin transfering queued items.
+
+<A Name="SaveTitle"><h4>Save Title</h4></A>
+<IMG SRC="images/SaveTitle.gif" ALT="Save Title" BORDER="0">
+Save current tab's host information to the config file.
+
+<A Name="UnsaveTitle"><h4>Unsave Title</h4></A>
+<IMG SRC="images/UnsaveTitle.gif" ALT="Unsave Title" BORDER="0">
+Remove the current tab's host information from the config file.
+
+<A Name="Refresh"><h4>Refresh</h4></A>
+<IMG SRC="images/Refresh.gif" ALT="Refresh" BORDER="0">
+(Re)load the current tab's directory information, even if cached.
+
+<A Name="PreferencesToolbar"><h4>Preferences</h4></A>
+<IMG SRC="images/preferencestoolbar.gif" ALT="Preferences" BORDER="0">
+Open the preferences dialog.
+
+<A Name="AdministrateSiteToolbar"><h4>Administrate Site</h4></A>
+<IMG SRC="images/AdministrateSite.gif" ALT="Administrate Site" BORDER="0">
+Open the site administration dialog.
+
+<A Name="GeneralHelpToolbar"><h4>General Help</h4></A>
+<IMG SRC="images/GeneralHelp.gif" ALT="General Help" BORDER="0">
+Open the help subsystem to the general help.
+
+<A Name="AboutToolbar"><h4>About</h4></A>
+<IMG SRC="images/about.gif" ALT="About" BORDER="0">
+Open the About dialog.
+
+<hr>
+
+<p>Brian Smith</p>
+<p><a
+href="mailto:dbsoft@technologist.com">dbsoft@technologist.com</a>
+</p>
+</body>
+
+</HTML>

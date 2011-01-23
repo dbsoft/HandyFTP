@@ -1,0 +1,52 @@
+# HandyFTP Makefile for Win32
+
+# Change these as needed
+DWLIBDIR=\netlabs\dwindows\lib
+DWINCDIR=\netlabs\dwindows
+
+TARGET=handyftp
+
+CC = cl
+CFLAGS = -c -G5 -GD -Zp1 -DWIN32 -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR)
+CFLAGS_DEBUG = -Zi
+CFLAGS_COMPILE = -MTd
+LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\dw.lib $(DWLIBDIR)\dwcompat.lib
+RES = 
+LINKFLAGS = -machine:i386 -debug:full -debugtype:cv
+DLLLINKFLAGS = -dll
+LINK = link
+DEFFILE = handyftp.def
+
+OBJS =	handyftp.obj \
+	datetime.obj \
+	winmain.obj
+	
+all: handyftp.exe
+
+clean:
+	-erase *.dll
+        -erase *.exe
+        -erase *.opt
+        -erase *.lib
+        -erase *.obj
+        -erase *.map
+        -erase *.pdb
+        -erase *.ilk
+        -erase *.exp
+        -erase *.res
+        -erase *~
+        
+handyftpw.res: handyftpw.rc
+	rc -r handyftpw.rc
+
+handyftp.exe: $(OBJS) handyftpw.res
+	$(LINK) @<<
+-out:$(@) -def:$(DEFFILE) -subsystem:windows
+$(LINKFLAGS)
+$(OBJS)
+$(LIBS)
+handyftpw.res
+<<
+        
+.c.obj:
+	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(CFLAGS_COMPILE) $*.c

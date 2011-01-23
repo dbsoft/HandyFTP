@@ -1,0 +1,152 @@
+/* $Id: handyftp.h,v 1.12 2001/11/03 05:35:33 bsmith Exp $ */
+
+#define MAIN_FRAME    155
+#define ID_FILEMENU   156
+#define ID_EDITMENU   158
+
+#define ID_TOOLBAR    1045
+#define ID_LPANE      1046
+#define ID_RPANE      1047
+#define ID_NOTEBOOK   1048
+#define ID_NOTEBOOKFR 1049
+#define ID_STATUS     1050
+#define ID_LIST       1051
+#define ID_MLE        1052
+#define ID_TOP        1053
+
+#define IDB_FILENEW   401
+#define IDB_FILEOPEN  402
+#define IDB_FILESAVE  403
+#define IDB_FILSAVAS  404
+#define IDB_EXIT      405
+#define IDB_EDITCOPY  406
+#define IDB_EDITCUT   407
+#define IDB_EDITFIND  408
+#define IDB_EDITFNNX  409
+#define IDB_EDITPAST  410
+#define IDB_EDITREPL  411
+#define IDB_EDITUNDO  412
+#define IDB_HELP      413
+#define IDB_ABOUT     414
+
+
+#define WIN_HANDYFTP 1
+#define IDM_FILE 258
+#define IDM_OPTIONS 262
+#define IDM_HELP 266
+#define IDM_NEW 260
+#define IDM_CONNECT 261
+#define IDM_SYSINFO 267
+#define IDM_GENERALHELP 268
+#define IDM_ABOUT 269
+#define IDM_REMOVE 270
+#define IDM_DISCONNECT 271
+#define IDM_ADMIN 272
+#define IDM_NOFAIL 273
+#define IDM_MKDIR 274
+#define IDM_REN 275
+#define IDM_DEL 276
+#define IDM_VIEW 277
+#define IDM_SAVE 286
+#define IDM_UNSAVE 287
+#define IDM_EXIT 288
+#define IDM_PREFERENCES 290
+#define IDM_AUTOCONNECT 291
+#define IDM_WINDOWLIST 293
+#define IDM_HELPINDEX 295
+#define IDM_DEL2 296
+#define IDM_VIEW2 297
+#define IDM_HOME 298
+#define IDM_MYHELP 299
+#define IDM_SAVEQ 300
+#define IDM_LOADQ 301
+#define IDM_SORT 302
+#define IDM_SORTF 303
+#define IDM_SORTD 304
+#define IDM_SORTS 305
+#define IDM_SORTN 306
+
+#define IDP_SORT 310
+#define IDP_SORTF 311
+#define IDP_SORTD 312
+#define IDP_SORTS 313
+#define IDP_SORTN 314
+
+
+#define EF_HOST 344
+#define SERVER 278
+#define ABOUT 314
+#define HELP 315
+#define CSTATUS 305
+#define PERCENT 304
+#define ST_DIRECTORY 307
+#define PB_CHANGE 309
+#define LDIR 276
+#define QUEUE 330
+#define URL 331
+#define PORTNUM 332
+#define USERNAME 333
+#define PASSWORD 334
+#define CONNECT 335
+#define DISCONNECT 336
+#define ADDTOQ 337
+#define REMOVEFROMQ 338
+#define SITE 339
+#define NOTEBOOKPAGE 340
+#define ID_PROP 341
+#define HICON 342
+#define HMENU 343
+#define CMENU 344
+#define CMENU2 299
+#define TEXT_PERCENT 345
+#define FLUSHQ 346
+#define ADMIN 349
+#define SAVETITLE 350
+#define UNSAVETITLE 351
+#define HOST_TITLE 352
+#define REMOVETAB 353
+#define PREFERENCES 354
+#define NEWTAB 355
+#define FILEICON 356
+#define FOLDERICON 357
+#define LINKICON 365
+
+#define ID_PROPPB 377
+
+#define DLG_PREFERENCES 1200
+#define DLG_SITEADMIN 1201
+#define DLG_ABOUT 1202
+
+#define LB_USERS 1203
+#define GB_USERSCONNECTED 1204
+#define IDLETIME 1205
+#define USERLEVEL 1206
+#define ADM_DISCONNECT 1207
+#define PB_MONITOR 1208
+#define PB_SHUTDOWN 1209
+#define PB_RESTART 1210
+#define PB_PASSWORD 1211
+#define PB_HELP 1212
+#define PB_EXECUTE 1213
+#define ST_LANGUAGE 1214
+#define CX_LANGUAGE 1215
+
+#define LOGO 1300
+
+#define OPEN_ALL 1400
+#define CB_REVERSEFXP 1401
+#define CB_SHOWPASSWORD 1402
+#define SPB_TIMEOUT 1403
+#define SPB_RETRIES 1404
+#define SPB_CACHELIMIT 1405
+
+#define DLG_SITEPROPERTIES 1700
+#define EF_SITETITLE 1701
+#define EF_HOSTNAME 1702
+#define SPB_PORT 1703
+#define EF_USERNAME 1704
+#define EF_PASSWORD 1705
+#define EF_DIRECTORY 1706
+#define ST_HOSTTITLE 1707
+#define ST_PORT 1709
+

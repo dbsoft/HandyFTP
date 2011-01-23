@@ -1,0 +1,8 @@
+Think of it like this.  Each site is a tab.  You have a source tab anda destination tab. So to do a transfer you need at least two connected tabs.          One can be local and one remote.  Or both remote.  Or both local(although I don't see much of a point ;)).
+
+If you want to download a file from a remote site to a local dir.
+
+1) Have a local tab open.2) Browse to the directory you want to download to.3) Go to the remote tab4) Use the destination combobox to choose your local tab.5) Select the file(s) you want to download6) Use the add to queue button or double click on the filename   They will appear in the queue on the right7) Click the flush queue button   It will transfer all the queued files from one tab (site) to the other.
+
+Brian Smith
+dbsoft@technologist.com

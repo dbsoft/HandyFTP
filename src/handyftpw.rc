@@ -1,0 +1,26 @@
+/*#include <windows.h>*/
+
+#include "handyftp.h"
+
+NEWTAB ICON          "win\\newtab.ico"
+REMOVETAB ICON       "win\\remtab.ico"
+CONNECT ICON         "win\\connect.ico"
+DISCONNECT ICON      "win\\disconnect.ico"
+IDM_EXIT ICON        "win\\exit.ico"
+ADDTOQ ICON          "win\\queue.ico"
+REMOVEFROMQ ICON     "win\\unqueue.ico"
+FLUSHQ ICON          "win\\flush.ico"
+SAVETITLE ICON       "win\\save.ico"
+UNSAVETITLE ICON     "win\\unsave.ico"
+ADMIN ICON           "win\\admin.ico"
+PB_CHANGE ICON       "win\\change.ico"
+IDM_PREFERENCES ICON "win\\preferences.ico"
+IDM_GENERALHELP ICON "win\\help.ico"
+IDM_ABOUT ICON       "win\\about.ico"
+
+LOGO BITMAP      "win\\handyftp.bmp"
+
+MAIN_FRAME ICON "win\\handyftp.ico"
+FILEICON ICON   "win\\FILE.ICO"
+FOLDERICON ICON "win\\FOLDER.ICO"
+LINKICON ICON "win\\LINK.ICO"
