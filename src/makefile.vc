@@ -8,12 +8,12 @@
 TARGET=handyftp
 
 CC = cl
-CFLAGS = -c -G5 -GD -Zp1 -DWIN32 -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR)
+CFLAGS = -c -Zp1 -DWIN32 -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR)
 CFLAGS_DEBUG = -Zi
 CFLAGS_COMPILE = -MTd
 LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\dw.lib $(DWLIBDIR)\dwcompat.lib
 RES = 
-LINKFLAGS = -machine:i386 -debugtype:cv
+LINKFLAGS = -machine:i386 -debug -debugtype:cv
 DLLLINKFLAGS = -dll
 LINK = link
 DEFFILE = handyftp.def
