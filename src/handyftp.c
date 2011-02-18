@@ -5572,7 +5572,7 @@ void loadsitetypes(void)
 				currenttype->translation[z] = NULL;
 			while(!feof(f))
 			{
-				getline(f, entry, entrydata);
+				handyftp_getline(f, entry, entrydata);
 				if(strcasecmp(entry, "type")==0)
 					currenttype->type = strdup(entrydata);
 
