@@ -5405,7 +5405,7 @@ void savetitle(void)
 }
 
 /* Generic function to parse information from a config file */
-void getline(FILE *f, char *entry, char *entrydata)
+void handyftp_getline(FILE *f, char *entry, char *entrydata)
 {
 	char in[256];
 	int z;
@@ -5469,7 +5469,7 @@ void loadconfig(void)
 
 	while(!feof(f))
 	{
-		getline(f, entry, entrydata);
+		handyftp_getline(f, entry, entrydata);
 		if(strcasecmp(entry, "nofail")==0 && strcasecmp(entrydata, "true") == 0)
 			nofail = TRUE;
 		if(strcasecmp(entry, "urlsave")==0 && strcasecmp(entrydata, "true") == 0)
