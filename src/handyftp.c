@@ -85,7 +85,7 @@ HWND IPS_handle;
 int IPS_page = 0;
 time_t IPS_time = 0;
 
-ULONG fileicon, foldericon, linkicon;
+HICN fileicon, foldericon, linkicon;
 
 volatile struct DebugInfo_st {
         int	linenumb;
@@ -153,7 +153,7 @@ char *contexttext = NULL;
 void handyftp_crash(int signal)
 {
 	char tmpbuf[1024];
-	sprintf(tmpbuf, locale_string("Crash in %s, line %d of %s. Please report to dbsoft@technologist.com", 32), DebugInfo.procname, DebugInfo.linenumb, __FILE__);
+	sprintf(tmpbuf, locale_string("Crash in %s, line %d of %s. Please report to brian@dbsoft.org", 32), DebugInfo.procname, DebugInfo.linenumb, __FILE__);
 	dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_INFORMATION, tmpbuf);
 	dw_exit(0);
 }
@@ -1680,7 +1680,8 @@ void drawq(SiteTab *lsite)
 	Queue *tmp;
 	int count = 0, z;
 	void *containerinfo;
-	unsigned long size, thisicon;
+	unsigned long size;
+	HICN thisicon;
 	CTIME time;
 	CDATE date;
 
@@ -1751,7 +1752,8 @@ void drawdir(SiteTab *lsite)
 	Directory *tmp;
 	int count = 0, z;
 	void *containerinfo;
-	unsigned long size, thisicon;
+	unsigned long size;
+	HICN thisicon;
 	CTIME time;
 	CDATE date;
 
@@ -5170,6 +5172,8 @@ void new_tab(void *data)
 	dw_window_set_font(status, "5.System VIO");
 #elif defined(__WIN32__)
 	dw_window_set_font(status, "8.Terminal");
+#elif defined(__MAC__)
+	dw_window_set_font(status, "7.Monaco");
 #else
 	dw_window_set_font(status, "fixed");
 #endif
@@ -6661,7 +6665,7 @@ int main(int argc, char *argv[])
 	if(hwndFrame)
 	{
 
-		dw_window_set_icon(hwndFrame, MAIN_FRAME);
+		dw_window_set_icon(hwndFrame, (HICN)MAIN_FRAME);
 
 		dw_signal_connect(hwndFrame, DW_SIGNAL_DELETE, DW_SIGNAL_FUNC(deleteevent), NULL);
 
