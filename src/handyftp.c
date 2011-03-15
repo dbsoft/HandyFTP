@@ -52,6 +52,9 @@ void *mainFunctions[] = { (void *)newtab, (void *)removetab, NULL, (void *)conne
 #elif defined(__WIN32__) || defined(WINNT)
 #define EDITOR "notepad"
 #define EDMODE DW_EXEC_GUI
+#elif defined(__MAC__)
+#define EDITOR "TextEdit"
+#define EDMODE DW_EXEC_GUI
 #else
 #define EDITOR "vi"
 #define EDMODE DW_EXEC_CON
@@ -187,8 +190,7 @@ int isip(char *buf)
 		return 0;
 	return 1;
 }
-/* Ret
- urn the total number of active pages */
+/* Return the total number of active pages */
 int countpages(void)
 {
 	int z, count = 0;
