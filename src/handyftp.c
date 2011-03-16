@@ -5175,7 +5175,7 @@ void new_tab(void *data)
 #elif defined(__WIN32__)
 	dw_window_set_font(status, "8.Terminal");
 #elif defined(__MAC__)
-	dw_window_set_font(status, "7.Monaco");
+	dw_window_set_font(status, "9.Monaco");
 #else
 	dw_window_set_font(status, "fixed");
 #endif
@@ -6638,6 +6638,10 @@ int main(int argc, char *argv[])
 	int cx, cy;
 
 	dw_init(TRUE, argc, argv);
+    
+#ifdef __MAC__
+    _dw_default_font("10.Geneva");
+#endif
 
 	signal(SIGSEGV, handyftp_crash);
 
