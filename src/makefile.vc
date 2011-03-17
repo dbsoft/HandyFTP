@@ -7,13 +7,27 @@
 
 TARGET=handyftp
 
+#
+# Configure settings for the target platform
+#	Default to x86 if not specified
+#
+!if "$(TARGET_CPU)" == ""
+TARGET_CPU=x86
+!endif
+
+!if "$(TARGET_CPU)" == "x86"
+PLATFORM_DEF = -DWIN32
+!else
+PLATFORM_DEF = -DWIN64
+!endif
+
 CC = cl
-CFLAGS = -c -Zp1 -DWIN32 -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR)
+CFLAGS = -c $(PLATFORM_DEF) -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR)
 CFLAGS_DEBUG = -Zi
 CFLAGS_COMPILE = -MTd
 LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\dw.lib $(DWLIBDIR)\dwcompat.lib
 RES = 
-LINKFLAGS = -machine:i386 -debug -debugtype:cv
+LINKFLAGS = -machine:$(TARGET_CPU) -debug -debugtype:cv
 DLLLINKFLAGS = -dll
 LINK = link
 DEFFILE = handyftp.def
