@@ -62,7 +62,7 @@ $(OBJS)
 $(LIBS)
 handyftpw.res
 <<
-	mt.exe /manifest handyftp.exe.manifest /outputresource:handyftp.exe;1
+	mt.exe /manifest handyftp.exe.manifest win\handyftp.exe.$(TARGET_CPU).manifest /outputresource:handyftp.exe;1
         
 .c.obj:
 	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(CFLAGS_COMPILE) $*.c
