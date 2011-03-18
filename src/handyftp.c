@@ -6531,6 +6531,7 @@ void handyftp_init(void)
 		if(mainItems[z] != -1)
 		{
 			tempbutton = dw_bitmapbutton_new(locale_string(mainHelpItems[z], 170 + m), mainItems[z]);
+            dw_window_set_style(tempbutton, DW_BS_NOBORDER, DW_BS_NOBORDER);
 
 			if(mainItems[z] == PB_CHANGE)
 				refreshbutton = tempbutton;
