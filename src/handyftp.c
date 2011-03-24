@@ -2069,6 +2069,8 @@ void about(void)
 	param->busy = &in_about;
 
 	point = dw_mle_import(mle, greets, point);
+	dw_mle_set_cursor(mle, 0);
+	dw_mle_set_visible(mle, 0);
 
 	dw_signal_connect(okbutton, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(generic_cancel), (void *)param);
 
