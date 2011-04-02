@@ -1,8 +1,8 @@
 # HandyFTP Makefile
 
 # Edit this as necessary.
-DWLIBPATH=..\..\dwindows\lib
-DWINCPATH=..\..\dwindows
+#DWLIBPATH=..\..\dwindows\lib
+#DWINCPATH=..\..\dwindows
 
 TARGET=handyftp
 
