@@ -45,6 +45,8 @@ void *mainFunctions[] = { (void *)newtab, (void *)removetab, NULL, (void *)conne
 #define CONNECTION_LIMIT 256
 #define URL_LIMIT 4000
 
+#define NAT_DELAY 1000
+
 /* Select an editor for the current build platform. */
 #if defined(__OS2__) || defined(__EMX__)
 #define EDITOR "epm"
@@ -59,8 +61,6 @@ void *mainFunctions[] = { (void *)newtab, (void *)removetab, NULL, (void *)conne
 #define EDITOR "vi"
 #define EDMODE DW_EXEC_CON
 #endif
-
-#define NAT_DELAY 1000
 
 /* Note currently DW has a limit of 4095 (4096 - NULL) */
 
@@ -265,7 +265,7 @@ void saveconfig(void)
 {
 	SavedSites *tmp;
 	FILE *f;
-	char *tmppath = INIDIR, *inidir, *inipath, *home = getenv("HOME");
+	char *tmppath = INIDIR, *inidir, *inipath, *home = dw_user_dir();
 
 	if(strcmp(INIDIR, ".") == 0)
 	{
@@ -5447,7 +5447,7 @@ void loadconfig(void)
 	char entry[256], entrydata[256];
 	FILE *f;
 	SavedSites *currentsite = SSroot;
-	char *tmppath = INIDIR, *inipath, *home = getenv("HOME");
+	char *tmppath = INIDIR, *inipath, *home = dw_user_dir();
 
 	if(strcmp(INIDIR, ".") == 0)
 		inipath = strdup("handyftp.ini");
