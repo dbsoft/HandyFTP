@@ -31,7 +31,7 @@ handyftp.exe:  $(OBJECTS)
 	 $(OBJECTS)
 	 handyftp.def
 <<
-	rc -x2 handyftp.res handyftp.exe
+	rc -x1 handyftp.res handyftp.exe
 #	lxlite sfx.exe
 
 clean: 
