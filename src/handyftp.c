@@ -4952,6 +4952,7 @@ void DWSIGNAL tab_thread(void)
 	freequeue(threadsite->queue);
 	threadsite->queue = NULL;
 	site_unref(threadsite);
+    dw_mutex_unlock(h);
 }
 
 /* Removes the current tab */
