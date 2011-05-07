@@ -6675,7 +6675,7 @@ int main(int argc, char *argv[])
 	if(hwndFrame)
 	{
 
-		dw_window_set_icon(hwndFrame, (HICN)MAIN_FRAME);
+		dw_window_set_icon(hwndFrame, DW_RESOURCE(MAIN_FRAME));
 
 		dw_signal_connect(hwndFrame, DW_SIGNAL_DELETE, DW_SIGNAL_FUNC(deleteevent), NULL);
 
