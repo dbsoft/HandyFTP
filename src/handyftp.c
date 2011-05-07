@@ -1646,7 +1646,7 @@ void setdir(SiteTab *lsite)
 	titles[1] = locale_string("Time", 46);
 	titles[2] = locale_string("Date", 47);
 
-	if(!dw_filesystem_setup(lsite->ldir, flags, titles, 3))
+	if(dw_filesystem_setup(lsite->ldir, flags, titles, 3))
 		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 }
 
@@ -1666,7 +1666,7 @@ void setqueue(SiteTab *lsite)
 	titles[3] = locale_string("Time", 52);
 	titles[4] = locale_string("Date", 53);
 
-	if(!dw_filesystem_setup(lsite->rqueue, flags, titles, 5))
+	if(dw_filesystem_setup(lsite->rqueue, flags, titles, 5))
 		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 }
 
@@ -2364,7 +2364,7 @@ void IPS(void)
 
 	dw_box_pack_start(xbox, container, 300, 200, TRUE,TRUE, 4);
 
-	if(!dw_container_setup(container, flags, titles, 5, 2))
+	if(dw_container_setup(container, flags, titles, 5, 2))
 		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 
 	param->page = currentpage;
