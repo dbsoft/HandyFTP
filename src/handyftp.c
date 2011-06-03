@@ -5176,7 +5176,7 @@ void new_tab(void *data)
 #ifdef __OS2__
 	dw_window_set_font(status, "5.System VIO");
 #elif defined(__WIN32__)
-	dw_window_set_font(status, "8.Terminal");
+	dw_window_set_font(status, "9.Terminal");
 #elif defined(__MAC__)
 	dw_window_set_font(status, "9.Monaco");
 #else
