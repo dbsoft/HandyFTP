@@ -6644,7 +6644,7 @@ int main(int argc, char *argv[])
 	dw_init(TRUE, argc, argv);
     
 #ifdef __MAC__
-    _dw_default_font("10.Geneva");
+        dw_font_set_default("10.Geneva");
 #endif
 
 	signal(SIGSEGV, handyftp_crash);
