@@ -5823,7 +5823,7 @@ int DWSIGNAL contextmenus(HWND hwnd, void *data)
 			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("You must be connected.", 159));
 		else
 		{
-			switch((int)data)
+			switch(DW_POINTER_TO_INT(data))
 			{
 			case IDP_SORTF:
 				site[currentpage]->sort = SORT_FILE;
@@ -6482,7 +6482,7 @@ int DWSIGNAL containerselect(HWND hwnd, char *text, void *data)
 
 void DWSIGNAL sortmenu(HWND hwnd, void *data)
 {
-	switch((int)data)
+	switch(DW_POINTER_TO_INT(data))
 	{
 	case IDM_SORTF:
 		default_sort = SORT_FILE;
