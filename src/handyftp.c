@@ -5161,12 +5161,8 @@ void new_tab(void *data)
 
 	site[thispage]->ldir = lcontainer = dw_container_new(LDIR, TRUE);
 	
-	dw_container_set_row_bg(lcontainer, DW_CLR_RED, DW_CLR_BLUE);
-
 	site[thispage]->rqueue = rcontainer = dw_container_new(QUEUE, TRUE);
 
-	dw_container_set_row_bg(rcontainer, DW_CLR_RED, DW_CLR_BLUE);
-	
 	splitbar = dw_splitbar_new(BOXHORZ, lcontainer, rcontainer, 0);
 
 	percentbox = dw_box_new(BOXVERT, 0);
@@ -5227,6 +5223,10 @@ void new_tab(void *data)
 
 	setdir(site[thispage]);
 	setqueue(site[thispage]);
+
+	/* Set the colors after the containers have been setup */
+	dw_container_set_row_bg(rcontainer, DW_CLR_RED, DW_CLR_BLUE);
+	dw_container_set_row_bg(lcontainer, DW_CLR_RED, DW_CLR_BLUE);
 
 	/* Set up the defaults */
 	dw_window_click_default(site[thispage]->host_title, site[thispage]->host_name);
