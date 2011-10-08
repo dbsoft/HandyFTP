@@ -5160,9 +5160,13 @@ void new_tab(void *data)
 	dw_box_pack_start(controlbox, destcombo, 240, 22, TRUE, FALSE, 0);
 
 	site[thispage]->ldir = lcontainer = dw_container_new(LDIR, TRUE);
+	
+	dw_container_set_row_bg(lcontainer, DW_CLR_RED, DW_CLR_BLUE);
 
 	site[thispage]->rqueue = rcontainer = dw_container_new(QUEUE, TRUE);
 
+	dw_container_set_row_bg(rcontainer, DW_CLR_RED, DW_CLR_BLUE);
+	
 	splitbar = dw_splitbar_new(BOXHORZ, lcontainer, rcontainer, 0);
 
 	percentbox = dw_box_new(BOXVERT, 0);
