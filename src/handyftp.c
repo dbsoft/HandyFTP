@@ -5225,8 +5225,8 @@ void new_tab(void *data)
 	setqueue(site[thispage]);
 
 	/* Set the colors after the containers have been setup */
-	dw_container_set_row_bg(rcontainer, DW_CLR_RED, DW_CLR_BLUE);
-	dw_container_set_row_bg(lcontainer, DW_CLR_RED, DW_CLR_BLUE);
+	dw_container_set_row_bg(rcontainer, DW_CLR_DEFAULT, DW_CLR_DEFAULT);
+	dw_container_set_row_bg(lcontainer, DW_CLR_DEFAULT, DW_CLR_DEFAULT);
 
 	/* Set up the defaults */
 	dw_window_click_default(site[thispage]->host_title, site[thispage]->host_name);
