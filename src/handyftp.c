@@ -398,9 +398,9 @@ void updateallsites(void)
 }
 
 /* Send a command to a page via the Unix domain socket */
-void sendthread(char msgid, int page)
+int sendthread(char msgid, int page)
 {
-	sockwrite(site[page]->pipefd[1], (char *)&msgid, 1, 0);
+	return (sockwrite(site[page]->pipefd[1], (char *)&msgid, 1, 0) == 1);
 }
 
 /* Free a site directory listing */
@@ -535,10 +535,8 @@ void loadqueue(SiteTab *thissite, char *filename)
 	FILE *fp;
 	char buf[1001] = "";
 
-	if((fp = fopen(filename, "r")) != NULL)
+	if((fp = fopen(filename, "r")) != NULL && fgets(buf, 1000, fp) != NULL)
 	{
-
-		fgets(buf, 1000, fp);
 		trimnewline(buf);
 
 		if(strcmp(buf, thissite->hosttitle) != 0)
@@ -606,9 +604,10 @@ void loadqueue(SiteTab *thissite, char *filename)
 			else
 				free(thisq);
 		}
-		fclose(fp);
 		drawq(thissite);
 	}
+	if(fp)
+		fclose(fp);
 }
 
 /* Adds a directory listing to the current cache, removing
@@ -3317,10 +3316,9 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	/* Request an update to the IPS list */
 	if(in_IPS && threadsite->status == STATUSIDLE && threadsite->page == IPS_page && ftd->in_200 == FALSE && (time(NULL) - IPS_time) > 60)
 	{
-		if(threadsite->controlfd)
-			socksprint(threadsite->controlfd, "SITE RADM LIST sockets\r\n");
-		clearadmin();
-		IPS_time = time(NULL);
+		if(threadsite->controlfd && socksprint(threadsite->controlfd, "SITE RADM LIST sockets\r\n") > 0)
+		   clearadmin();
+      IPS_time = time(NULL);
 	}
 
 	/* Command from the user or another thread */
@@ -3435,13 +3433,15 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					ftd->originalcommand = THRDDISCONNECT;
 					if(threadsite->controlfd)
 					{
-						sockwrite(threadsite->controlfd, "QUIT\r\n", 6, 0);
-						setstatustext(threadsite, locale_string("Sending QUIT message to remote host...", 108));
+						if(sockwrite(threadsite->controlfd, "QUIT\r\n", 6, 0) > 0)
+						{
+							setstatustext(threadsite, locale_string("Sending QUIT message to remote host...", 108));
 
-						/* Pause briefly to insure receipt. */
-						dw_mutex_unlock(h);
-						msleep(1000);
-						dw_mutex_lock(h);
+							/* Pause briefly to insure receipt. */
+							dw_mutex_unlock(h);
+							msleep(1000);
+							dw_mutex_lock(h);
+						}
 
 						sockclose(threadsite->controlfd);
 						writeconsole(threadsite, locale_string("Closed connection to %s port %d.", 109), threadsite->hostname, threadsite->port);
@@ -3577,17 +3577,22 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 									/* FXP Code */
 									if(ftd->currentfxpstate == FALSE)
 									{
-										socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->currentqueue->srcdirectory));
-										sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0);
-										ftd->commandready = FALSE;
-										set_status(threadsite, STATUSFXPRETR);
+										if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n",
+											threadsite->currentqueue->srcdirectory)) > 0 &&
+											sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0) > 0)
+										{
+											ftd->commandready = FALSE;
+											set_status(threadsite, STATUSFXPRETR);
+										}
 									}
 									else
 									{
-										socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->currentqueue->srcdirectory));
-										sprintf(ftd->destsite->thrdcommand, "%d", threadsite->page);
-										sendthread(THRDFXP, ftd->destsite->page);
-										set_status(threadsite, STATUSFXPWAIT);
+										if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->currentqueue->srcdirectory)) > 0)
+										{
+											sprintf(ftd->destsite->thrdcommand, "%d", threadsite->page);
+											sendthread(THRDFXP, ftd->destsite->page);
+											set_status(threadsite, STATUSFXPWAIT);
+										}
 									}
 								}
 								else
@@ -3595,10 +3600,13 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 									if(ftd->currentfxpstate == FALSE)
 									{
 										/* Passive FTP */
-										socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->currentqueue->srcdirectory));
-										sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0);
-										ftd->commandready = FALSE;
-										set_status(threadsite, STATUSPASVRETR);
+										if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n",
+											threadsite->currentqueue->srcdirectory)) > 0 &&
+											sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0) > 0)
+										{
+											ftd->commandready = FALSE;
+											set_status(threadsite, STATUSPASVRETR);
+										}
 									}
 									else
 									{
@@ -3607,8 +3615,10 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 										server.sin_family = AF_INET;
 										server.sin_port   = 0;
 										server.sin_addr.s_addr = INADDR_ANY;
-										if ((ftd->listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ||  bind(ftd->listenfd, (struct sockaddr *)&server, sizeof(server)) < 0 || listen(ftd->listenfd, 0) < 0)
-											writeconsole(threadsite, locale_string("Error binding to port of data connection.", 113));
+										if ((ftd->listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ||  
+											bind(ftd->listenfd, (struct sockaddr *)&server, sizeof(server)) < 0 || 
+											listen(ftd->listenfd, 0) < 0)
+												writeconsole(threadsite, locale_string("Error binding to port of data connection.", 113));
 										else
 										{
 											struct sockaddr_in listen_addr = { 0 };
@@ -3618,19 +3628,30 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 											port4.ip32 = ntohs(listen_addr.sin_port);
 
-											socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->currentqueue->srcdirectory));
-											sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0);
-											dw_mutex_unlock(h);
-											msleep(NAT_DELAY);
-											dw_mutex_lock(h);
-											socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,ftd->our_ip.ip4.ip2,ftd->our_ip.ip4.ip1,port4.ip4.ip2,port4.ip4.ip1));
-											/* If we can try to resume download */
-											if(ftd->filesize)
+											if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n",
+												threadsite->currentqueue->srcdirectory)) > 0 &&
+												sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0) > 0)
 											{
-												socksprint(threadsite->controlfd, vargs(alloca(101), 100, "REST %lu\r\n", ftd->filesize));
-												ftd->destsite->sent = ftd->filesize;
+												dw_mutex_unlock(h);
+												msleep(NAT_DELAY);
+												dw_mutex_lock(h);
+												
+												if(socksprint(threadsite->controlfd, 
+													vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", 
+													ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,
+													ftd->our_ip.ip4.ip2,ftd->our_ip.ip4.ip1,
+													port4.ip4.ip2,port4.ip4.ip1)) > 0)
+													{
+														/* If we can try to resume download */
+														if(ftd->filesize)
+														{
+															if(socksprint(threadsite->controlfd, 
+																vargs(alloca(101), 100, "REST %lu\r\n", ftd->filesize)) > 0)
+																	ftd->destsite->sent = ftd->filesize;
+														}
+														set_status(threadsite, STATUSRETR);
+													}
 											}
-											set_status(threadsite, STATUSRETR);
 										}
 									}
 								}
@@ -3736,58 +3757,67 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 						ftd->transmitted = 0;
 
-						socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", ftd->destsite->currentqueue->destdirectory));
-
-						/* Deal with the 3 cases, FXP, Standard FTP and Passive FTP */
-						if(ftd->currentfxpstate == TRUE && cmd == THRDFXPRECEIVE)
+						if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", 
+							ftd->destsite->currentqueue->destdirectory)) > 0)
 						{
-							/* We could probably do resume on FXP too */
-							sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0);
-						}
-						else if(cmd == THRDRECEIVE)
-						{
-							if(ftd->currentfxpstate == TRUE)
+							/* Deal with the 3 cases, FXP, Standard FTP and Passive FTP */
+							if(ftd->currentfxpstate == TRUE && cmd == THRDFXPRECEIVE &&
+								sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0) > 0)
 							{
-								/* Standard FTP Code */
-								memset(&server, 0, sizeof(server));
-								server.sin_family = AF_INET;
-								server.sin_port   = 0;
-								server.sin_addr.s_addr = INADDR_ANY;
-								if ((ftd->listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ||  bind(ftd->listenfd, (struct sockaddr *)&server, sizeof(server)) < 0 || listen(ftd->listenfd, 0) < 0)
-									writeconsole(threadsite, locale_string("Error binding to port of data connection.", 113));
+								/* We could probably do resume on FXP too */
+							}
+							else if(cmd == THRDRECEIVE)
+							{
+								if(ftd->currentfxpstate == TRUE)
+								{
+									/* Standard FTP Code */
+									memset(&server, 0, sizeof(server));
+									server.sin_family = AF_INET;
+									server.sin_port   = 0;
+									server.sin_addr.s_addr = INADDR_ANY;
+									if ((ftd->listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ||  
+										bind(ftd->listenfd, (struct sockaddr *)&server, sizeof(server)) < 0 || 
+										listen(ftd->listenfd, 0) < 0)
+											writeconsole(threadsite, locale_string("Error binding to port of data connection.", 113));
+									else
+									{
+										struct sockaddr_in listen_addr = { 0 };
+										int len = sizeof(struct sockaddr_in);
+
+										getsockname(ftd->listenfd, (struct sockaddr *)&listen_addr, &len);
+
+										port4.ip32 = ntohs(listen_addr.sin_port);
+
+										dw_mutex_unlock(h);
+										msleep(NAT_DELAY);
+										dw_mutex_lock(h);
+										if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", 
+											ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,ftd->our_ip.ip4.ip2,
+											ftd->our_ip.ip4.ip1,port4.ip4.ip2,port4.ip4.ip1)) > 0)
+										{
+											/* If we can try to resume download */
+											if(ftd->filesize)
+											{
+												if(socksprint(threadsite->controlfd, vargs(alloca(101), 100, "REST %lu\r\n", 
+													ftd->filesize)) > 0)
+														ftd->received = ftd->transmitted = ftd->filesize;
+											}
+											ftd->commandready = FALSE;
+											set_status(threadsite, STATUSSTORE);
+										}
+									}
+								}
 								else
 								{
-									struct sockaddr_in listen_addr = { 0 };
-									int len = sizeof(struct sockaddr_in);
-
-									getsockname(ftd->listenfd, (struct sockaddr *)&listen_addr, &len);
-
-									port4.ip32 = ntohs(listen_addr.sin_port);
-
-									dw_mutex_unlock(h);
-									msleep(NAT_DELAY);
-									dw_mutex_lock(h);
-									socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,ftd->our_ip.ip4.ip2,ftd->our_ip.ip4.ip1,port4.ip4.ip2,port4.ip4.ip1));
-									/* If we can try to resume download */
-									if(ftd->filesize)
+									if(sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0) > 0)
 									{
-										socksprint(threadsite->controlfd, vargs(alloca(101), 100, "REST %lu\r\n", ftd->filesize));
-										ftd->received = ftd->transmitted = ftd->filesize;
+										/* If we can try to resume download */
+										if(ftd->filesize && socksprint(threadsite->controlfd, 
+											vargs(alloca(101), 100, "REST %lu\r\n", ftd->filesize)) > 0)
+												ftd->received = ftd->transmitted = ftd->filesize;
+										set_status(threadsite, STATUSSTORE);
 									}
-									ftd->commandready = FALSE;
-									set_status(threadsite, STATUSSTORE);
 								}
-							}
-							else
-							{
-								sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0);
-								/* If we can try to resume download */
-								if(ftd->filesize)
-								{
-									socksprint(threadsite->controlfd, vargs(alloca(101), 100, "REST %lu\r\n", ftd->filesize));
-									ftd->received = ftd->transmitted = ftd->filesize;
-								}
-								set_status(threadsite, STATUSSTORE);
 							}
 						}
 					}
@@ -3877,10 +3907,12 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						sendthread(THRDCONNECT, threadsite->page);
 					else
 					{
-						writeconsole(threadsite, locale_string("Changing working directory to \"%s\".", 117), threadsite->url);
-						socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url));
-						sockwrite(threadsite->controlfd, "PWD\r\n", 5, 0);
-						set_status(threadsite, STATUSLSPORT);
+						if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0 &&
+							sockwrite(threadsite->controlfd, "PWD\r\n", 5, 0) > 0)
+						{
+							writeconsole(threadsite, locale_string("Changing working directory to \"%s\".", 117), threadsite->url);
+							set_status(threadsite, STATUSLSPORT);
+						}
 					}
 				}
 			}
@@ -3898,10 +3930,12 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				/* The source page was passed in the thrdcommand entry in the site structure */
 				if(pagenumber > -1 && pagenumber < CONNECTION_LIMIT && (ftd->destsite = site[pagenumber]))
 				{
-					site_ref(ftd->destsite);
-					sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0);
-					ftd->commandready = FALSE;
-					set_status(threadsite, STATUSFXPSTOR);
+					if(sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0) > 0)
+					{
+						site_ref(ftd->destsite);
+						ftd->commandready = FALSE;
+						set_status(threadsite, STATUSFXPSTOR);
+					}
 				}
 				else
 				{
@@ -3917,11 +3951,13 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			dw_mutex_unlock(h);
 			msleep(NAT_DELAY);
 			dw_mutex_lock(h);
-			socksprint(threadsite->controlfd, vargs(alloca(101), 100, "PORT %s\r\n", threadsite->thrdcommand));
-			if(ftd->currentfxpstate == FALSE)
-				set_status(threadsite, STATUSFXPSTOR);
-			else
-				set_status(threadsite, STATUSFXPRETR);
+			if(socksprint(threadsite->controlfd, vargs(alloca(101), 100, "PORT %s\r\n", threadsite->thrdcommand)) > 0)
+			{
+				if(ftd->currentfxpstate == FALSE)
+					set_status(threadsite, STATUSFXPSTOR);
+				else
+					set_status(threadsite, STATUSFXPRETR);
+			}
 			break;
 		case THRDDEL:
 #ifdef DEBUG
@@ -3930,19 +3966,20 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			if(contexttext)
 			{
 				int filetype = findfiletype(contexttext, threadsite);
+				int result = -1;
 
 				if(filetype == DIRFILE || filetype == DIRLINK)
 				{
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url));
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "DELE %s\r\n", contexttext));
+					if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0)
+						result = socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "DELE %s\r\n", contexttext));
 				}
 				else if(filetype == DIRDIR)
 				{
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url));
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RMD %s\r\n", contexttext));
+					if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0)
+						result = socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RMD %s\r\n", contexttext));
 				}
-
-				sendthread(THRDHARDREFRESH, threadsite->page);
+				if(result > 0)
+					sendthread(THRDHARDREFRESH, threadsite->page);
 			}
 			break;
 		case THRDREN:
@@ -3950,9 +3987,9 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			writeconsole(threadsite, "THRDREN");
 #endif
 			{
-				socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url));
-				sockwrite(threadsite->controlfd, threadsite->thrdcommand, strlen(threadsite->thrdcommand), 0);
-				sendthread(THRDHARDREFRESH, threadsite->page);
+				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0 &&
+					sockwrite(threadsite->controlfd, threadsite->thrdcommand, strlen(threadsite->thrdcommand), 0) > 0)
+						sendthread(THRDHARDREFRESH, threadsite->page);
 			}
 			break;
 		case THRDVIEW:
@@ -3965,17 +4002,17 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			writeconsole(threadsite, "THRDMKDIR");
 #endif
 			{
-				socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url));
-				socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "MKD %s\r\n", threadsite->thrdcommand));
-				sendthread(THRDHARDREFRESH, threadsite->page);
+				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0 &&
+					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "MKD %s\r\n", threadsite->thrdcommand)) > 0)
+						sendthread(THRDHARDREFRESH, threadsite->page);
 			}
 			break;
 		case THRDRAW:
 			if(threadsite->status == STATUSIDLE && threadsite->connected == TRUE &&
 			   threadsite->controlfd && threadsite->thrdcommand[0])
 			{
-				socksprint(threadsite->controlfd, threadsite->thrdcommand);
-				threadsite->thrdcommand[0] = '\0';
+				if(socksprint(threadsite->controlfd, threadsite->thrdcommand) > 0)
+					threadsite->thrdcommand[0] = '\0';
 			}
 			break;
 		case THRDABORT:
@@ -4357,35 +4394,43 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			if(threadsite->status == STATUSIDENT && ftd->commandready == TRUE)
 			{
 				ftd->thissitetype = determinesitetype(controlbuffer);
-				sockwrite(threadsite->controlfd, "SYST\r\n", 6, 0);
-				ftd->commandready = FALSE;
-				set_status(threadsite, STATUSCWD);
+				if(sockwrite(threadsite->controlfd, "SYST\r\n", 6, 0) > 0)
+				{
+					ftd->commandready = FALSE;
+					set_status(threadsite, STATUSCWD);
+				}
 			} else if(threadsite->status == STATUSLOGIN)
 			{
+				int result;
+				
 				if(strcmp(threadsite->username, "") == 0)
-					socksprint(threadsite->controlfd, "USER anonymous\r\n");
+					result = socksprint(threadsite->controlfd, "USER anonymous\r\n");
 				else
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "USER %s\r\n", threadsite->username));
-				set_status(threadsite, STATUSPASSWORD);
+					result = socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "USER %s\r\n", threadsite->username));
+				if(result > 0)
+					set_status(threadsite, STATUSPASSWORD);
 			} else if(threadsite->status == STATUSPASSWORD)
 			{
+				int result;
+				
 				if(strcmp(threadsite->password, "") == 0)
-					socksprint(threadsite->controlfd, "PASS handyftp@netlabs.org\r\n");
+					result = socksprint(threadsite->controlfd, "PASS handyftp@netlabs.org\r\n");
 				else
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PASS %s\r\n", threadsite->password));
-				set_status(threadsite, STATUSIDENT);
+					result = socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PASS %s\r\n", threadsite->password));
+				if(result > 0)
+					set_status(threadsite, STATUSIDENT);
 			} else if(threadsite->status == STATUSCWD)
 			{
 				if(threadsite->url && strlen(threadsite->url) > 0)
 				{
-					writeconsole(threadsite, locale_string("Changing working directory to \"%s\".", 131), threadsite->url);
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url));
-					sockwrite(threadsite->controlfd, "PWD\r\n", 5, 0);
+					if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0)
+						writeconsole(threadsite, locale_string("Changing working directory to \"%s\".", 131), threadsite->url);
 				}
-				else
-					socksprint(threadsite->controlfd, "PWD\r\n");
-				ftd->currentfxpstate = !reversefxp;
-				set_status(threadsite, STATUSLSPORT);
+				if(sockwrite(threadsite->controlfd, "PWD\r\n", 5, 0) > 0)
+				{
+					ftd->currentfxpstate = !reversefxp;
+					set_status(threadsite, STATUSLSPORT);
+				}
 			} else if(threadsite->status == STATUSLSPORT)
 			{
 				ftd->dirlen = 0;
@@ -4393,9 +4438,11 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				if(ftd->currentfxpstate == FALSE)
 				{
 					/* Passive FTP */
-					sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0);
-					ftd->commandready = FALSE;
-					set_status(threadsite, STATUSPASVLS);
+					if(sockwrite(threadsite->controlfd, "PASV\r\n", 6, 0) > 0)
+					{
+						ftd->commandready = FALSE;
+						set_status(threadsite, STATUSPASVLS);
+					}
 				}
 				else
 				{
@@ -4405,7 +4452,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					server.sin_family = AF_INET;
 					server.sin_port   = 0;
 					server.sin_addr.s_addr = INADDR_ANY;
-					if ((ftd->listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ||  bind(ftd->listenfd, (struct sockaddr *)&server, sizeof(server)) < 0 || listen(ftd->listenfd, 0) < 0)
+					if ((ftd->listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 || 
+						bind(ftd->listenfd, (struct sockaddr *)&server, sizeof(server)) < 0 || listen(ftd->listenfd, 0) < 0)
 					{
 						writeconsole(threadsite, locale_string("Error binding to port of data connection.", 132));
 						return exitthread;
@@ -4422,17 +4470,19 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					dw_mutex_unlock(h);
 					msleep(NAT_DELAY);
 					dw_mutex_lock(h);
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,ftd->our_ip.ip4.ip2,ftd->our_ip.ip4.ip1,port4.ip4.ip2,port4.ip4.ip1));
-					set_status(threadsite, STATUSLS);
+					if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", 
+						ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,ftd->our_ip.ip4.ip2,
+						ftd->our_ip.ip4.ip1,port4.ip4.ip2,port4.ip4.ip1)) > 0)
+							set_status(threadsite, STATUSLS);
 				}
 			} else if(threadsite->status == STATUSLS)
 			{
-				sockwrite(threadsite->controlfd, "LIST\r\n", 6, 0);
-				set_status(threadsite, STATUSDIRACCEPT);
+				if(sockwrite(threadsite->controlfd, "LIST\r\n", 6, 0) > 0)
+					set_status(threadsite, STATUSDIRACCEPT);
 			} else if(threadsite->status == STATUSRETR)
 			{
-				socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RETR %s\r\n", threadsite->currentqueue->srcfilename));
-				set_status(threadsite, STATUSDATAACCEPT);
+				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RETR %s\r\n", threadsite->currentqueue->srcfilename)) > 0)
+					set_status(threadsite, STATUSDATAACCEPT);
 			} else if(threadsite->status == STATUSSTORE && ftd->commandready == TRUE)
 			{
 				ftd->commandready = FALSE;
@@ -4444,13 +4494,16 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				}
 				else
 				{
-					sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0);
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "STOR %s\r\n", ftd->destsite->currentqueue->srcfilename));
-					/* If we are in standard FTP listenfd will be greater than zero */
-					if(ftd->listenfd > 0)
-						set_status(threadsite, STATUSDATAACCEPT);
-					else
-						set_status(threadsite, STATUSSTOREWAIT);
+					if(sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0) > 0 &&
+						socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "STOR %s\r\n", 
+						ftd->destsite->currentqueue->srcfilename)) > 0)
+					{
+						/* If we are in standard FTP listenfd will be greater than zero */
+						if(ftd->listenfd > 0)
+							set_status(threadsite, STATUSDATAACCEPT);
+						else
+							set_status(threadsite, STATUSSTOREWAIT);
+					}
 				}
 			} else if(threadsite->status == STATUSSTOREWAIT /*&& ftd->commandready == TRUE*/)
 			{
@@ -4459,7 +4512,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				server.sin_family      = AF_INET;
 				server.sin_port        = htons(ftd->pasvport.ip32);
 				server.sin_addr.s_addr = htonl(ftd->pasvip.ip32);
-				if((threadsite->datafd = socket(AF_INET, SOCK_STREAM, 0)) < 0 || connect(threadsite->datafd, (struct sockaddr *)&server, sizeof(server)))
+				if((threadsite->datafd = socket(AF_INET, SOCK_STREAM, 0)) < 0 || 
+					connect(threadsite->datafd, (struct sockaddr *)&server, sizeof(server)))
 				{
 					writeconsole(threadsite, locale_string("Failed to establish connection.", 134));
 					ftd->retrywhat = threadsite->status;
@@ -4473,14 +4527,14 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					ftd->mytimer = time(NULL);
 					nonblock(threadsite->datafd);
 				}
-			} else if(threadsite->status == STATUSPASVLS && ftd->commandready == TRUE)
+			} else if(threadsite->status == STATUSPASVLS && ftd->commandready == TRUE &&
+					sockwrite(threadsite->controlfd, "LIST\r\n", 6, 0) > 0)
 			{
-				sockwrite(threadsite->controlfd, "LIST\r\n", 6, 0);
-
 				server.sin_family      = AF_INET;
 				server.sin_port        = htons(ftd->pasvport.ip32);
 				server.sin_addr.s_addr = htonl(ftd->pasvip.ip32);
-				if((threadsite->datafd = socket(AF_INET, SOCK_STREAM, 0)) < 0 || connect(threadsite->datafd, (struct sockaddr *)&server, sizeof(server)))
+				if((threadsite->datafd = socket(AF_INET, SOCK_STREAM, 0)) < 0 || 
+					connect(threadsite->datafd, (struct sockaddr *)&server, sizeof(server)))
 				{
 					writeconsole(threadsite, locale_string("Failed to establish data connection.", 186));
 					ftd->retrywhat = threadsite->status;
@@ -4492,45 +4546,52 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				}
 				ftd->mytimer = time(NULL);
 				set_status(threadsite, STATUSDIR);
-			} else if(threadsite->status == STATUSPASVRETR && ftd->commandready == TRUE)
+			} else if(threadsite->status == STATUSPASVRETR && ftd->commandready == TRUE &&
+					sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0) > 0)
 			{
-				sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0);
 				/* If we can try to resume download */
 				if(ftd->filesize)
 				{
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "REST %lu\r\n", ftd->filesize));
-					ftd->destsite->sent = ftd->filesize;
+					if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "REST %lu\r\n", ftd->filesize)) > 0)
+						ftd->destsite->sent = ftd->filesize;
 				}
-				socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RETR %s\r\n", threadsite->currentqueue->srcfilename));
-
-				server.sin_family      = AF_INET;
-				server.sin_port        = htons(ftd->pasvport.ip32);
-				server.sin_addr.s_addr = htonl(ftd->pasvip.ip32);
-				if((threadsite->datafd = socket(AF_INET, SOCK_STREAM, 0)) < 0 || connect(threadsite->datafd, (struct sockaddr *)&server, sizeof(server)))
+				
+				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RETR %s\r\n", 
+					threadsite->currentqueue->srcfilename)) > 0)
 				{
-					writeconsole(threadsite, locale_string("Failed to establish data connection.", 186));
-					ftd->retrywhat = threadsite->status;
-					set_status(threadsite, STATUSRETRY);
-					threadsite->datafd = 0;
-				} else
-				{
-					nonblock(threadsite->datafd);
+					server.sin_family      = AF_INET;
+					server.sin_port        = htons(ftd->pasvport.ip32);
+					server.sin_addr.s_addr = htonl(ftd->pasvip.ip32);
+					if((threadsite->datafd = socket(AF_INET, SOCK_STREAM, 0)) < 0 || 
+						connect(threadsite->datafd, (struct sockaddr *)&server, sizeof(server)))
+					{
+						writeconsole(threadsite, locale_string("Failed to establish data connection.", 186));
+						ftd->retrywhat = threadsite->status;
+						set_status(threadsite, STATUSRETRY);
+						threadsite->datafd = 0;
+					} else
+					{
+						nonblock(threadsite->datafd);
+					}
+					ftd->mytimer = time(NULL);
+					set_status(threadsite, STATUSDATA);
 				}
-				ftd->mytimer = time(NULL);
-				set_status(threadsite, STATUSDATA);
 			} else if(threadsite->status == STATUSFXPRETR && ftd->commandready == TRUE)
 			{
 				if(ftd->destsite)
 				{
-					sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0);
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RETR %s\r\n", threadsite->currentqueue->srcfilename));
-					if(ftd->currentfxpstate == FALSE)
+					if(sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0) > 0 &&
+						socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "RETR %s\r\n", 
+						threadsite->currentqueue->srcfilename)) > 0)
 					{
-						sprintf(ftd->destsite->thrdcommand, "%d,%d,%d,%d,%d,%d", ftd->pasvip.ip4.ip1,ftd->pasvip.ip4.ip2,ftd->pasvip.ip4.ip3,ftd->pasvip.ip4.ip4,ftd->pasvport.ip4.ip2,ftd->pasvport.ip4.ip1);
-						sendthread(THRDFXPSTART, ftd->destsite->page);
+						if(ftd->currentfxpstate == FALSE)
+						{
+							sprintf(ftd->destsite->thrdcommand, "%d,%d,%d,%d,%d,%d", ftd->pasvip.ip4.ip1,ftd->pasvip.ip4.ip2,ftd->pasvip.ip4.ip3,ftd->pasvip.ip4.ip4,ftd->pasvport.ip4.ip2,ftd->pasvport.ip4.ip1);
+							sendthread(THRDFXPSTART, ftd->destsite->page);
+						}
+						set_status(threadsite, STATUSFXPTRANSFER);
+						ftd->mytimer = time(NULL);
 					}
-					set_status(threadsite, STATUSFXPTRANSFER);
-					ftd->mytimer = time(NULL);
 				}
 				else
 				{
@@ -4543,15 +4604,19 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			{
 				if(ftd->destsite)
 				{
-					sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0);
-					socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "STOR %s\r\n", ftd->destsite->currentqueue->srcfilename));
-					if((ftd->currentfxpstate == FALSE && ftd->originalcommand == THRDFLUSH) || ftd->currentfxpstate == TRUE)
+					if(sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0) > 0 &&
+						socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "STOR %s\r\n", 
+						ftd->destsite->currentqueue->srcfilename)) > 0)
 					{
-						sprintf(ftd->destsite->thrdcommand, "%d,%d,%d,%d,%d,%d", ftd->pasvip.ip4.ip1,ftd->pasvip.ip4.ip2,ftd->pasvip.ip4.ip3,ftd->pasvip.ip4.ip4,ftd->pasvport.ip4.ip2,ftd->pasvport.ip4.ip1);
-						sendthread(THRDFXPSTART, ftd->destsite->page);
+						if((ftd->currentfxpstate == FALSE && ftd->originalcommand == THRDFLUSH) || ftd->currentfxpstate == TRUE)
+						{
+							sprintf(ftd->destsite->thrdcommand, "%d,%d,%d,%d,%d,%d", ftd->pasvip.ip4.ip1,ftd->pasvip.ip4.ip2,
+									ftd->pasvip.ip4.ip3,ftd->pasvip.ip4.ip4,ftd->pasvport.ip4.ip2,ftd->pasvport.ip4.ip1);
+							sendthread(THRDFXPSTART, ftd->destsite->page);
+						}
+						set_status(threadsite, STATUSFXPTRANSFER);
+						ftd->mytimer = time(NULL);
 					}
-					set_status(threadsite, STATUSFXPTRANSFER);
-					ftd->mytimer = time(NULL);
 				}
 				else
 				{
@@ -4590,11 +4655,14 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		writeconsole(threadsite, debugtext);
 #endif
 	DBUG_POINT("tab_thread");
-	if(threadsite->datafd && ((threadsite->status == STATUSTRANSMIT && FD_ISSET(threadsite->datafd, &writeset)) || (FD_ISSET(threadsite->datafd, &readset) && ftd->transbufsize < 4096)))
+	if(threadsite->datafd && ((threadsite->status == STATUSTRANSMIT && FD_ISSET(threadsite->datafd, &writeset)) ||
+		 (FD_ISSET(threadsite->datafd, &readset) && ftd->transbufsize < 4096)))
 	{
 		time_t curtime = time(NULL);
 		if(threadsite->status == STATUSTRANSMIT)
 		{
+			int amt;
+			
 			if(ftd->transferdone == TRUE && ftd->transmitted >= threadsite->sent)
 			{
 				if(threadsite->datafd)
@@ -4609,9 +4677,23 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				setstatustext(threadsite, locale_string("Remote directory, connected.", 38));
 				dw_percent_set_pos(threadsite->percent, 0);
 			}
-			sockwrite(threadsite->datafd, ftd->transbuf, ftd->transbufsize, 0);
-			ftd->transmitted += ftd->transbufsize;
-			ftd->transbufsize = 0;
+			/* Empty the transmission buffer */
+			while(ftd->transbufsize > 0 &&
+				(amt = sockwrite(threadsite->datafd, ftd->transbuf, ftd->transbufsize, 0)) != -1)
+			{
+				ftd->transmitted += amt;
+				ftd->transbufsize -= amt;
+				memmove(ftd->transbuf, &ftd->transbuf[amt], ftd->transbufsize);
+				if(ftd->transbufsize > 0)
+				{
+					/* If we didn't empty the buffer... 
+					 * release the mutex briefly... then try again.
+					 */
+					dw_mutex_unlock(h);
+					msleep(10);
+					dw_mutex_lock(h);
+				}
+			}
 		}
 		else
 		{
@@ -4675,24 +4757,26 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				{
 					if(ftd->destsite && ftd->destsite->tpipefd[1])
 					{
-						int res = -1;
-
-						ftd->destsite->sent += ftd->transbufsize;
-						while(res < ftd->transbufsize)
+						int amt;
+						
+						/* Empty the transmission buffer */
+						while(ftd->transbufsize > 0 &&
+							(amt = sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, ftd->transbufsize, 0)) != -1)
 						{
-							res = sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, ftd->transbufsize, 0);
-							if(res > 0 && res < ftd->transbufsize)
+							ftd->destsite->sent += amt;
+							ftd->transbufsize -= amt;
+							memmove(ftd->transbuf, &ftd->transbuf[amt], ftd->transbufsize);
+							if(ftd->transbufsize > 0)
 							{
-								ftd->transbufsize -= res;
-								memmove(ftd->transbuf, &ftd->transbuf[res], ftd->transbufsize);
-								res = 0;
+								/* If we didn't empty the buffer... 
+								 * release the mutex briefly... then try again.
+								 */
+								dw_mutex_unlock(h);
+								msleep(10);
+								dw_mutex_lock(h);
 							}
-							dw_mutex_unlock(h);
-							msleep(10);
-							dw_mutex_lock(h);
 						}
-						ftd->transbufsize = 0;
-						}
+					}
 					if(ftd->destsite)
 						sendthread(THRDDONE, ftd->destsite->page);
 					if(curtime-ftd->mytimer == 0)
@@ -4763,9 +4847,27 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		{
 			if(!feof(ftd->localfile))
 			{
+				int amt;
+				
 				amnt = fread(ftd->transbuf, 1, 4096, ftd->localfile);
-				ftd->destsite->sent += amnt;
-				sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, amnt, 0);
+				
+				/* Empty the transmission buffer */
+				while(amnt > 0 &&
+					(amt = sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, ftd->transbufsize, 0)) != -1)
+				{
+					ftd->destsite->sent += amt;
+					amnt -= amt;
+					memmove(ftd->transbuf, &ftd->transbuf[amt], ftd->transbufsize);
+					if(amnt > 0)
+					{
+						/* If we didn't empty the buffer... 
+						 * release the mutex briefly... then try again.
+						 */
+						dw_mutex_unlock(h);
+						msleep(10);
+						dw_mutex_lock(h);
+					}
+				}
 			}
 			else
 			{
@@ -4795,9 +4897,25 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		}
 		if(threadsite->status == STATUSDATA)
 		{
-			ftd->destsite->sent += ftd->transbufsize;
-			sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, ftd->transbufsize, 0);
-			ftd->transbufsize = 0;
+			int amt;
+			
+			/* Empty the transmission buffer */
+			while(ftd->transbufsize > 0 &&
+				(amt = sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, ftd->transbufsize, 0)) != -1)
+			{
+				ftd->destsite->sent += amt;
+				ftd->transbufsize -= amt;
+				memmove(ftd->transbuf, &ftd->transbuf[amt], ftd->transbufsize);
+				if(ftd->transbufsize > 0)
+				{
+					/* If we didn't empty the buffer... 
+					 * release the mutex briefly... then try again.
+					 */
+					dw_mutex_unlock(h);
+					msleep(10);
+					dw_mutex_lock(h);
+				}
+			}
 			update_eta(threadsite, TRUE, ftd->destsite->sent, threadsite->currentqueue->size, curtime, ftd->mytimer, &ftd->lastupdate, ftd->filesize);
 		}
 	}
@@ -5424,21 +5542,23 @@ void handyftp_getline(FILE *f, char *entry, char *entrydata)
 	int z;
 
 	memset(in, 0, 256);
-	fgets(in, 255, f);
-
-	if(in[strlen(in)-1] == '\n')
-		in[strlen(in)-1] = 0;
-
-	if(in[0] != '#')
+	
+	if(fgets(in, 255, f))
 	{
-		for(z=0;z<strlen(in);z++)
+		if(in[strlen(in)-1] == '\n')
+			in[strlen(in)-1] = 0;
+
+		if(in[0] != '#')
 		{
-			if(in[z] == '=')
+			for(z=0;z<strlen(in);z++)
 			{
-				in[z] = 0;
-				strcpy(entry, in);
-				strcpy(entrydata, &in[z+1]);
-				return;
+				if(in[z] == '=')
+				{
+					in[z] = 0;
+					strcpy(entry, in);
+					strcpy(entrydata, &in[z+1]);
+					return;
+				}
 			}
 		}
 	}
@@ -5611,10 +5731,12 @@ void loadsitetypes(void)
 					{
 						while(!feof(k) && count < 20)
 						{
-							fgets(buffer, 255, k);
-							if(buffer[strlen(buffer)-1] == '\n')
-								buffer[strlen(buffer)-1] = 0;
-							currenttype->translation[count] = strdup(buffer);
+							if(fgets(buffer, 255, k))
+							{
+								if(buffer[strlen(buffer)-1] == '\n')
+									buffer[strlen(buffer)-1] = 0;
+								currenttype->translation[count] = strdup(buffer);
+							}
 						}
 						fclose(k);
 					}
