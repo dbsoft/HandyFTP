@@ -3084,9 +3084,6 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	struct sockaddr_in server, client;
 	char cmd;
 	int amnt, selectres, maxfd = 0, exitthread = FALSE;
-#ifdef DEBUG
-	char debugtext[512];
-#endif
 
 	do {
 
@@ -3253,9 +3250,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 
 #ifdef DEBUG
-	sprintf(debugtext, "Done Select() - %s", sitestatus[threadsite->status]);
 	if(threadsite->status != STATUSIDLE)
-		writeconsole(threadsite, debugtext);
+        dw_debug("[%s] Done Select() - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 
 	dw_mutex_lock(h);
@@ -3331,13 +3327,13 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		{
 		case THRDEXIT:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDEXIT");
+			dw_debug("[%s] THRDEXIT", threadsite->hosttitle);
 #endif
 			exitthread = TRUE;
 			break;
 		case THRDCONNECT:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDCONNECT");
+			dw_debug("[%s] THRDCONNECT", threadsite->hosttitle);
 #endif
 			if(threadsite->connected == FALSE)
 			{
@@ -3354,7 +3350,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				else
 				{
 					struct sockaddr_in si;
-					int sisize, ipaddr = 0;
+					int ipaddr = 0;
+                    socklen_t sisize;
 
 					dw_mutex_unlock(h);
 
@@ -3406,7 +3403,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDDISCONNECT:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDDISCONNECT");
+			dw_debug("[%s] THRDDISCONNECT", threadsite->hosttitle);
 #endif
 			if(strcasecmp(threadsite->hostname, "local") == 0)
 			{
@@ -3468,7 +3465,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDFLUSH:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDFLUSH");
+			dw_debug("[%s] THRDFLUSH", threadsite->hosttitle);
 #endif
 			{
 				ftd->filesize = 0;
@@ -3622,7 +3619,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 										else
 										{
 											struct sockaddr_in listen_addr = { 0 };
-											int len = sizeof(struct sockaddr_in);
+											socklen_t len = sizeof(struct sockaddr_in);
 
 											getsockname(ftd->listenfd, (struct sockaddr *)&listen_addr, &len);
 
@@ -3676,7 +3673,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		case THRDFXPRECEIVE:
 		case THRDRECEIVE:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDRECEIVE");
+			dw_debug("[%s] THRDRECEIVE", threadsite->hosttitle);
 #endif
 			ftd->filesize = 0;
 
@@ -3782,7 +3779,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 									else
 									{
 										struct sockaddr_in listen_addr = { 0 };
-										int len = sizeof(struct sockaddr_in);
+										socklen_t len = sizeof(struct sockaddr_in);
 
 										getsockname(ftd->listenfd, (struct sockaddr *)&listen_addr, &len);
 
@@ -3828,7 +3825,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDDONE:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDDONE");
+			dw_debug("[%s] THRDDONE", threadsite->hosttitle);
 #endif
 			ftd->transferdone = TRUE;
 			if(strcasecmp(threadsite->hostname, "local") == 0)
@@ -3855,7 +3852,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		case THRDHARDREFRESH:
 		case THRDREFRESH:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDREFRESH");
+			dw_debug("[%s] THRDREFRESH", threadsite->hosttitle);
 #endif
 			if(threadsite->status != STATUSIDLE)
 			{
@@ -3923,7 +3920,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				ftd->currentfxpstate = !reversefxp;
 
 #ifdef DEBUG
-				writeconsole(threadsite, "THRDFXP");
+				dw_debug("[%s] THRDFXP", threadsite->hosttitle);
 #endif
 				pagenumber = atoi(threadsite->thrdcommand);
 
@@ -3946,7 +3943,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDFXPSTART:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDFXPSTART: PORT %s", threadsite->thrdcommand);
+			dw_debug("[%s] THRDFXPSTART: PORT %s", threadsite->hosttitle, threadsite->thrdcommand);
 #endif
 			dw_mutex_unlock(h);
 			msleep(NAT_DELAY);
@@ -3961,7 +3958,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDDEL:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDDEL");
+			dw_debug("[%s] THRDDEL", threadsite->hosttitle);
 #endif
 			if(contexttext)
 			{
@@ -3984,7 +3981,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDREN:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDREN");
+			dw_debug("[%s] THRDREN", threadsite->hosttitle);
 #endif
 			{
 				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0 &&
@@ -3994,12 +3991,12 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDVIEW:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDVIEW");
+			dw_debug("[%s] THRDVIEW", threadsite->hosttitle);
 #endif
 			break;
 		case THRDMKDIR:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDMKDIR");
+			dw_debug("[%s] THRDMKDIR", threadsite->hosttitle);
 #endif
 			{
 				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0 &&
@@ -4017,7 +4014,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDABORT:
 #ifdef DEBUG
-			writeconsole(threadsite, "THRDABORT");
+			dw_debug("[%s] THRDABORT", threadsite->hosttitle);
 #endif
 			set_status(threadsite, STATUSIDLE);
 			ftd->originalcommand = -1;
@@ -4036,9 +4033,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	}
 
 #ifdef DEBUG
-	sprintf(debugtext, "Controlfd - %s", sitestatus[threadsite->status]);
 	if(threadsite->status != STATUSIDLE)
-		writeconsole(threadsite, debugtext);
+        dw_debug("[%s] Controlfd - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 	if(threadsite->controlfd && FD_ISSET(threadsite->controlfd, &readset))
@@ -4461,7 +4457,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					else
 					{
 						struct sockaddr_in listen_addr = { 0 };
-						int len = sizeof(struct sockaddr_in);
+						socklen_t len = sizeof(struct sockaddr_in);
 
 						getsockname(ftd->listenfd, (struct sockaddr *)&listen_addr, &len);
 
@@ -4633,7 +4629,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	{
 		if(threadsite->status == STATUSDIRACCEPT || threadsite->status == STATUSDATAACCEPT)
 		{
-			int clientsize = sizeof(client);
+			socklen_t clientsize = sizeof(client);
 			threadsite->datafd = accept(ftd->listenfd, (struct sockaddr *)&client, &clientsize);
 			nonblock(threadsite->datafd);
 			if(threadsite->status == STATUSDIRACCEPT)
@@ -4650,9 +4646,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	}
 
 #ifdef DEBUG
-	sprintf(debugtext, "Datafd - %s", sitestatus[threadsite->status]);
 	if(threadsite->status != STATUSIDLE)
-		writeconsole(threadsite, debugtext);
+        dw_debug("[%s] Datafd - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 	if(threadsite->datafd && ((threadsite->status == STATUSTRANSMIT && FD_ISSET(threadsite->datafd, &writeset)) ||
@@ -4795,9 +4790,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		}
 	}
 #ifdef DEBUG
-	sprintf(debugtext, "Tpipefd - %s", sitestatus[threadsite->status]);
 	if(threadsite->status != STATUSIDLE)
-		writeconsole(threadsite, debugtext);
+        dw_debug("[%s] Tpipefd - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 
@@ -4834,9 +4828,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	}
 
 #ifdef DEBUG
-	sprintf(debugtext, "Tpipefd 2 - %s", sitestatus[threadsite->status]);
 	if(threadsite->status != STATUSIDLE)
-		writeconsole(threadsite, debugtext);
+        dw_debug("[%s] Tpipefd 2 - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	if((threadsite->status == STATUSSENDING || threadsite->status == STATUSDATA) && ftd->destsite && FD_ISSET(ftd->destsite->tpipefd[1], &writeset))
 	{
