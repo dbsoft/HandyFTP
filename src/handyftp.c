@@ -5082,7 +5082,6 @@ void remove_tab(void)
 	alive[thispage] = FALSE;
 
 	dw_notebook_page_destroy(hwndNBK, site[thispage]->pageid);
-	dw_window_destroy(site[thispage]->hwnd);
 
 	sendthread(THRDEXIT, thispage);
 	site[thispage] = NULL;
