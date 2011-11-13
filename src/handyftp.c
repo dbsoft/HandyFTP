@@ -5235,9 +5235,9 @@ void new_tab(void *data)
 
 	dw_box_pack_start(controlbox, stext, 60, 22, FALSE, FALSE, 0);
 
-    if(showpassword)
+	if(showpassword)
 		site[thispage]->pass_word = dw_entryfield_new("", EF_PASSWORD);
-    else
+        else
 		site[thispage]->pass_word = dw_entryfield_password_new("", EF_PASSWORD);
 
 	dw_box_pack_start(controlbox, site[thispage]->pass_word, 160,22, TRUE, FALSE, 0);
@@ -6226,7 +6226,8 @@ int DWSIGNAL generalhelp(HWND hwnd, void *data)
 {
 	char *path, *templ = "file://%s/help.html";
 
-#ifdef __UNIX__
+	/* Might need a separate __MAC__ case */
+#if defined(__UNIX__) || defined(__MAC__)
 	path = strdup(INSTALL_PREFIX "/handyftp");
 #else
 	path = (char *)getcwd(NULL, 100);
@@ -6253,7 +6254,7 @@ int DWSIGNAL contentshelp(HWND hwnd, void *data)
 {
 	char *path, *templ = "file://%s/contents.html";
 
-#ifdef __UNIX__
+#if defined(__UNIX__) || defined(__MAC__)
 	path = strdup(INSTALL_PREFIX "/handyftp");
 #else
 	path = (char *)getcwd(NULL, 100);
