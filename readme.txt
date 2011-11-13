@@ -15,14 +15,17 @@ Changes:
 
 Gave up on tracking changes in this file, there are just way
 too many.  If you really want to know about all the changes
-connect to the CVS at 
+connect to the Dynamic Windows SVN at:
 
-CVSROOT=:pserver:guest@www.netlabs.org:/netlabs.src/handyftp
-password readonly
+http://svn.netlabs.org/dwindows/timeline
 
-And use the "cvs log" feature.  I comment all my commits.
+and the HandyFTP Mercurial repository at:
+
+http://hg.dbsoft.org/HandyFTP/
 
 Changes since 1.0b2:
+
+Boatloads considering it has been 8 years since the last release.
 
 Rewrote the splitbar code.  It now works on all platforms and is
 accurate, unlike before. :)
@@ -57,7 +60,7 @@ DW.DLL, DWCOMPAT.DLL (OS/2 and Windows) or libdw.so.1, libdwcompat.so.1
 
 End:
 
-Question, comments, fixes, suggestions welcome: dbsoft@technologist.com
+Question, comments, fixes, suggestions welcome: brian@dbsoft.org
 
 Thanks! 
 

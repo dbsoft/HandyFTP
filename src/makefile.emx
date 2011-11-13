@@ -2,8 +2,8 @@
 
 # HandyFTP Makefile
 
-DWINCDIR = d:/work/netlabs/dwindows
-DWLIBDIR = d:/work/netlabs/dwindows/lib
+DWINCDIR = /work/netlabs/dwindows
+DWLIBDIR = /work/netlabs/dwindows/lib
 
 CC = gcc
 RM = rm -f
