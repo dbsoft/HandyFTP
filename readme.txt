@@ -49,15 +49,6 @@ a new local tab will be named "Local #2" and so on.
 
 Finally readded the open all code and got it working.
 
-Dynamic Windows is now a DLL and hence in a seperate CVS repository
-on Netlabs.  Current build version is 1.0.0.  Access it at:
-
-CVSROOT=:pserver:guest@www.netlabs.org:/netlabs.src/dwindows
-password readonly
-
-DW.DLL, DWCOMPAT.DLL (OS/2 and Windows) or libdw.so.1, libdwcompat.so.1
-(Unix) required to run HandyFTP now.
-
 End:
 
 Question, comments, fixes, suggestions welcome: brian@dbsoft.org
