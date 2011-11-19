@@ -37,6 +37,25 @@ handyftp.exe:  $(OBJECTS)
 clean: 
 	rm $(OBJECTS) handyftp.exe handyftp.res
 
+# Create an installer using Installer/2...
+# Packinst and ace2 need to be in the path...
+# and sfx.exe needs to be in the install dir
+installer:
+    rm -rf ..\install\package
+    md ..\install\package
+    copy handyftp.exe ..\install\package
+    copy $(DWINCPATH)\dw.dll ..\install\package
+    copy $(DWINCPATH)\dwcompat.dll ..\install\package
+    copy ..\readme.txt ..\install\package
+    copy ..\config\* ..\install\package
+    xcopy /s ..\help\* ..\install\package
+    rm -f ..\install\handyftp.ace ..\install\misc.ace
+    cd ..\install\package
+    ace2 -r a ..\handyftp.ace *
+    cd ..\scripts
+    ace2 a ..\misc.ace *
+    cd ..
+    packinst handyftp.cfg
 
 handyftp.obj: handyftp.c handyftp.h hftpextr.h site.h
 datetime.obj: datetime.c datetime.h
