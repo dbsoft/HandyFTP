@@ -2900,7 +2900,6 @@ void info_box(void)
 void update_eta(SiteTab *threadsite, int send_or_receive, long sent_or_received, long total_size, time_t curtime, time_t mytimer, time_t *lastupdate, int filesize)
 {
 	unsigned long sliderpos = 0;
-	unsigned int pixels;
 	float myrate = 0;
 
 	if((curtime - mytimer) != 0)
