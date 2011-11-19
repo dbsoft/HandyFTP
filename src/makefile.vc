@@ -21,13 +21,22 @@ PLATFORM_DEF = -DWIN32
 PLATFORM_DEF = -DWIN64
 !endif
 
+#
+# Settings for either debug or release
+#
+!if "$(DEBUG)" == "Y"
+CFLAGS_DEBUG = -Z7 -Od -MTd # was -Zi
+LINK_DEBUG = -debug
+!else
+CFLAGS_DEBUG = -Ox -MT
+LINK_DEBUG = -release
+!endif
+
 CC = cl
 CFLAGS = -c $(PLATFORM_DEF) -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR)
-CFLAGS_DEBUG = -Zi
-CFLAGS_COMPILE = -MTd
 LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\dw.lib $(DWLIBDIR)\dwcompat.lib
 RES = 
-LINKFLAGS = -machine:$(TARGET_CPU) -manifest -debug -debugtype:cv
+LINKFLAGS = -machine:$(TARGET_CPU) -manifest $(LINK_DEBUG)
 DLLLINKFLAGS = -dll
 LINK = link
 DEFFILE = handyftp.def
@@ -50,7 +59,21 @@ clean:
         -erase *.exp
         -erase *.res
         -erase *~
-        
+
+# Create a zip file for use with Nullsoft's Install system
+# Requires NSIS and Info-Zip's zip        
+installer:
+    rd /s /q ..\install\package
+    md ..\install\package
+    copy handyftp.exe ..\install\package
+    copy $(DWINCDIR)\dw.dll ..\install\package
+    copy $(DWINCDIR)\dwcompat.dll ..\install\package
+    copy ..\readme.txt ..\install\package
+    copy ..\config\* ..\install\package
+    xcopy /s ..\help\* ..\install\package
+    cd ..\install\package
+    zip -r handyftp.zip *
+    
 handyftpw.res: handyftpw.rc
 	rc -r handyftpw.rc
 
@@ -65,4 +88,4 @@ handyftpw.res
 	mt.exe /manifest handyftp.exe.manifest win\handyftp.exe.$(TARGET_CPU).manifest /outputresource:handyftp.exe;1
         
 .c.obj:
-	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $(CFLAGS_COMPILE) $*.c
+	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $*.c
