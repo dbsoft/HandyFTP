@@ -3,6 +3,7 @@
 # Edit this as necessary.
 #DWLIBPATH=..\..\dwindows\lib
 #DWINCPATH=..\..\dwindows
+#SFXPATH=..\install
 
 TARGET=handyftp
 
@@ -39,7 +40,6 @@ clean:
 
 # Create an installer using Installer/2...
 # Packinst and ace2 need to be in the path...
-# and sfx.exe needs to be in the install dir
 installer:
     rm -rf ..\install\package
     md ..\install\package
@@ -55,6 +55,7 @@ installer:
     cd ..\scripts
     ace2 a ..\misc.ace *
     cd ..
+    copy $(SFXPATH)\sfx.exe .\sfx.exe
     packinst handyftp.cfg
 
 handyftp.obj: handyftp.c handyftp.h hftpextr.h site.h
