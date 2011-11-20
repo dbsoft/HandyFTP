@@ -72,7 +72,7 @@ installer:
     copy ..\config\* ..\install\package
     xcopy /s ..\help\* ..\install\package
     cd ..\install\package
-    zip -r handyftp.zip *
+    zip -r ..\handyftp.zip *
     
 handyftpw.res: handyftpw.rc
 	rc -r handyftpw.rc
