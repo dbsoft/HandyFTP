@@ -1,9 +1,11 @@
 #!/bin/sh
 PLATFORM=`uname -s`
-APPNAME="HandyFTP"
+APPNAME=$1
+BINNAME=$2
 
 if [ $PLATFORM = "Darwin" ]
 then
+    rm -rf "$APPNAME.app"
     mkdir -p "$APPNAME.app/Contents/MacOS"
     mkdir -p "$APPNAME.app/Contents/Resources"
 
@@ -30,9 +32,5 @@ then
     cp -f mac/FOLDER.png "$APPNAME.app/Contents/Resources/357.png"
     cp -f mac/LINK.png "$APPNAME.app/Contents/Resources/365.png"
     cp -f mac/*.icns "$APPNAME.app/Contents/Resources"
-    cp -f handyftp "$APPNAME.app/Contents/MacOS"
-    cp -f /usr/local/lib/libdwindows.dylib "$APPNAME.app/Contents/MacOS"
-    cp -f /usr/local/lib/libdwcompat.dylib "$APPNAME.app/Contents/MacOS"
-    install_name_tool -change libdwindows.so.2.2 @executable_path/libdwindows.dylib "$APPNAME.app/Contents/MacOS/handyftp"
-    install_name_tool -change libdwcompat.so.2.2 @executable_path/libdwcompat.dylib "$APPNAME.app/Contents/MacOS/handyftp"
+    cp -f $BINNAME "$APPNAME.app/Contents/MacOS"
 fi
