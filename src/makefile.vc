@@ -74,7 +74,7 @@ installer:
     cd ..\install\package
     copy ..\handyftp-$(TARGET_CPU).nsi handyftp.nsi
     makensis handyftp.nsi
-    move hftp10b3win*.exe ..
+    move hftp*win*.exe ..
     
 handyftpw.res: handyftpw.rc
 	rc -r handyftpw.rc

@@ -91,7 +91,7 @@ Section "Dummy Section" SecDummy
     
     ; Create Uninstall infor 
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\HandyFTP" \
-                     "DisplayName" "Image Maker -- super software from Great Northern"
+                     "DisplayName" "HandyFTP"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\HandyFTP" \
                      "UninstallString" "$\"$INSTDIR\uninstall.exe$\""  
   !insertmacro MUI_STARTMENU_WRITE_END
