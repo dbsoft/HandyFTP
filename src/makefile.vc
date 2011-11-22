@@ -61,7 +61,7 @@ clean:
         -erase *~
 
 # Create a zip file for use with Nullsoft's Install system
-# Requires NSIS and Info-Zip's zip        
+# Requires NSIS and makensis to be in the PATH     
 installer:
     rd /s /q ..\install\package
     md ..\install\package
@@ -72,7 +72,9 @@ installer:
     copy ..\config\* ..\install\package
     xcopy /s ..\help\* ..\install\package
     cd ..\install\package
-    zip -r ..\handyftp.zip *
+    copy ..\handyftp-$(TARGET_CPU).nsi handyftp.nsi
+    makensis handyftp.nsi
+    move hftp10b3win*.exe ..
     
 handyftpw.res: handyftpw.rc
 	rc -r handyftpw.rc
