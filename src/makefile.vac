@@ -47,6 +47,7 @@ installer:
     copy $(DWINCPATH)\dw.dll ..\install\package
     copy $(DWINCPATH)\dwcompat.dll ..\install\package
     copy ..\readme.txt ..\install\package
+    copy ..\readme.txt ..\install\scripts
     copy ..\config\* ..\install\package
     xcopy /s ..\help\* ..\install\package
     rm -f ..\install\handyftp.ace ..\install\misc.ace
