@@ -2952,7 +2952,8 @@ void update_eta(SiteTab *threadsite, int send_or_receive, long sent_or_received,
 		if(total_size != 0)
 		{
 			sliderpos = (int)(((float)sent_or_received/(float)total_size)*100);
-			dw_percent_set_pos(threadsite->percent, sliderpos);
+			if(sliderpos)
+				dw_percent_set_pos(threadsite->percent, sliderpos);
 		}
 		*lastupdate = curtime;
 	}
@@ -3250,7 +3251,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Done Select() - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
+        dw_debug("[%s] Done Select() - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 
 	dw_mutex_lock(h);
@@ -3326,13 +3327,13 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		{
 		case THRDEXIT:
 #ifdef DEBUG
-			dw_debug("[%s] THRDEXIT", threadsite->hosttitle);
+			dw_debug("[%s] THRDEXIT\n", threadsite->hosttitle);
 #endif
 			exitthread = TRUE;
 			break;
 		case THRDCONNECT:
 #ifdef DEBUG
-			dw_debug("[%s] THRDCONNECT", threadsite->hosttitle);
+			dw_debug("[%s] THRDCONNECT\n", threadsite->hosttitle);
 #endif
 			if(threadsite->connected == FALSE)
 			{
@@ -3402,7 +3403,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDDISCONNECT:
 #ifdef DEBUG
-			dw_debug("[%s] THRDDISCONNECT", threadsite->hosttitle);
+			dw_debug("[%s] THRDDISCONNECT\n", threadsite->hosttitle);
 #endif
 			if(strcasecmp(threadsite->hostname, "local") == 0)
 			{
@@ -3464,9 +3465,10 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDFLUSH:
 #ifdef DEBUG
-			dw_debug("[%s] THRDFLUSH", threadsite->hosttitle);
+			dw_debug("[%s] THRDFLUSH\n", threadsite->hosttitle);
 #endif
 			{
+				dw_percent_set_pos(threadsite->percent, DW_PERCENT_INDETERMINATE);
 				ftd->filesize = 0;
 
 				if(threadsite->connected == TRUE && threadsite->status == STATUSIDLE)
@@ -3672,7 +3674,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		case THRDFXPRECEIVE:
 		case THRDRECEIVE:
 #ifdef DEBUG
-			dw_debug("[%s] THRDRECEIVE", threadsite->hosttitle);
+			dw_debug("[%s] THRDRECEIVE\n", threadsite->hosttitle);
 #endif
 			ftd->filesize = 0;
 
@@ -3680,6 +3682,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			{
 				int sendpage;
 
+				dw_percent_set_pos(threadsite->percent, DW_PERCENT_INDETERMINATE);
 				ftd->originalcommand = cmd;
 				sendpage = atoi(threadsite->thrdcommand);
 				ftd->destsite = site[sendpage];
@@ -3824,7 +3827,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDDONE:
 #ifdef DEBUG
-			dw_debug("[%s] THRDDONE", threadsite->hosttitle);
+			dw_debug("[%s] THRDDONE\n", threadsite->hosttitle);
 #endif
 			ftd->transferdone = TRUE;
 			if(strcasecmp(threadsite->hostname, "local") == 0)
@@ -3851,7 +3854,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		case THRDHARDREFRESH:
 		case THRDREFRESH:
 #ifdef DEBUG
-			dw_debug("[%s] THRDREFRESH", threadsite->hosttitle);
+			dw_debug("[%s] THRDREFRESH\n", threadsite->hosttitle);
 #endif
 			if(threadsite->status != STATUSIDLE)
 			{
@@ -3919,7 +3922,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				ftd->currentfxpstate = !reversefxp;
 
 #ifdef DEBUG
-				dw_debug("[%s] THRDFXP", threadsite->hosttitle);
+				dw_debug("[%s] THRDFXP\n", threadsite->hosttitle);
 #endif
 				pagenumber = atoi(threadsite->thrdcommand);
 
@@ -3942,7 +3945,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDFXPSTART:
 #ifdef DEBUG
-			dw_debug("[%s] THRDFXPSTART: PORT %s", threadsite->hosttitle, threadsite->thrdcommand);
+			dw_debug("[%s] THRDFXPSTART: PORT %s\n", threadsite->hosttitle, threadsite->thrdcommand);
 #endif
 			dw_mutex_unlock(h);
 			msleep(NAT_DELAY);
@@ -3957,7 +3960,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDDEL:
 #ifdef DEBUG
-			dw_debug("[%s] THRDDEL", threadsite->hosttitle);
+			dw_debug("[%s] THRDDEL\n", threadsite->hosttitle);
 #endif
 			if(contexttext)
 			{
@@ -3980,7 +3983,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDREN:
 #ifdef DEBUG
-			dw_debug("[%s] THRDREN", threadsite->hosttitle);
+			dw_debug("[%s] THRDREN\n", threadsite->hosttitle);
 #endif
 			{
 				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0 &&
@@ -3990,12 +3993,12 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDVIEW:
 #ifdef DEBUG
-			dw_debug("[%s] THRDVIEW", threadsite->hosttitle);
+			dw_debug("[%s] THRDVIEW\n", threadsite->hosttitle);
 #endif
 			break;
 		case THRDMKDIR:
 #ifdef DEBUG
-			dw_debug("[%s] THRDMKDIR", threadsite->hosttitle);
+			dw_debug("[%s] THRDMKDIR\n", threadsite->hosttitle);
 #endif
 			{
 				if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "CWD %s\r\n", threadsite->url)) > 0 &&
@@ -4013,7 +4016,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			break;
 		case THRDABORT:
 #ifdef DEBUG
-			dw_debug("[%s] THRDABORT", threadsite->hosttitle);
+			dw_debug("[%s] THRDABORT\n", threadsite->hosttitle);
 #endif
 			set_status(threadsite, STATUSIDLE);
 			ftd->originalcommand = -1;
@@ -4033,7 +4036,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Controlfd - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
+        dw_debug("[%s] Controlfd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 	if(threadsite->controlfd && FD_ISSET(threadsite->controlfd, &readset))
@@ -4646,7 +4649,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Datafd - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
+        dw_debug("[%s] Datafd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 	if(threadsite->datafd && ((threadsite->status == STATUSTRANSMIT && FD_ISSET(threadsite->datafd, &writeset)) ||
@@ -4782,7 +4785,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						writeconsole(threadsite, locale_string("Transfer completed.", 139));
 
 					setstatustext(threadsite, locale_string("Remote directory, connected.", 38));
-					dw_percent_set_pos(threadsite->percent, 0);
+					dw_percent_set_pos(threadsite->percent, DW_PERCENT_INDETERMINATE);
 				}
 				set_status(threadsite, STATUSNEXT);
 			}
@@ -4790,7 +4793,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	}
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Tpipefd - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
+        dw_debug("[%s] Tpipefd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 
@@ -4828,7 +4831,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Tpipefd 2 - %s", threadsite->hosttitle, sitestatus[threadsite->status]);
+        dw_debug("[%s] Tpipefd 2 - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	if((threadsite->status == STATUSSENDING || threadsite->status == STATUSDATA) && ftd->destsite && FD_ISSET(ftd->destsite->tpipefd[1], &writeset))
 	{
@@ -4839,13 +4842,13 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		{
 			if(!feof(ftd->localfile))
 			{
-				int amt;
+				int amt = 0;
 				
 				amnt = fread(ftd->transbuf, 1, 4096, ftd->localfile);
 				
 				/* Empty the transmission buffer */
 				while(amnt > 0 &&
-					(amt = sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, ftd->transbufsize, 0)) != -1)
+					(amt = sockwrite(ftd->destsite->tpipefd[1], ftd->transbuf, amnt, 0)) != -1)
 				{
 					ftd->destsite->sent += amt;
 					amnt -= amt;
@@ -4882,7 +4885,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					setstatustext(threadsite, locale_string("Local directory, connected.", 44));
 				else
 					setstatustext(threadsite, locale_string("Remote directory, connected.", 38));
-				dw_percent_set_pos(threadsite->percent, 0);
+				dw_percent_set_pos(threadsite->percent, DW_PERCENT_INDETERMINATE);
 			}
 			else
 				update_eta(threadsite, TRUE, ftd->destsite->sent, threadsite->currentqueue->size, curtime, ftd->mytimer, &ftd->lastupdate, ftd->filesize);
