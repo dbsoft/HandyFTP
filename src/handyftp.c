@@ -3024,14 +3024,12 @@ void getipport(char *buffer, union ip4_32 *ip, union ip4_32 *port)
 /* Wait until the state is no longer true */
 void wait_site(int *state, int waitstate)
 {
-	dw_mutex_lock(mutex);
 	while(*state == waitstate)
 	{
 		dw_mutex_unlock(mutex);
 		msleep(1);
 		dw_mutex_lock(mutex);
 	}
-	dw_mutex_unlock(mutex);
 }
 
 /* Change the current status of a site and set the
