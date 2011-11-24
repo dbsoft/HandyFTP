@@ -14,7 +14,9 @@ COMPRESS = lxlite
 DEFS =
 LIBS =
 
-CFLAGS = -O -g -Zomf -Zmt -D__ST_MT_ERRNO__ -I. -Wall -I$(DWINCDIR) -o $(@)
+include Version
+
+CFLAGS = -O -g -Zomf -Zmt -D__ST_MT_ERRNO__ -I. -Wall -I$(DWINCDIR) -DVER_MAJ=$(VER_MAJ) -DVER_MIN=$(VER_MIN) -DVER_REV=0 -o $(@)
 LDFLAGS = -lsocket -ldw -ldwcompat -L$(DWLIBDIR)
 RCFLAGS = -r
 

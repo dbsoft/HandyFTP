@@ -90,7 +90,7 @@ Andere
 Erzeuge Verzeichnis \"%s\"
 Benenne \"%s\" um in \"%s\"
 Systeminformation
-HandyFTP:\r\n\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\n
+HandyFTP:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\n
 System:\r\n\r\nFarbtiefe: %lu\r\n
 Bildschirmbreite: %d\r\nBildschirmh”he: %d\r\n\r\n
 Dynamic Windows:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\nBetriebssystem:\r\n\r\nSystem: %s\r\nVersion: %d.%d
@@ -277,7 +277,7 @@ Andere
 Erzeuge Verzeichnis \"%s\"
 Benenne \"%s\" um in \"%s\"
 Systeminformation
-HandyFTP:\r\n\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\n
+HandyFTP:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\n
 System:\r\n\r\nFarbtiefe: %lu\r\n
 Bildschirmbreite: %d\r\nBildschirmh”he: %d\r\n\r\n
 Dynamic Windows:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\nBetriebssystem:\r\n\r\nSystem: %s\r\nVersion: %d.%d

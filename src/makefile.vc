@@ -32,8 +32,10 @@ CFLAGS_DEBUG = -Ox -MT
 LINK_DEBUG = -release
 !endif
 
+!include Version
+
 CC = cl
-CFLAGS = -c $(PLATFORM_DEF) -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR)
+CFLAGS = -c $(PLATFORM_DEF) -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR) -DVER_MAJ=$(VER_MAJ) -D VER_MIN=$(VER_MIN) -DVER_REV=0 
 LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\dw.lib $(DWLIBDIR)\dwcompat.lib
 RES = 
 LINKFLAGS = -machine:$(TARGET_CPU) -manifest $(LINK_DEBUG)
