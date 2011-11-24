@@ -90,8 +90,9 @@ time_t IPS_time = 0;
 
 HICN fileicon, foldericon, linkicon;
 
-volatile struct DebugInfo_st {
-        int	linenumb;
+volatile struct DebugInfo_st 
+{
+	int	linenumb;
 	char	*procname;
 } DebugInfo;
 
@@ -1079,6 +1080,76 @@ Directory *lastdir(SiteTab *lsite)
 	return prev;
 }
 
+/* Compare 2 dates... returns 1 if a is bigger than b
+ * returns -1 if a is smaller that b
+ * returns 0 if they are equal
+ */
+int datecmp(CDATE a, CDATE b)
+{
+	if(a.year >= b.year)
+	{
+		if(a.year > b.year)
+			return 1;
+		else if(a.month >= b.month)
+		{
+			if(a.month > b.month)
+				return 1;
+			else if(a.day >= b.day)
+			{
+				if(a.day > b.day)
+					return 1;
+				return 0;
+			}
+		}
+	}
+	return -1;
+}
+
+/* Compare 2 times... returns 1 if a is bigger than b
+ * returns -1 if a is smaller that b
+ * returns 0 if they are equal
+ */
+int timecmp(CTIME a, CTIME b)
+{
+	if(a.hours >= b.hours)
+	{
+		if(a.hours > b.hours)
+			return 1;
+		else if(a.minutes >= b.minutes)
+		{
+			if(a.minutes > b.minutes)
+				return 1;
+			else if(a.seconds >= b.seconds)
+			{
+				if(a.seconds > b.seconds)
+					return 1;
+				return 0;
+			}
+		}
+	}
+	return -1;
+}
+
+/* Compare two date and time pairs */
+int datetimecmp(CDATE a1, CTIME a2, CDATE b1, CTIME b2)
+{
+	int c = datecmp(a1, b1);
+	if(c >= 0)
+	{
+		int d = timecmp(a2, b2);
+
+		if(c > 0)
+			return 1;
+		else if(d >= 0)
+		{
+			if(d > 0)
+				return 1;
+			return 0;
+		}
+	}
+	return -1;
+}
+
 /* Sort the directory list */
 void sortdir(SiteTab *lsite)
 {
@@ -1100,10 +1171,11 @@ void sortdir(SiteTab *lsite)
 
 			if(prev)
 			{
-				switch(lsite->sort)
+				switch(abs(lsite->sort))
 				{
 				case SORT_FILE:
-					if(strcasecmp(prev->entry, tmp->entry) > 0)
+					if((lsite->sort > 0 && strcasecmp(prev->entry, tmp->entry) > 0) ||
+					   (lsite->sort < 0 && strcasecmp(prev->entry, tmp->entry) < 0))
 					{
 						prev->next = tmp->next;
 						*stem = tmp;
@@ -1112,67 +1184,18 @@ void sortdir(SiteTab *lsite)
 					}
 					break;
 				case SORT_DATE:
-					if(prev->date.year >= tmp->date.year)
+					if((lsite->sort > 0 && datetimecmp(prev->date, prev->time, tmp->date, tmp->time) > 0) ||
+					   (lsite->sort < 0 && datetimecmp(prev->date, prev->time, tmp->date, tmp->time) < 0))
 					{
-						if(prev->date.year > tmp->date.year)
-						{
-							prev->next = tmp->next;
-							*stem = tmp;
-							tmp->next = prev;
-							tmp=NULL;
-						}
-						else if(prev->date.month >= tmp->date.month)
-						{
-                            if(prev->date.month > tmp->date.month)
-							{
-								prev->next = tmp->next;
-								*stem = tmp;
-								tmp->next = prev;
-								tmp=NULL;
-							}
-							else if(prev->date.day >= tmp->date.day)
-							{
-								if(prev->date.day > tmp->date.day)
-								{
-									prev->next = tmp->next;
-									*stem = tmp;
-									tmp->next = prev;
-									tmp=NULL;
-								}
-								else if(prev->time.hours >= tmp->time.hours)
-								{
-									if(prev->time.hours > tmp->time.hours)
-									{
-										prev->next = tmp->next;
-										*stem = tmp;
-										tmp->next = prev;
-										tmp=NULL;
-									}
-									else if(prev->time.minutes >= tmp->time.minutes)
-									{
-										if(prev->time.minutes > tmp->time.minutes)
-										{
-											prev->next = tmp->next;
-											*stem = tmp;
-											tmp->next = prev;
-											tmp=NULL;
-										}
-										else if(prev->time.seconds > tmp->time.seconds)
-										{
-											prev->next = tmp->next;
-											*stem = tmp;
-											tmp->next = prev;
-											tmp=NULL;
-										}
-									}
-								}
-							}
-						}
+						prev->next = tmp->next;
+						*stem = tmp;
+						tmp->next = prev;
+						tmp=NULL;
 					}
-
 					break;
 				case SORT_SIZE:
-					if(prev->size > tmp->size)
+					if((lsite->sort > 0 && prev->size > tmp->size) ||
+					   (lsite->sort < 0 && prev->size < tmp->size))
 					{
 						prev->next = tmp->next;
 						*stem = tmp;
@@ -1306,7 +1329,7 @@ void loadremotedir(SiteTab *lsite, char *buffer, int bufferlen, int type)
 				char *columns[20], *line2 = strdup(line);
 
 				memset(columns, 0, sizeof(char *)*20);
-                memset(columnpos, 0, sizeof(int)*20);
+				memset(columnpos, 0, sizeof(int)*20);
 
 				for(j=0;j<l;j++)
 				{
@@ -1497,7 +1520,7 @@ void loadlocaldir(SiteTab *lsite)
 	DIR *dir;
 	struct dirent *ent;
 	struct stat bleah;
-    struct tm *filetime;
+	struct tm *filetime;
 #if defined(__EMX__) || defined(__OS2__) || defined(__WIN32__) || defined(WINNT)
 	int j;
 #endif
@@ -1582,7 +1605,10 @@ void loadlocaldir(SiteTab *lsite)
 				}
 
 				if(S_ISDIR(bleah.st_mode))
+				{
 					tmp->type = DIRDIR;
+					tmp->size = 0;
+				}
 #if !defined(__OS2__) && !defined(__EMX__) && !defined(__WIN32__) && !defined(WINNT)
 				else if(S_ISLNK(bleah.st_mode))
 					tmp->type = DIRLINK;
@@ -1654,10 +1680,10 @@ void setqueue(SiteTab *lsite)
 {
 	char *titles[5];
 	unsigned long flags[5] = {  DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-    DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-	DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-	DW_CFA_TIME | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-	DW_CFA_DATE | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR };
+								DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+								DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+								DW_CFA_TIME | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+								DW_CFA_DATE | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR };
 
 	titles[0] = locale_string("Destination", 49);
 	titles[1] = locale_string("Directory", 50);
@@ -2305,10 +2331,10 @@ void IPS(void)
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_SHELLPOSITION | DW_FCF_SIZEBORDER;
 	char *titles[5] = { "User",	"Address", "Activity", "Idle", "Socket" };
 	unsigned long flags[5] = {  DW_CFA_STRING | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-	DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-	DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-	DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-	DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR };
+								DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+								DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+								DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+								DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR };
 
 
 	titles[0] = locale_string("User", 72);
@@ -2442,7 +2468,7 @@ void administrate(void)
 
 	dw_box_pack_start(mainbox, handles[1], 50, 20, TRUE, TRUE, 4);
 
-    /* Pack in some blank space */
+	/* Pack in some blank space */
 	dw_box_pack_start(mainbox, 0, 50, 40, TRUE, TRUE, 4);
 
 	/* Buttons */
@@ -2828,7 +2854,7 @@ void info_box(void)
 		DW_FCF_SHELLPOSITION | DW_FCF_TASKLIST | DW_FCF_DLGBORDER;
 	char buffer[1024];
 	ULONG point = -1;
-    DWEnv env;
+	DWEnv env;
 
 	infowindow = dw_window_new(HWND_DESKTOP, locale_string("System Information", 89), flStyle);
 
@@ -3249,7 +3275,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Done Select() - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
+		dw_debug("[%s] Done Select() - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 
 	dw_mutex_lock(h);
@@ -3311,8 +3337,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	if(in_IPS && threadsite->status == STATUSIDLE && threadsite->page == IPS_page && ftd->in_200 == FALSE && (time(NULL) - IPS_time) > 60)
 	{
 		if(threadsite->controlfd && socksprint(threadsite->controlfd, "SITE RADM LIST sockets\r\n") > 0)
-		   clearadmin();
-      IPS_time = time(NULL);
+			clearadmin();
+		IPS_time = time(NULL);
 	}
 
 	/* Command from the user or another thread */
@@ -3349,7 +3375,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				{
 					struct sockaddr_in si;
 					int ipaddr = 0;
-                    socklen_t sisize;
+					socklen_t sisize;
 
 					dw_mutex_unlock(h);
 
@@ -4034,7 +4060,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Controlfd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
+		dw_debug("[%s] Controlfd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 	if(threadsite->controlfd && FD_ISSET(threadsite->controlfd, &readset))
@@ -4647,7 +4673,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Datafd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
+		dw_debug("[%s] Datafd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 	if(threadsite->datafd && ((threadsite->status == STATUSTRANSMIT && FD_ISSET(threadsite->datafd, &writeset)) ||
@@ -4791,7 +4817,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	}
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Tpipefd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
+		dw_debug("[%s] Tpipefd - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	DBUG_POINT("tab_thread");
 
@@ -4829,7 +4855,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 #ifdef DEBUG
 	if(threadsite->status != STATUSIDLE)
-        dw_debug("[%s] Tpipefd 2 - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
+		dw_debug("[%s] Tpipefd 2 - %s\n", threadsite->hosttitle, sitestatus[threadsite->status]);
 #endif
 	if((threadsite->status == STATUSSENDING || threadsite->status == STATUSDATA) && ftd->destsite && FD_ISSET(ftd->destsite->tpipefd[1], &writeset))
 	{
@@ -5063,7 +5089,7 @@ void DWSIGNAL tab_thread(void)
 	freequeue(threadsite->queue);
 	threadsite->queue = NULL;
 	site_unref(threadsite);
-    dw_mutex_unlock(h);
+	dw_mutex_unlock(h);
 }
 
 /* Removes the current tab */
@@ -5086,6 +5112,31 @@ void remove_tab(void)
 	sendthread(THRDEXIT, thispage);
 	site[thispage] = NULL;
 	settabs();
+}
+
+/* Handle sort request */
+int DWSIGNAL column_clicked(HWND window, int column_num, void *data)
+{
+	if(validatecurrentpage())
+	{
+		int oldsort = site[currentpage]->sort;
+
+		/* Pick the sort mode based on the column clicked */
+		if(column_num == 0)
+			site[currentpage]->sort = SORT_FILE;
+		else if(column_num == 1)
+			site[currentpage]->sort = SORT_SIZE;
+		else
+			site[currentpage]->sort = SORT_DATE;
+
+		if(abs(oldsort) == site[currentpage]->sort)
+			site[currentpage]->sort = -oldsort;
+
+		/* If the site is connected then refresh */
+		if(site[currentpage]->connected)
+			sendthread(THRDHARDREFRESH, currentpage);
+	}
+	return FALSE;
 }
 
 /* Creates a new tab and makes it current */
@@ -5119,7 +5170,7 @@ void new_tab(void *data)
 		nonblock(site[thispage]->pipefd[0]);
 	}
 
-    sockpipe(site[thispage]->tpipefd);
+	sockpipe(site[thispage]->tpipefd);
 	if(site[thispage]->tpipefd[0] < 0 || site[thispage]->tpipefd[1] < 0)
 	{
 		/* Just to be certain :) */
@@ -5237,7 +5288,7 @@ void new_tab(void *data)
 
 	if(showpassword)
 		site[thispage]->pass_word = dw_entryfield_new("", EF_PASSWORD);
-        else
+	else
 		site[thispage]->pass_word = dw_entryfield_password_new("", EF_PASSWORD);
 
 	dw_box_pack_start(controlbox, site[thispage]->pass_word, 160,22, TRUE, FALSE, 0);
@@ -5311,13 +5362,13 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 300, 17, TRUE, FALSE, 2);
+	dw_box_pack_start(controlbox, stext, 300, 20, TRUE, FALSE, 2);
 
 	site[thispage]->cmorestatus = stext = dw_status_text_new(locale_string("Idle", 153), CSTATUS);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 300, 17, TRUE, FALSE, 2);
+	dw_box_pack_start(controlbox, stext, 300, 20, TRUE, FALSE, 2);
 
 	alive[thispage] = TRUE;
 
@@ -5350,6 +5401,7 @@ void new_tab(void *data)
 	dw_signal_connect(lcontainer, DW_SIGNAL_ITEM_ENTER, DW_SIGNAL_FUNC(containerselect), NULL);
 	dw_signal_connect(lcontainer, DW_SIGNAL_ITEM_CONTEXT, DW_SIGNAL_FUNC(containercontextmenu), NULL);
 	dw_signal_connect(rcontainer, DW_SIGNAL_ITEM_CONTEXT, DW_SIGNAL_FUNC(containercontextmenu), NULL);
+	dw_signal_connect(lcontainer, DW_SIGNAL_COLUMN_CLICK, DW_SIGNAL_FUNC(column_clicked), NULL);
 
 	DBUG_POINT("new_tab");
 	if(firstpage == TRUE)
@@ -6081,7 +6133,7 @@ int DWSIGNAL refreshtab(HWND hwnd, void *data)
 	{
 		char *tempbuffer = dw_window_get_text(site[currentpage]->directory);
 
-        /* Update the url from the entryfield in case someone edited it. */
+		/* Update the url from the entryfield in case someone edited it. */
 		if(site[currentpage]->url)
 			free(site[currentpage]->url);
 		site[currentpage]->url = strdup(tempbuffer);
@@ -6140,7 +6192,7 @@ int DWSIGNAL savetitletab(HWND hwnd, void *data)
 		site[currentpage]->initialdir = strdup(tempbuffer);
 		dw_free(tempbuffer);
 
-        /* Finally do the actual save */
+		/* Finally do the actual save */
 		savetitle();
 	}
 	return FALSE;
@@ -6450,10 +6502,10 @@ int DWSIGNAL containercontextmenu(HWND hwnd, char *text, int x, int y, void *dat
 
 		contexttext = text;
 
-		dw_menu_item_set_check(hwndMenu, IDP_SORTF, site[currentpage]->sort == SORT_FILE ? TRUE : FALSE);
-		dw_menu_item_set_check(hwndMenu, IDP_SORTS, site[currentpage]->sort == SORT_SIZE ? TRUE : FALSE);
-		dw_menu_item_set_check(hwndMenu, IDP_SORTD, site[currentpage]->sort == SORT_DATE ? TRUE : FALSE);
-		dw_menu_item_set_check(hwndMenu, IDP_SORTN, site[currentpage]->sort == SORT_NONE ? TRUE : FALSE);
+		dw_menu_item_set_check(hwndMenu, IDP_SORTF, abs(site[currentpage]->sort) == SORT_FILE ? TRUE : FALSE);
+		dw_menu_item_set_check(hwndMenu, IDP_SORTS, abs(site[currentpage]->sort) == SORT_SIZE ? TRUE : FALSE);
+		dw_menu_item_set_check(hwndMenu, IDP_SORTD, abs(site[currentpage]->sort) == SORT_DATE ? TRUE : FALSE);
+		dw_menu_item_set_check(hwndMenu, IDP_SORTN, abs(site[currentpage]->sort) == SORT_NONE ? TRUE : FALSE);
 		dw_menu_popup(&hwndMenu, hwndFrame, x, y);
 	}
 	return FALSE;  
@@ -6653,7 +6705,7 @@ void handyftp_init(void)
 		if(mainItems[z] != -1)
 		{
 			tempbutton = dw_bitmapbutton_new(locale_string(mainHelpItems[z], 170 + m), mainItems[z]);
-            dw_window_set_style(tempbutton, DW_BS_NOBORDER, DW_BS_NOBORDER);
+			dw_window_set_style(tempbutton, DW_BS_NOBORDER, DW_BS_NOBORDER);
 
 			if(mainItems[z] == PB_CHANGE)
 				refreshbutton = tempbutton;
@@ -6761,9 +6813,9 @@ int main(int argc, char *argv[])
 	int cx, cy;
 
 	dw_init(TRUE, argc, argv);
-    
+
 #ifdef __MAC__
-        dw_font_set_default("10.Geneva");
+	dw_font_set_default("10.Geneva");
 #endif
 
 	signal(SIGSEGV, handyftp_crash);
