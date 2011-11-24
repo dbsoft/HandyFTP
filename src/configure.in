@@ -22,6 +22,16 @@ AC_PROG_INSTALL
 
 AC_SUBST(MAKE)
 
+dnl Checks for system
+AC_CANONICAL_SYSTEM
+
+dnl ---------------------- check for '--with-arch' switch -----------------
+AC_ARG_WITH(arch,
+   [  --with-arch             specify architecture: one of all, 32bit, 64bit, intel, ppc, ppc64, x86_64, i386],
+   [with_arch=$withval],
+   [with_arch=no],
+)
+
 AC_HEADER_STDC
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS(unistd.h)
@@ -55,6 +65,33 @@ AC_CHECK_LIB(dgc, inet_addr, LIBS="$LIBS -ldgc",)
 AC_CHECK_LIB(resolv, gethostbyname, LIBS="$LIBS -lresolv",)
 AC_CHECK_LIB(dwcompat, locale_string, LIBS="$LIBS -ldwcompat",)
 
+case "$target" in
+   *apple-darwin*)
+      case "$with_arch" in
+         no)
+            ARCH=""
+            ;;
+         all)
+            ARCH="-arch ppc -arch ppc64 -arch x86_64 -arch i386"
+            ;;
+         32bit)
+            ARCH="-arch ppc -arch i386"
+            ;;
+         64bit)
+            ARCH="-arch ppc64 -arch x86_64"
+            ;;
+         intel)
+            ARCH="-arch i386 -arch x86_64"
+            ;;
+         *)
+            ARCH="-arch $with_arch"
+            ;;
+      esac
+   ;;
+   *)
+   ;;
+esac
+
 RM="rm -f"
 LN="ln -s"
 CP="cp"
@@ -68,5 +105,7 @@ AC_SUBST(LN)
 AC_SUBST(CP)
 AC_SUBST(MV)
 AC_SUBST(MKDIR)
+
+AC_SUBST(ARCH)
 
 AC_OUTPUT(Makefile:Makefile.in)
