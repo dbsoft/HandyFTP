@@ -10,9 +10,9 @@ TARGET=handyftp
 .SUFFIXES: \
 	.c .obj
 
-!include Verison
+!include Version
 
-CFLAGS = /Ti /Tm+ /DOS2 /DTCPV40HDRS /D__TARGET__=\"$(TARGET)\" /I. /I$(DWINCPATH) -DVER_MAJ=$(VER_MAJ) -D VER_MIN=$(VER_MIN) -DVER_REV=0 /Sm /Ss /Q /Gm /Gt /C
+CFLAGS = /Ti /Tm+ /DOS2 /DTCPV40HDRS /D__TARGET__=\"$(TARGET)\" /I. /I$(DWINCPATH) -DVER_MAJ=$(VER_MAJ) -DVER_MIN=$(VER_MIN) -DVER_REV=0 /Sm /Ss /Q /Gm /Gt /C
 LDFLAGS = /DE /optfunc
 
 
