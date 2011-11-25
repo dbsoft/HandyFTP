@@ -5714,7 +5714,7 @@ void loadsitetypes(void)
 	FILE *f;
 	int z;
 
-	if(!(dir = opendir(TYPDIR)))
+	if(!(dir = opendir(dw_app_dir())))
 	{
 		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not open site type files.", 155));
 		return;
@@ -6664,18 +6664,17 @@ void handyftp_init(void)
 	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER | DW_FCF_MINMAX |
 		DW_FCF_SHELLPOSITION | DW_FCF_TASKLIST | DW_FCF_DLGBORDER;
 	int z = 0, m = 0;
+    char msgbuf[1025];
+    
+    strncpy(msgbuf, dw_app_dir(), 1024);
+    strcat(msgbuf, "/handyftp.msg");
 
-#ifdef INSTALL_PREFIX
-	locale_init(INSTALL_PREFIX "/handyftp/handyftp.msg", handyftp_locale);
-#else
-	locale_init("handyftp.msg", handyftp_locale);
-#endif
+	locale_init(msgbuf, handyftp_locale);
 
 	hwndFrame = dw_window_new(HWND_DESKTOP, "HandyFTP", flStyle);
 
-#if 0
-	dw_window_set_icon(hwndFrame, MAIN_FRAME);
-#endif
+	dw_window_set_icon(hwndFrame, DW_RESOURCE(MAIN_FRAME));
+    
 	mainbox = dw_box_new(BOXVERT, 0);
 
 	dw_box_pack_start(hwndFrame, mainbox, 0, 0, TRUE, TRUE, 0);

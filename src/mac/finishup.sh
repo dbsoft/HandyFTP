@@ -8,7 +8,12 @@ then
     rm -rf "$APPNAME.app"
     mkdir -p "$APPNAME.app/Contents/MacOS"
     mkdir -p "$APPNAME.app/Contents/Resources"
-
+    mkdir -p "$APPNAME.app/images"
+    
+    cp -f ../config/*.typ "$APPNAME.app"
+    cp -f ../config/handyftp.msg "$APPNAME.app"
+    cp -f ../help/*.html "$APPNAME.app"
+    cp -f ../help/images/*.gif "$APPNAME.app/images"
     cp -f mac/Info.plist "$APPNAME.app/Contents"
     cp -f mac/PkgInfo "$APPNAME.app/Contents"
     cp -f mac/logo.png "$APPNAME.app/Contents/Resources/1300.png"
