@@ -1555,7 +1555,12 @@ void loadlocaldir(SiteTab *lsite)
 
 	while((ent = readdir(dir)) != 0)
 	{
-		if(strcmp(ent->d_name, ".") != 0)
+		if(strcmp(ent->d_name, ".") != 0
+#ifdef __WIN32__
+			/* Filter out hidden and system files on Windows */
+			&& !(ent->d_attribute & (FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN))
+#endif
+		  )
 		{
 			if(lsite->dir == NULL)
 			{
