@@ -58,11 +58,12 @@ install:
 	$(MKDIR)  $(PREFIX)/share/$(TARGET)/images
 	$(CP) -f ../help/images/*.gif $(PREFIX)/share/$(TARGET)/images
 	$(INSTALL) $(TARGET) $(PREFIX)/bin
-	$(CP) -f gtk/*.png /usr/share/pixmaps/$(TARGET)
-	$(MKDIR) -p /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
-	$(INSTALL) gtk/HandyFTP.desktop /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
-	$(INSTALL) gtk/HandyFTP.desktop /usr/share/applications/
-	$(INSTALL) gtk/Readme.desktop /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(MKDIR) -p $(PREFIX)/share/pixmaps/$(TARGET)
+	$(CP) -f gtk/*.png $(PREFIX)/share/pixmaps/$(TARGET)
+	$(MKDIR) -p $(PREFIX)/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(INSTALL) gtk/HandyFTP.desktop $(PREFIX)/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(INSTALL) gtk/HandyFTP.desktop $(PREFIX)/share/applications/
+	$(INSTALL) gtk/Readme.desktop $(PREFIX)/share/gnome/apps/Internet/$(DISPLAYNAME)
 	$(INSTALL) ../readme.txt $(PREFIX)/share/$(TARGET)
         
 resources.o: gtk/resources.c
