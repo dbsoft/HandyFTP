@@ -25,6 +25,8 @@ PLATFORM_DEF = -DWIN64
 !if ![hg log -r . --template="VER_REV={rev}" > HG.REV]
 !include HG.REV
 !message Revision is [$(VER_REV)]
+!else
+VER_REV=0
 !endif
 
 #

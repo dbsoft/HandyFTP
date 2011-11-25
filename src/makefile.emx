@@ -15,8 +15,9 @@ DEFS =
 LIBS =
 
 include Version
+VER_REV := $(shell hg log -r . --template={rev})
 
-CFLAGS = -O -g -Zomf -Zmt -D__ST_MT_ERRNO__ -I. -Wall -I$(DWINCDIR) -DVER_MAJ=$(VER_MAJ) -DVER_MIN=$(VER_MIN) -DVER_REV=0 -o $(@)
+CFLAGS = -O -g -Zomf -Zmt -D__ST_MT_ERRNO__ -I. -Wall -I$(DWINCDIR) -DVER_MAJ=$(VER_MAJ) -DVER_MIN=$(VER_MIN) -DVER_REV=$(VER_REV) -o $(@)
 LDFLAGS = -lsocket -ldw -ldwcompat -L$(DWLIBDIR)
 RCFLAGS = -r
 
