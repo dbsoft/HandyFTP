@@ -21,14 +21,6 @@ PLATFORM_DEF = -DWIN32
 PLATFORM_DEF = -DWIN64
 !endif
 
-# Check the Mercurial revision number if possible
-!if ![hg log -r . --template="VER_REV={rev}" > HG.REV]
-!include HG.REV
-!message Revision is [$(VER_REV)]
-!else
-VER_REV=0
-!endif
-
 #
 # Settings for either debug or release
 #
@@ -38,6 +30,14 @@ LINK_DEBUG = -debug
 !else
 CFLAGS_DEBUG = -Ox -MT
 LINK_DEBUG = -release
+!endif
+
+# Check the Mercurial revision number if possible
+!if ![hg log -r . --template="VER_REV={rev}" > HG.REV]
+!include HG.REV
+!message Revision is [$(VER_REV)]
+!else
+VER_REV=0
 !endif
 
 !include Version
