@@ -50,20 +50,20 @@ distclean:
 	$(RM) $(OBJECTS) resources.o $(TARGET) *~ os2/*~ win/*~ gtk/*~ config.cache config.log config.status Makefile config.h
 
 install:
-	$(RM) -rf $(PREFIX)/$(TARGET)
-	$(MKDIR)  $(PREFIX)/$(TARGET)
-	$(CP) -f ../config/*.typ $(PREFIX)/$(TARGET)
-	$(CP) -f ../config/handyftp.msg $(PREFIX)/$(TARGET)
-	$(CP) -f ../help/*.html $(PREFIX)/$(TARGET)
-	$(MKDIR)  $(PREFIX)/$(TARGET)/images
-	$(CP) -f ../help/images/*.gif $(PREFIX)/$(TARGET)/images
+	$(RM) -rf $(PREFIX)/share/$(TARGET)
+	$(MKDIR)  $(PREFIX)/share/$(TARGET)
+	$(CP) -f ../config/*.typ $(PREFIX)/share/$(TARGET)
+	$(CP) -f ../config/handyftp.msg $(PREFIX)/share/$(TARGET)
+	$(CP) -f ../help/*.html $(PREFIX)/share/$(TARGET)
+	$(MKDIR)  $(PREFIX)/share/$(TARGET)/images
+	$(CP) -f ../help/images/*.gif $(PREFIX)/share/$(TARGET)/images
 	$(INSTALL) $(TARGET) $(PREFIX)/bin
-	$(CP) -f gtk/*.png /usr/share/pixmaps
+	$(CP) -f gtk/*.png /usr/share/pixmaps/$(TARGET)
 	$(MKDIR) -p /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
 	$(INSTALL) gtk/HandyFTP.desktop /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
 	$(INSTALL) gtk/HandyFTP.desktop /usr/share/applications/
 	$(INSTALL) gtk/Readme.desktop /usr/share/gnome/apps/Internet/$(DISPLAYNAME)
-	$(INSTALL) ../readme.txt $(PREFIX)/$(TARGET)
+	$(INSTALL) ../readme.txt $(PREFIX)/share/$(TARGET)
         
 resources.o: gtk/resources.c
 handyftp.o: handyftp.c handyftp.h hftpextr.h site.h config.h

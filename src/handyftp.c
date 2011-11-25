@@ -6276,16 +6276,9 @@ int DWSIGNAL abouttab(HWND hwnd, void *data)
 /* IDM_ABOUT */
 int DWSIGNAL generalhelp(HWND hwnd, void *data)
 {
-	char *path, *templ = "file://%s/help.html";
+	char *path = dw_app_dir(), *templ = "file://%s/help.html";
 
-	/* Might need a separate __MAC__ case */
-#if defined(__UNIX__) || defined(__MAC__)
-	path = strdup(INSTALL_PREFIX "/handyftp");
-#else
-	path = (char *)getcwd(NULL, 100);
-#endif
-
-	if(path)
+	if(path && path[0])
 	{
 		char *url = malloc(strlen(path) + strlen(templ));
 
@@ -6297,22 +6290,15 @@ int DWSIGNAL generalhelp(HWND hwnd, void *data)
 			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
 
 		free(url);
-		free(path);
 	}
 	return FALSE;
 }
 
 int DWSIGNAL contentshelp(HWND hwnd, void *data)
 {
-	char *path, *templ = "file://%s/contents.html";
+	char *path = dw_app_dir(), *templ = "file://%s/contents.html";
 
-#if defined(__UNIX__) || defined(__MAC__)
-	path = strdup(INSTALL_PREFIX "/handyftp");
-#else
-	path = (char *)getcwd(NULL, 100);
-#endif
-
-	if(path)
+	if(path && path[0])
 	{
 		char *url = malloc(strlen(path) + strlen(templ));
 
@@ -6324,7 +6310,6 @@ int DWSIGNAL contentshelp(HWND hwnd, void *data)
 			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
 
 		free(url);
-		free(path);
 	}
 	return FALSE;
 }
