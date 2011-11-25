@@ -5710,11 +5710,12 @@ void loadsitetypes(void)
 	SiteTypes *currenttype = NULL;
 	SiteIds *currentid = NULL;
 	DIR *dir;
+	char *typdir = dw_app_dir();
 	struct dirent *ent;
 	FILE *f;
 	int z;
 
-	if(!(dir = opendir(dw_app_dir())))
+	if(!(dir = opendir(typdir)))
 	{
 		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not open site type files.", 155));
 		return;
@@ -5722,16 +5723,11 @@ void loadsitetypes(void)
 
 	while((ent = readdir(dir)) != 0)
 	{
-		char *tmppath = malloc(strlen(ent->d_name)+strlen(TYPDIR)+2);
+		char *tmppath = malloc(strlen(ent->d_name)+strlen(typdir)+2);
 
-		if(strcmp(TYPDIR, ".") == 0)
-			strcpy(tmppath, ent->d_name);
-		else
-		{
-			strcpy(tmppath, TYPDIR);
-			strcat(tmppath, DIRSEP);
-			strcat(tmppath, ent->d_name);
-		}
+		strcpy(tmppath, typdir);
+		strcat(tmppath, DIRSEP);
+		strcat(tmppath, ent->d_name);
 
 		if(instring(ent->d_name, ".typ") == TRUE && (f = fopen(tmppath, FOPEN_READ_TEXT))!=NULL)
 		{
@@ -6664,10 +6660,10 @@ void handyftp_init(void)
 	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER | DW_FCF_MINMAX |
 		DW_FCF_SHELLPOSITION | DW_FCF_TASKLIST | DW_FCF_DLGBORDER;
 	int z = 0, m = 0;
-    char msgbuf[1025];
+	char msgbuf[1025];
     
-    strncpy(msgbuf, dw_app_dir(), 1024);
-    strcat(msgbuf, "/handyftp.msg");
+	strncpy(msgbuf, dw_app_dir(), 1024);
+	strcat(msgbuf, "/handyftp.msg");
 
 	locale_init(msgbuf, handyftp_locale);
 
