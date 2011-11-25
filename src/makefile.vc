@@ -58,7 +58,7 @@ OBJS =	handyftp.obj \
 all: handyftp.exe
 
 clean:
-	-erase *.dll
+        -erase *.dll
         -erase *.exe
         -erase *.opt
         -erase *.lib
@@ -68,6 +68,7 @@ clean:
         -erase *.ilk
         -erase *.exp
         -erase *.res
+        -erase HG.REV
         -erase *~
 
 # Create a zip file for use with Nullsoft's Install system

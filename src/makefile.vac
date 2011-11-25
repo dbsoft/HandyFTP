@@ -45,7 +45,7 @@ handyftp.exe:  $(OBJECTS)
 #	lxlite sfx.exe
 
 clean: 
-	rm $(OBJECTS) handyftp.exe handyftp.res
+	rm -f $(OBJECTS) handyftp.exe handyftp.res HG.REV
 
 # Create an installer using Installer/2...
 # Packinst and ace2 need to be in the path...
