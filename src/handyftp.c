@@ -5251,6 +5251,7 @@ void new_tab(void *data)
 	dw_signal_connect(hostcombo, DW_SIGNAL_LIST_SELECT, DW_SIGNAL_FUNC(listboxselect), NULL);
 
 	dw_box_pack_start(controlbox, hostcombo, 200, 22, TRUE, FALSE, 0);
+    dw_window_set_tooltip(hostcombo, "Name of the site on this tab, pick from saved sites here.");
 
 	stext = dw_text_new(locale_string("Hostname:", 146), 0);
 
@@ -5261,6 +5262,7 @@ void new_tab(void *data)
 	site[thispage]->host_name = dw_entryfield_new("", EF_HOSTNAME);
 
 	dw_box_pack_start(controlbox, site[thispage]->host_name, 160, 22, TRUE, FALSE, 0);
+    dw_window_set_tooltip(site[thispage]->host_name, "Internet name or address of the server; or local.");
 
 	stext = dw_text_new(locale_string("Port:", 147), 0);
 
@@ -5274,6 +5276,7 @@ void new_tab(void *data)
 	dw_spinbutton_set_pos(site[thispage]->port_num, 21);
 
 	dw_box_pack_start(controlbox, site[thispage]->port_num, 65, 22, FALSE, FALSE, 0);
+    dw_window_set_tooltip(site[thispage]->port_num, "TCP/IP port number from 0 to 65535");
 
 	stext = dw_text_new(locale_string("Username:", 148), 0);
 
@@ -5314,6 +5317,7 @@ void new_tab(void *data)
 	dw_entryfield_set_limit(site[thispage]->directory, URL_LIMIT);
 
 	dw_box_pack_start(controlbox, site[thispage]->directory, 240, 22, TRUE, FALSE, 0);
+    dw_window_set_tooltip(site[thispage]->directory, "Path on the current site, displayed below if connected.");
 
 	stext = dw_text_new(locale_string("Destination:", 151), 0);
 
@@ -5324,6 +5328,7 @@ void new_tab(void *data)
 	site[thispage]->destsite = destcombo = dw_combobox_new("", SITE);
 
 	dw_box_pack_start(controlbox, destcombo, 240, 22, TRUE, FALSE, 0);
+    dw_window_set_tooltip(destcombo, "Destination tab to add files to the transfer queue displayed below.");
 
 	site[thispage]->ldir = lcontainer = dw_container_new(LDIR, TRUE);
 	
