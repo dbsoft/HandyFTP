@@ -5244,7 +5244,7 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 60, 22, FALSE, FALSE, 0);
+	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, FALSE, 0);
 
 	site[thispage]->host_title = hostcombo = dw_combobox_new("Local", HOST_TITLE);
 
@@ -5257,7 +5257,7 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 60, 22, FALSE, FALSE, 0);
+	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, FALSE, 0);
 
 	site[thispage]->host_name = dw_entryfield_new("", EF_HOSTNAME);
 
@@ -5268,7 +5268,7 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 40, 22, FALSE, FALSE, 0);
+	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, FALSE, 0);
 
 	site[thispage]->port_num = dw_spinbutton_new("", SPB_PORT);
 
@@ -5282,7 +5282,7 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 72, 22, FALSE, FALSE, 0);
+	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, FALSE, 0);
 
 	site[thispage]->user_name = dw_entryfield_new("", EF_USERNAME);
 
@@ -5292,7 +5292,7 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 60, 22, FALSE, FALSE, 0);
+	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, FALSE, 0);
 
 	if(showpassword)
 		site[thispage]->pass_word = dw_entryfield_new("", EF_PASSWORD);
@@ -5310,7 +5310,7 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 60, 22, FALSE, FALSE, 0);
+	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, FALSE, 0);
 
 	site[thispage]->directory = dw_entryfield_new("", EF_DIRECTORY);
 
@@ -5323,7 +5323,7 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 65, 22, FALSE, FALSE, 0);
+	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, FALSE, 0);
 
 	site[thispage]->destsite = destcombo = dw_combobox_new("", SITE);
 
