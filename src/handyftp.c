@@ -6349,8 +6349,6 @@ int DWSIGNAL exittab(HWND hwnd, void *data)
 				if(alive[z] == TRUE)
 					sendthread(THRDEXIT, z);
 			msleep(500);
-			/* Destroy the main window */
-			dw_window_destroy(hwndFrame);
 			dw_main_quit();
 		}
 	}
@@ -6416,7 +6414,6 @@ int DWSIGNAL deleteevent(HWND hwnd, void *data)
 				if(alive[z] == TRUE)
 					sendthread(THRDEXIT, z);
 			msleep(500);
-			dw_window_destroy(hwndFrame);
 			dw_main_quit();
 		}
 	}
