@@ -6351,7 +6351,7 @@ int DWSIGNAL exittab(HWND hwnd, void *data)
 			msleep(500);
 			/* Destroy the main window */
 			dw_window_destroy(hwndFrame);
-			dw_exit(0);
+			dw_main_quit();
 		}
 	}
 	return FALSE;
@@ -6417,7 +6417,7 @@ int DWSIGNAL deleteevent(HWND hwnd, void *data)
 					sendthread(THRDEXIT, z);
 			msleep(500);
 			dw_window_destroy(hwndFrame);
-			dw_exit(0);
+			dw_main_quit();
 		}
 	}
 	return TRUE;
@@ -6887,5 +6887,6 @@ int main(int argc, char *argv[])
 	dw_mutex_close(mutex);
 	dw_event_close(&hev);
 
+	dw_exit(0);   
 	return 0;
 }
