@@ -36,7 +36,7 @@ char mainHelpItems[][100]=
 };
 
 void *mainFunctions[] = { (void *)newtab, (void *)removetab, NULL, (void *)connecttab, (void *)disconnecttab,
-						  NULL, (void *)exittab, NULL, (void *)removefromqtab, (void *)addtoqtab,
+						  NULL, (void *)deleteevent, NULL, (void *)removefromqtab, (void *)addtoqtab,
 						  (void *)flushtab, NULL, (void *)savetitletab, (void *)unsavetitletab, NULL,
 						  (void *)refreshtab, NULL, (void *)preferencestab, (void *)administratetab, NULL,
 						  (void *)generalhelp, (void *)abouttab };
@@ -6336,25 +6336,6 @@ int DWSIGNAL handyftphome(HWND hwnd, void *data)
 	return FALSE;
 }
 
-/* IDM_EXIT */
-int DWSIGNAL exittab(HWND hwnd, void *data)
-{
-	int z;
-
-	if(validatecurrentpage())
-	{
-		if(dw_messagebox("HandyFTP", DW_MB_YESNO | DW_MB_QUESTION, locale_string("Are you sure you want to exit HandyFTP?", 167)))
-		{
-			for(z=0;z<CONNECTION_LIMIT;z++)
-				if(alive[z] == TRUE)
-					sendthread(THRDEXIT, z);
-			msleep(500);
-			dw_main_quit();
-		}
-	}
-	return FALSE;
-}
-
 /* IDM_PREFERENCES */
 int DWSIGNAL preferencestab(HWND hwnd, void *data)
 {
@@ -6738,7 +6719,7 @@ void handyftp_init(void)
 
 	dw_menu_append_item(menu, "", 0L, 0L, TRUE, FALSE, DW_NOMENU);
 	menuitem = dw_menu_append_item(menu, locale_string("~Exit", 9), IDM_EXIT, 0L, TRUE, FALSE, DW_NOMENU);
-	dw_signal_connect(menuitem, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(exittab), NULL);
+	dw_signal_connect(menuitem, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(deleteevent), NULL);
 
 
 	dw_menu_append_item(menubar, locale_string("~File", 0), IDM_FILE, 0L, TRUE, FALSE, menu);

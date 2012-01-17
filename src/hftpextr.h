@@ -6,7 +6,7 @@ int DWSIGNAL containercontextmenu(HWND hwnd, char *text, int x, int y, void *dat
 int DWSIGNAL nofailtab(HWND hwnd, void *data);
 int DWSIGNAL autoconnecttab(HWND hwnd, void *data);
 int DWSIGNAL preferencestab(HWND hwnd, void *data);
-int DWSIGNAL exittab(HWND hwnd, void *data);
+int DWSIGNAL deleteevent(HWND hwnd, void *data);
 int DWSIGNAL sysinfotab(HWND hwnd, void *data);
 int DWSIGNAL abouttab(HWND hwnd, void *data);
 int DWSIGNAL generalhelp(HWND hwnd, void *data);
