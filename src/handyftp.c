@@ -865,7 +865,7 @@ void IPS_update(void)
 /* Returns the size of a file in the site's directory listing
  * or returns 0 if it was not found.
  */
-unsigned long findfilesize(char *filename, SiteTab *lsite)
+unsigned long long findfilesize(char *filename, SiteTab *lsite)
 {
 	Directory *tmp = lsite->dir;
 
@@ -881,25 +881,17 @@ unsigned long findfilesize(char *filename, SiteTab *lsite)
 /* Returns the size of a file in a local directory listing
  * or returns 0 if it was not found.
  */
-unsigned long findlocalfilesize(char *filename, char *path)
+unsigned long long findlocalfilesize(char *filename, char *path)
 {
 	char *tmpbuf = malloc(strlen(filename) + strlen(path) + 3);
-#ifdef HAVE_STAT64
-	struct stat64 bleah;
-#else
 	struct stat bleah;
-#endif
 
 	strcpy(tmpbuf, path);
 	if(tmpbuf[strlen(tmpbuf)-1] != '\\' && tmpbuf[strlen(tmpbuf)-1] != '/')
 		strcat(tmpbuf, DIRSEP);
 	strcat(tmpbuf, filename);
 
-#ifdef HAVE_STAT64
-	if(stat64(tmpbuf, &bleah) == 0)
-#else
 	if(stat(tmpbuf, &bleah) == 0)
-#endif
 		return bleah.st_size;
 	return 0;
 }
@@ -1403,7 +1395,7 @@ void loadremotedir(SiteTab *lsite, char *buffer, int bufferlen, int type)
 							thisinc = 0;
 
 						removecommas(&line[columnpos[abs(sitetype->sizecol) - 1 - thisinc]], tmpbuf, 100);
-                        sscanf(tmpbuf, "%llu", &tmp->size);
+						sscanf(tmpbuf, "%llu", &tmp->size);
 
 						if(sitetype->linkcol < abs(sitetype->timecol))
 							thisinc = increment;
@@ -1491,8 +1483,10 @@ void loadremotedir(SiteTab *lsite, char *buffer, int bufferlen, int type)
 						tmp->next = (Directory *)malloc(sizeof(Directory));
 						tmp = tmp->next;
 						tmp->entry = strdup(&line[sitetype->filestart-1]);
+						
 						removecommas(&line[sitetype->sizestart-1], tmpbuf, (sitetype->sizeend - sitetype->sizestart) + 1);
-						tmp->size = atoi(tmpbuf);
+						sscanf(tmpbuf, "%llu", &tmp->size);
+
 						tmp->time.hours = findhour(&line[sitetype->timestart-1]);
 						tmp->time.minutes = findmin(&line[sitetype->timestart-1]);
 						tmp->time.seconds = findsec(&line[sitetype->timestart-1]);
@@ -1527,11 +1521,7 @@ void loadlocaldir(SiteTab *lsite)
 	char tmpbuf[1024];
 	DIR *dir;
 	struct dirent *ent;
-#ifdef HAVE_STAT64
-    struct stat64 bleah;
-#else
 	struct stat bleah;
-#endif
 	struct tm *filetime;
 #if defined(__EMX__) || defined(__OS2__) || defined(__WIN32__) || defined(WINNT)
 	int j;
@@ -1606,11 +1596,7 @@ void loadlocaldir(SiteTab *lsite)
 					strcat(tmpbuf, DIRSEP);
 				strcat(tmpbuf, ent->d_name);
 
-#ifdef HAVE_STAT64
-                stat64(tmpbuf, &bleah);
-#else
 				stat(tmpbuf, &bleah);
-#endif
                 
 				tmp->size = bleah.st_size;
 				filetime = localtime(&bleah.st_mtime);
@@ -2944,7 +2930,7 @@ void info_box(void)
 
 
 /* Generic function for updating the transfer statistics on the status line */
-void update_eta(SiteTab *threadsite, long long send_or_receive, long long sent_or_received, long long total_size, time_t curtime, time_t mytimer, time_t *lastupdate, long long filesize)
+void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_received, long long total_size, time_t curtime, time_t mytimer, time_t *lastupdate, long long filesize)
 {
 	unsigned long sliderpos = 0;
 	float myrate = 0;
@@ -2972,8 +2958,8 @@ void update_eta(SiteTab *threadsite, long long send_or_receive, long long sent_o
 			setstatustext(threadsite, (send_or_receive ? locale_string("Started sending...", 95) : locale_string("Started receiving...", 96)));
 		else
 		{
-			long total_size_K = (long)(total_size/1024);
-			long sent_or_received_K = (long)(sent_or_received/1024);
+			long long total_size_K = (long long)(total_size/1024);
+			long long sent_or_received_K = (long long)(sent_or_received/1024);
 			long minutes_left = 0, seconds_left = 0, elapsed_time = (long)(curtime-mytimer);
 			long minutes_elapsed = elapsed_time/60;
 			long seconds_elapsed = elapsed_time - (minutes_elapsed*60);
@@ -2987,7 +2973,7 @@ void update_eta(SiteTab *threadsite, long long send_or_receive, long long sent_o
 				seconds_left = (long)((total_size_K-sent_or_received_K)/myrate)-(minutes_left*60);
 			}
 
-			setstatustext(threadsite, locale_string("%d bytes %s in %d:%.2d (%.2fK/s ETA %d:%.2d).", 97),
+			setstatustext(threadsite, locale_string("%lld bytes %s in %d:%.2d (%.2fK/s ETA %d:%.2d).", 97),
 						  sent_or_received,
 						  send_or_receive ? locale_string("sent", 98) : locale_string("received", 99),
 						  minutes_elapsed,
@@ -3751,23 +3737,15 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					if(strcasecmp(threadsite->hostname, "local") == 0)
 					{
 						char lfile[1000];
-#ifdef HAVE_STAT64
-						struct stat64 buf;
-#else
 						struct stat buf;
-#endif
 
 						strcpy(lfile, ftd->destsite->currentqueue->destdirectory);
 						if(lfile[strlen(lfile)-1] != '\\' && lfile[strlen(lfile)-1] != '/')
 							strcat(lfile, "/");
 						strcat(lfile, ftd->destsite->currentqueue->srcfilename);
 
-                        /* If we can try to resume download */
-#ifdef HAVE_STAT64
-						if(stat64(lfile, &buf) == 0 && buf.st_size < ftd->destsite->currentqueue->size)
-#else
+						/* If we can try to resume download */
 						if(stat(lfile, &buf) == 0 && buf.st_size < ftd->destsite->currentqueue->size)
-#endif
 						{
 							ftd->localfile = fopen(lfile, FOPEN_APPEND_BINARY);
 							ftd->filesize = ftd->received = buf.st_size;
