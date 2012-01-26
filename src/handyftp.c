@@ -3157,7 +3157,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					ftd->originalcommand = -1;
 					if(curtime-ftd->mytimer == 0)
 						curtime++;
-					writeconsole(threadsite, locale_string("Transfer completed. %d bytes received in %d seconds (%.2fK/s).", 101), ftd->received, (int)(curtime - ftd->mytimer), (double)((ftd->received-ftd->filesize)/1024)/((long)curtime-ftd->mytimer));
+					writeconsole(threadsite, locale_string("Transfer completed. %lld bytes received in %d seconds (%.2fK/s).", 101), ftd->received, (int)(curtime - ftd->mytimer), (double)((ftd->received-ftd->filesize)/1024)/((long)curtime-ftd->mytimer));
 					ftd->currentqueuesize = 0;
 					setstatustext(threadsite, locale_string("Local directory, connected.", 44));
 				}
@@ -4701,7 +4701,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				set_status(threadsite, STATUSIDLE);
 				if(curtime-ftd->mytimer == 0)
 					curtime++;
-				writeconsole(threadsite, locale_string("Transfer completed. %d bytes sent in %d seconds (%.2fK/s).", 138), threadsite->sent, (int)(curtime - ftd->mytimer), (double)((threadsite->sent-ftd->filesize)/1024)/((long)(curtime-ftd->mytimer)));
+				writeconsole(threadsite, locale_string("Transfer completed. %lld bytes sent in %d seconds (%.2fK/s).", 138), threadsite->sent, (int)(curtime - ftd->mytimer), (double)((threadsite->sent-ftd->filesize)/1024)/((long)(curtime-ftd->mytimer)));
 				setstatustext(threadsite, locale_string("Remote directory, connected.", 38));
 				dw_percent_set_pos(threadsite->percent, 0);
 			}
@@ -4811,7 +4811,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						curtime++;
 
 					if(ftd->destsite)
-						writeconsole(threadsite, locale_string("Transfer completed. %d bytes sent in %d seconds (%.2fK/s).", 138), ftd->destsite->sent, (int)(curtime - ftd->mytimer), (double)((ftd->destsite->sent-ftd->filesize)/1024)/((long)curtime-ftd->mytimer));
+						writeconsole(threadsite, locale_string("Transfer completed. %lld bytes sent in %d seconds (%.2fK/s).", 138), ftd->destsite->sent, (int)(curtime - ftd->mytimer), (double)((ftd->destsite->sent-ftd->filesize)/1024)/((long)curtime-ftd->mytimer));
 					else
 						writeconsole(threadsite, locale_string("Transfer completed.", 139));
 
@@ -4911,7 +4911,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			{
 				if(curtime-ftd->mytimer == 0)
 					curtime++;
-				writeconsole(threadsite, locale_string("Transfer completed. %d bytes sent in %d seconds (%.2fK/s).", 138), ftd->destsite->sent, curtime - ftd->mytimer, (double)((ftd->destsite->sent-ftd->filesize)/1024)/(curtime-ftd->mytimer));
+				writeconsole(threadsite, locale_string("Transfer completed. %lld bytes sent in %d seconds (%.2fK/s).", 138), ftd->destsite->sent, curtime - ftd->mytimer, (double)((ftd->destsite->sent-ftd->filesize)/1024)/(curtime-ftd->mytimer));
 				if(strcasecmp(threadsite->hostname, "local") == 0)
 					setstatustext(threadsite, locale_string("Local directory, connected.", 44));
 				else
