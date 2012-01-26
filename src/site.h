@@ -3,7 +3,7 @@
 typedef struct _directory {
 	char *entry;
 	struct _directory *next;
-	ULONG size;
+	unsigned long long size;
 	CTIME time;
 	CDATE date;
 	int type;
@@ -15,7 +15,7 @@ typedef struct _queue {
 	/*SiteTab *dest;*/
 	char *site;
 	char *destdirectory;
-	ULONG size;
+	unsigned long long size;
 	CTIME time;
 	CDATE date;
 	int type;

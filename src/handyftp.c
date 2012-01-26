@@ -459,7 +459,7 @@ void savequeue(SiteTab *thissite, char *filename)
 
 		while(tmp)
 		{
-			fprintf(fp, "%s\n%s\n%s\n%s\n%lu\n",
+			fprintf(fp, "%s\n%s\n%s\n%s\n%llu\n",
 					tmp->srcfilename,
 					tmp->srcdirectory,
 					tmp->destdirectory,
@@ -884,14 +884,22 @@ unsigned long findfilesize(char *filename, SiteTab *lsite)
 unsigned long findlocalfilesize(char *filename, char *path)
 {
 	char *tmpbuf = malloc(strlen(filename) + strlen(path) + 3);
+#ifdef HAVE_STAT64
+	struct stat64 bleah;
+#else
 	struct stat bleah;
+#endif
 
 	strcpy(tmpbuf, path);
 	if(tmpbuf[strlen(tmpbuf)-1] != '\\' && tmpbuf[strlen(tmpbuf)-1] != '/')
 		strcat(tmpbuf, DIRSEP);
 	strcat(tmpbuf, filename);
 
+#ifdef HAVE_STAT64
+	if(stat64(tmpbuf, &bleah) == 0)
+#else
 	if(stat(tmpbuf, &bleah) == 0)
+#endif
 		return bleah.st_size;
 	return 0;
 }
@@ -1395,7 +1403,7 @@ void loadremotedir(SiteTab *lsite, char *buffer, int bufferlen, int type)
 							thisinc = 0;
 
 						removecommas(&line[columnpos[abs(sitetype->sizecol) - 1 - thisinc]], tmpbuf, 100);
-						tmp->size = atoi(tmpbuf);
+                        sscanf(tmpbuf, "%llu", &tmp->size);
 
 						if(sitetype->linkcol < abs(sitetype->timecol))
 							thisinc = increment;
@@ -1519,7 +1527,11 @@ void loadlocaldir(SiteTab *lsite)
 	char tmpbuf[1024];
 	DIR *dir;
 	struct dirent *ent;
+#ifdef HAVE_STAT64
+    struct stat64 bleah;
+#else
 	struct stat bleah;
+#endif
 	struct tm *filetime;
 #if defined(__EMX__) || defined(__OS2__) || defined(__WIN32__) || defined(WINNT)
 	int j;
@@ -1594,8 +1606,12 @@ void loadlocaldir(SiteTab *lsite)
 					strcat(tmpbuf, DIRSEP);
 				strcat(tmpbuf, ent->d_name);
 
+#ifdef HAVE_STAT64
+                stat64(tmpbuf, &bleah);
+#else
 				stat(tmpbuf, &bleah);
-
+#endif
+                
 				tmp->size = bleah.st_size;
 				filetime = localtime(&bleah.st_mtime);
 
@@ -2928,7 +2944,7 @@ void info_box(void)
 
 
 /* Generic function for updating the transfer statistics on the status line */
-void update_eta(SiteTab *threadsite, int send_or_receive, long sent_or_received, long total_size, time_t curtime, time_t mytimer, time_t *lastupdate, int filesize)
+void update_eta(SiteTab *threadsite, long long send_or_receive, long long sent_or_received, long long total_size, time_t curtime, time_t mytimer, time_t *lastupdate, long long filesize)
 {
 	unsigned long sliderpos = 0;
 	float myrate = 0;
@@ -2943,7 +2959,7 @@ void update_eta(SiteTab *threadsite, int send_or_receive, long sent_or_received,
 			while(myrate > bandwidthlimit && bandwidthlimit)
 			{
 				dw_mutex_unlock(mutex);
-				msleep(10);
+				dw_main_sleep(10);
 				dw_mutex_lock(mutex);
 				myrate = (float)((sent_or_received-filesize)/1024)/(time(NULL)-mytimer);
 			}
@@ -3058,7 +3074,7 @@ void wait_site(int *state, int waitstate)
 	while(*state == waitstate)
 	{
 		dw_mutex_unlock(mutex);
-		msleep(1);
+		dw_main_sleep(1);
 		dw_mutex_lock(mutex);
 	}
 }
@@ -3083,8 +3099,8 @@ typedef struct _ftpdata {
 	int transbufsize;
 	int laststatus;
 	int in_200;
-	unsigned long received;
-	unsigned long transmitted;
+	unsigned long long received;
+	unsigned long long transmitted;
 	FILE *localfile;
 	time_t mytimer;
 	time_t lastupdate;
@@ -3093,7 +3109,7 @@ typedef struct _ftpdata {
 	int waitcount;
 	int dirlen;
 	int currentqueuesize;
-	unsigned long filesize;
+	unsigned long long filesize;
 	/* State variables */
 	int currentfxpstate;
 	int commandready;
@@ -3271,7 +3287,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		if(selectres == -1)
 		{
 			/* Lets hope it doesn't get here. */
-			msleep(1);
+			dw_main_sleep(1);
 			dw_beep(1000*(threadsite->page+1),100);
 			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, "maxfd %d, controlfd %d datafd %d listenfd %d pipe0 %d pipe1 %d tpipe0 %d tpipe1 %d page %d errno %d", maxfd, threadsite->controlfd, threadsite->datafd, ftd->listenfd, threadsite->pipefd[0], threadsite->pipefd[1], threadsite->tpipefd[0], threadsite->tpipefd[1], threadsite->page, errno);
 		}
@@ -3465,7 +3481,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 							/* Pause briefly to insure receipt. */
 							dw_mutex_unlock(h);
-							msleep(1000);
+							dw_main_sleep(1000);
 							dw_mutex_lock(h);
 						}
 
@@ -3660,7 +3676,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 												sockwrite(threadsite->controlfd, "TYPE I\r\n", 8, 0) > 0)
 											{
 												dw_mutex_unlock(h);
-												msleep(NAT_DELAY);
+												dw_main_sleep(NAT_DELAY);
 												dw_mutex_lock(h);
 												
 												if(socksprint(threadsite->controlfd, 
@@ -3735,15 +3751,23 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					if(strcasecmp(threadsite->hostname, "local") == 0)
 					{
 						char lfile[1000];
+#ifdef HAVE_STAT64
+						struct stat64 buf;
+#else
 						struct stat buf;
+#endif
 
 						strcpy(lfile, ftd->destsite->currentqueue->destdirectory);
 						if(lfile[strlen(lfile)-1] != '\\' && lfile[strlen(lfile)-1] != '/')
 							strcat(lfile, "/");
 						strcat(lfile, ftd->destsite->currentqueue->srcfilename);
 
-							/* If we can try to resume download */
+                        /* If we can try to resume download */
+#ifdef HAVE_STAT64
+						if(stat64(lfile, &buf) == 0 && buf.st_size < ftd->destsite->currentqueue->size)
+#else
 						if(stat(lfile, &buf) == 0 && buf.st_size < ftd->destsite->currentqueue->size)
+#endif
 						{
 							ftd->localfile = fopen(lfile, FOPEN_APPEND_BINARY);
 							ftd->filesize = ftd->received = buf.st_size;
@@ -3817,7 +3841,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 										port4.ip32 = ntohs(listen_addr.sin_port);
 
 										dw_mutex_unlock(h);
-										msleep(NAT_DELAY);
+										dw_main_sleep(NAT_DELAY);
 										dw_mutex_lock(h);
 										if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", 
 											ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,ftd->our_ip.ip4.ip2,
@@ -3977,7 +4001,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			dw_debug("[%s] THRDFXPSTART: PORT %s\n", threadsite->hosttitle, threadsite->thrdcommand);
 #endif
 			dw_mutex_unlock(h);
-			msleep(NAT_DELAY);
+			dw_main_sleep(NAT_DELAY);
 			dw_mutex_lock(h);
 			if(socksprint(threadsite->controlfd, vargs(alloca(101), 100, "PORT %s\r\n", threadsite->thrdcommand)) > 0)
 			{
@@ -4495,7 +4519,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						port4.ip32 = ntohs(listen_addr.sin_port);
 					}
 					dw_mutex_unlock(h);
-					msleep(NAT_DELAY);
+					dw_main_sleep(NAT_DELAY);
 					dw_mutex_lock(h);
 					if(socksprint(threadsite->controlfd, vargs(alloca(1024), 1023, "PORT %d,%d,%d,%d,%d,%d\r\n", 
 						ftd->our_ip.ip4.ip4,ftd->our_ip.ip4.ip3,ftd->our_ip.ip4.ip2,
@@ -4716,7 +4740,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					 * release the mutex briefly... then try again.
 					 */
 					dw_mutex_unlock(h);
-					msleep(10);
+					dw_main_sleep(10);
 					dw_mutex_lock(h);
 				}
 			}
@@ -4798,7 +4822,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 								 * release the mutex briefly... then try again.
 								 */
 								dw_mutex_unlock(h);
-								msleep(10);
+								dw_main_sleep(10);
 								dw_mutex_lock(h);
 							}
 						}
@@ -4888,7 +4912,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						 * release the mutex briefly... then try again.
 						 */
 						dw_mutex_unlock(h);
-						msleep(10);
+						dw_main_sleep(10);
 						dw_mutex_lock(h);
 					}
 				}
@@ -4936,7 +4960,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					 * release the mutex briefly... then try again.
 					 */
 					dw_mutex_unlock(h);
-					msleep(10);
+					dw_main_sleep(10);
 					dw_mutex_lock(h);
 				}
 			}
@@ -6394,7 +6418,7 @@ int DWSIGNAL deleteevent(HWND hwnd, void *data)
 			for(z=0;z<CONNECTION_LIMIT;z++)
 				if(alive[z] == TRUE)
 					sendthread(THRDEXIT, z);
-			msleep(500);
+			dw_main_sleep(500);
 			dw_main_quit();
 		}
 	}
