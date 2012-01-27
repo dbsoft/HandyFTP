@@ -211,6 +211,46 @@ int finddead(void)
 	return -1;
 }
 
+/* Output a number in a nice easily readable format */
+void ScaledPrint(char *cBuff, long double value, int decimals)
+{
+	char fstr[] = "%.0Lf ", *dec = &fstr[2], *not = &fstr[5];
+	long double real_value = value;
+	static long double giga = 1073741824.0;
+
+	*dec = decimals + '0';
+
+	if(value >= (giga*1024*1024))
+	{
+		real_value = (long double)value/(giga*1024.0*1024.0);
+		*not = 'P';
+	}
+	else if(value >= (giga*1024))
+	{
+		real_value = (long double)value/(giga*1024.0);
+		*not = 'T';
+	}
+	else if(value >= giga)
+	{
+		real_value = (long double)value/(long double)giga;
+		*not = 'G';
+	}
+	else if(value >= (1024*1024))
+	{
+		real_value = (long double)value/(1024.0*1024.0);
+		*not = 'M';
+	}
+	else if(value >= 1024)
+	{
+		real_value = (long double)value/1024.0;
+		*not = 'K';
+	}
+	else
+		*dec = '0';
+
+	sprintf(cBuff, fstr, (long double)real_value);
+}
+
 /* Set the page count on all of the tabs */
 void settabs(void)
 {
@@ -884,7 +924,7 @@ unsigned long long findfilesize(char *filename, SiteTab *lsite)
 unsigned long long findlocalfilesize(char *filename, char *path)
 {
 	char *tmpbuf = malloc(strlen(filename) + strlen(path) + 3);
-	struct stat bleah;
+	struct dwstat bleah;
 
 	strcpy(tmpbuf, path);
 	if(tmpbuf[strlen(tmpbuf)-1] != '\\' && tmpbuf[strlen(tmpbuf)-1] != '/')
@@ -1521,7 +1561,7 @@ void loadlocaldir(SiteTab *lsite)
 	char tmpbuf[1024];
 	DIR *dir;
 	struct dirent *ent;
-	struct stat bleah;
+	struct dwstat bleah;
 	struct tm *filetime;
 #if defined(__EMX__) || defined(__OS2__) || defined(__WIN32__) || defined(WINNT)
 	int j;
@@ -1670,7 +1710,7 @@ void loadlocaldir(SiteTab *lsite)
 void setdir(SiteTab *lsite)
 {
 	char *titles[3];
-	unsigned long flags[3] = {  DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+	unsigned long flags[3] = {  DW_CFA_STRING | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 	DW_CFA_TIME | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 	DW_CFA_DATE | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR };
 
@@ -1688,7 +1728,7 @@ void setqueue(SiteTab *lsite)
 	char *titles[5];
 	unsigned long flags[5] = {  DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 								DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
-								DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
+								DW_CFA_STRING | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 								DW_CFA_TIME | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 								DW_CFA_DATE | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR };
 
@@ -1714,10 +1754,11 @@ void drawq(SiteTab *lsite)
 	Queue *tmp;
 	int count = 0, z;
 	void *containerinfo;
-	unsigned long size;
+	unsigned long long size;
 	HICN thisicon;
 	CTIME time;
 	CDATE date;
+	char *str;
 
 	tmp = lsite->queue;
 
@@ -1753,7 +1794,10 @@ void drawq(SiteTab *lsite)
 		dw_filesystem_set_file(lsite->rqueue, containerinfo, z, tmp->srcfilename, thisicon);
 		dw_filesystem_set_item(lsite->rqueue, containerinfo, 0, z, &tmp->site);
 		dw_filesystem_set_item(lsite->rqueue, containerinfo, 1, z, &tmp->destdirectory);
-		dw_filesystem_set_item(lsite->rqueue, containerinfo, 2, z, &size);
+
+		str = tmp->sizebuf;
+		ScaledPrint(str, size, 3);
+		dw_filesystem_set_item(lsite->rqueue, containerinfo, 2, z, &str);
 
 		time.seconds = tmp->time.seconds;
 		time.minutes = tmp->time.minutes;
@@ -1786,10 +1830,11 @@ void drawdir(SiteTab *lsite)
 	Directory *tmp;
 	int count = 0, z;
 	void *containerinfo;
-	unsigned long size;
+	unsigned long long size;
 	HICN thisicon;
 	CTIME time;
 	CDATE date;
+	char *str;
 
 	tmp = lsite->dir;
 
@@ -1823,7 +1868,9 @@ void drawdir(SiteTab *lsite)
 		}
 
 		dw_filesystem_set_file(lsite->ldir, containerinfo, z, tmp->entry, thisicon);
-		dw_filesystem_set_item(lsite->ldir, containerinfo, 0, z, &size);
+		str = tmp->sizebuf;
+		ScaledPrint(str, size, 3);
+		dw_filesystem_set_item(lsite->ldir, containerinfo, 0, z, &str);
 
 		time.seconds = tmp->time.seconds;
 		time.minutes = tmp->time.minutes;
@@ -2933,13 +2980,13 @@ void info_box(void)
 void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_received, long long total_size, time_t curtime, time_t mytimer, time_t *lastupdate, long long filesize)
 {
 	unsigned long sliderpos = 0;
-	float myrate = 0;
+	long double myrate = 0;
 
 	if((curtime - mytimer) != 0)
 	{
 		if(bandwidthlimit)
 		{
-			myrate = (float)((sent_or_received-filesize)/1024)/(curtime-mytimer);
+			myrate = (long double)((sent_or_received-filesize)/1024)/(curtime-mytimer);
 
 			/* Do bandwidth shaping */
 			while(myrate > bandwidthlimit && bandwidthlimit)
@@ -2947,7 +2994,7 @@ void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_rece
 				dw_mutex_unlock(mutex);
 				dw_main_sleep(10);
 				dw_mutex_lock(mutex);
-				myrate = (float)((sent_or_received-filesize)/1024)/(time(NULL)-mytimer);
+				myrate = (long double)((sent_or_received-filesize)/1024)/(time(NULL)-mytimer);
 			}
 		}
 	}
@@ -2965,7 +3012,7 @@ void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_rece
 			long seconds_elapsed = elapsed_time - (minutes_elapsed*60);
 
 			if(!bandwidthlimit)
-				myrate = (float)((sent_or_received-filesize)/1024)/(curtime-mytimer);
+				myrate = (long double)((sent_or_received-filesize)/1024)/(curtime-mytimer);
 
 			if(myrate > 0)
 			{
@@ -2973,18 +3020,18 @@ void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_rece
 				seconds_left = (long)((total_size_K-sent_or_received_K)/myrate)-(minutes_left*60);
 			}
 
-			setstatustext(threadsite, locale_string("%lld bytes %s in %d:%.2d (%.2fK/s ETA %d:%.2d).", 97),
+			setstatustext(threadsite, locale_string("%lld bytes %s in %d:%.2d (%.2LfK/s ETA %d:%.2d).", 97),
 						  sent_or_received,
 						  send_or_receive ? locale_string("sent", 98) : locale_string("received", 99),
 						  minutes_elapsed,
 						  seconds_elapsed,
-						  (float)((sent_or_received-filesize)/1024)/elapsed_time,
+						  (long double)((sent_or_received-filesize)/1024)/elapsed_time,
 						  minutes_left,
 						  seconds_left);
 		}
 		if(total_size != 0)
 		{
-			sliderpos = (int)(((float)sent_or_received/(float)total_size)*100);
+			sliderpos = (int)(((long double)sent_or_received/(long double)total_size)*100);
 			if(sliderpos)
 				dw_percent_set_pos(threadsite->percent, sliderpos);
 		}
@@ -3737,7 +3784,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					if(strcasecmp(threadsite->hostname, "local") == 0)
 					{
 						char lfile[1000];
-						struct stat buf;
+						struct dwstat buf;
 
 						strcpy(lfile, ftd->destsite->currentqueue->destdirectory);
 						if(lfile[strlen(lfile)-1] != '\\' && lfile[strlen(lfile)-1] != '/')

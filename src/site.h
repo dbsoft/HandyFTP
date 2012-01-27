@@ -4,6 +4,7 @@ typedef struct _directory {
 	char *entry;
 	struct _directory *next;
 	unsigned long long size;
+	char sizebuf[255];
 	CTIME time;
 	CDATE date;
 	int type;
@@ -16,6 +17,7 @@ typedef struct _queue {
 	char *site;
 	char *destdirectory;
 	unsigned long long size;
+	char sizebuf[255];
 	CTIME time;
 	CDATE date;
 	int type;
@@ -37,7 +39,8 @@ typedef struct _sitetab {
 	/* We'll let each site know what page they are */
 	int page, refcount;
 	int controlfd, datafd, pipefd[2], tpipefd[2];
-	unsigned long pageid, sent, ip, serverip;
+	unsigned long long sent;
+	unsigned long pageid, ip, serverip;
 	unsigned long fxpserver, fxpport;
 	int fxpready;
 	/* Used for recursive queuing */
