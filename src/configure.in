@@ -67,7 +67,6 @@ AC_CHECK_LIB(dwcompat, locale_string, LIBS="$LIBS -ldwcompat",)
 
 case "$target" in
    *apple-darwin*)
-      CFLAGS="$CFLAGS -D_DARWIN_USE_64_BIT_INODE"
       case "$with_arch" in
          no)
             ARCH=""
@@ -88,12 +87,6 @@ case "$target" in
             ARCH="-arch $with_arch"
             ;;
       esac
-   ;;
-   *linux*)
-      CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64"
-   ;;
-   *aix*)
-      CFLAGS="$CFLAGS -D_LARGE_FILES"
    ;;
    *)
    ;;

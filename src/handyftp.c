@@ -956,7 +956,7 @@ int findfiletype(char *filename, SiteTab *lsite)
  * parameter, but I was pretty sure it was supposed to set the
  * file size listed in the directory list.
  */
-void setfilesize(char *filename, SiteTab *lsite, unsigned long filesize)
+void setfilesize(char *filename, SiteTab *lsite, unsigned long long filesize)
 {
 	Directory *tmp = lsite->dir;
 
@@ -3141,7 +3141,7 @@ typedef struct _ftpdata {
 	char *dirbuffer;
 	int waitcount;
 	int dirlen;
-	int currentqueuesize;
+	unsigned long long currentqueuesize;
 	unsigned long long filesize;
 	/* State variables */
 	int currentfxpstate;
@@ -3722,7 +3722,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 														if(ftd->filesize)
 														{
 															if(socksprint(threadsite->controlfd, 
-																vargs(alloca(101), 100, "REST %lu\r\n", ftd->filesize)) > 0)
+																vargs(alloca(101), 100, "REST %llu\r\n", ftd->filesize)) > 0)
 																	ftd->destsite->sent = ftd->filesize;
 														}
 														set_status(threadsite, STATUSRETR);
@@ -3875,7 +3875,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 											/* If we can try to resume download */
 											if(ftd->filesize)
 											{
-												if(socksprint(threadsite->controlfd, vargs(alloca(101), 100, "REST %lu\r\n", 
+												if(socksprint(threadsite->controlfd, vargs(alloca(101), 100, "REST %llu\r\n", 
 													ftd->filesize)) > 0)
 														ftd->received = ftd->transmitted = ftd->filesize;
 											}
@@ -3890,7 +3890,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 									{
 										/* If we can try to resume download */
 										if(ftd->filesize && socksprint(threadsite->controlfd, 
-											vargs(alloca(101), 100, "REST %lu\r\n", ftd->filesize)) > 0)
+											vargs(alloca(101), 100, "REST %llu\r\n", ftd->filesize)) > 0)
 												ftd->received = ftd->transmitted = ftd->filesize;
 										set_status(threadsite, STATUSSTORE);
 									}
