@@ -1,6 +1,6 @@
 /* $Id: handyftp.c,v 1.269 2005/05/20 11:32:41 bsmith Exp $ */
 
-#include "compat.h"
+#include "dwcompat.h"
 #include "dw.h"
 #include "handyftp.h"
 #include "site.h"
