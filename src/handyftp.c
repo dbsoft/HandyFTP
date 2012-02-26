@@ -5469,13 +5469,13 @@ void new_tab(void *data)
 		dw_window_set_text(site[currentpage]->host_title, "Local");
 
 		if(autoconnect == TRUE)
-			dw_menu_item_set_check(menubar, IDM_AUTOCONNECT, TRUE);
+			dw_menu_item_set_state(menubar, IDM_AUTOCONNECT, DW_MIS_CHECKED);
 		else
-			dw_menu_item_set_check(menubar, IDM_AUTOCONNECT, FALSE);
+			dw_menu_item_set_state(menubar, IDM_AUTOCONNECT, DW_MIS_UNCHECKED);
 		if(nofail == TRUE)
-			dw_menu_item_set_check(menubar, IDM_NOFAIL, TRUE);
+			dw_menu_item_set_state(menubar, IDM_NOFAIL, DW_MIS_CHECKED);
 		else
-			dw_menu_item_set_check(menubar, IDM_NOFAIL, FALSE);
+			dw_menu_item_set_state(menubar, IDM_NOFAIL, DW_MIS_UNCHECKED);
 	}
 
 	DBUG_POINT("new_tab");
@@ -6401,12 +6401,12 @@ int DWSIGNAL autoconnecttab(HWND hwnd, void *data)
 		if(autoconnect == TRUE)
 		{
 			autoconnect = FALSE;
-			dw_menu_item_set_check(menubar, IDM_AUTOCONNECT, FALSE);
+			dw_menu_item_set_state(menubar, IDM_AUTOCONNECT, DW_MIS_UNCHECKED);
 		}
 		else
 		{
 			autoconnect = TRUE;
-			dw_menu_item_set_check(menubar, IDM_AUTOCONNECT, TRUE);
+			dw_menu_item_set_state(menubar, IDM_AUTOCONNECT, DW_MIS_CHECKED);
 		}
 	}
 	return FALSE;
@@ -6420,12 +6420,12 @@ int DWSIGNAL nofailtab(HWND hwnd, void *data)
 		if(nofail == TRUE)
 		{
 			nofail = FALSE;
-			dw_menu_item_set_check(menubar, IDM_NOFAIL, FALSE);
+			dw_menu_item_set_state(menubar, IDM_NOFAIL, DW_MIS_UNCHECKED);
 		}
 		else
 		{
 			nofail = TRUE;
-			dw_menu_item_set_check(menubar, IDM_NOFAIL, TRUE);
+			dw_menu_item_set_state(menubar, IDM_NOFAIL, DW_MIS_CHECKED);
 		}
 	}
 	return FALSE;
@@ -6453,10 +6453,10 @@ int DWSIGNAL deleteevent(HWND hwnd, void *data)
 /* Set all the menu items on the sort menu */
 void validate_sort_menu(HMENUI menu, int sort)
 {
-	dw_menu_item_set_check(menu, IDM_SORTF, sort == SORT_FILE ? TRUE : FALSE);
-	dw_menu_item_set_check(menu, IDM_SORTS, sort == SORT_SIZE ? TRUE : FALSE);
-	dw_menu_item_set_check(menu, IDM_SORTD, sort == SORT_DATE ? TRUE : FALSE);
-	dw_menu_item_set_check(menu, IDM_SORTN, sort == SORT_NONE ? TRUE : FALSE);
+	dw_menu_item_set_state(menu, IDM_SORTF, sort == SORT_FILE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
+	dw_menu_item_set_state(menu, IDM_SORTS, sort == SORT_SIZE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
+	dw_menu_item_set_state(menu, IDM_SORTD, sort == SORT_DATE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
+	dw_menu_item_set_state(menu, IDM_SORTN, sort == SORT_NONE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
 }
 
 /* Callback to handle right clicks on the container */
@@ -6520,10 +6520,10 @@ int DWSIGNAL containercontextmenu(HWND hwnd, char *text, int x, int y, void *dat
 
 		contexttext = text;
 
-		dw_menu_item_set_check(hwndMenu, IDP_SORTF, abs(site[currentpage]->sort) == SORT_FILE ? TRUE : FALSE);
-		dw_menu_item_set_check(hwndMenu, IDP_SORTS, abs(site[currentpage]->sort) == SORT_SIZE ? TRUE : FALSE);
-		dw_menu_item_set_check(hwndMenu, IDP_SORTD, abs(site[currentpage]->sort) == SORT_DATE ? TRUE : FALSE);
-		dw_menu_item_set_check(hwndMenu, IDP_SORTN, abs(site[currentpage]->sort) == SORT_NONE ? TRUE : FALSE);
+		dw_menu_item_set_state(hwndMenu, IDP_SORTF, abs(site[currentpage]->sort) == SORT_FILE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
+		dw_menu_item_set_state(hwndMenu, IDP_SORTS, abs(site[currentpage]->sort) == SORT_SIZE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
+		dw_menu_item_set_state(hwndMenu, IDP_SORTD, abs(site[currentpage]->sort) == SORT_DATE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
+		dw_menu_item_set_state(hwndMenu, IDP_SORTN, abs(site[currentpage]->sort) == SORT_NONE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
 		dw_menu_popup(&hwndMenu, hwndFrame, x, y);
 	}
 	return FALSE;  
