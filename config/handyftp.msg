@@ -4,11 +4,11 @@ LOCALE=1 Deutsch
 ~Optionen
 ~Hilfe
 ~Neue Verbindung
-S~chlie·e Verbindung
+S~chlie√üe Verbindung
 ~Verbinde
 ~Trenne
 Server ~sichern
-Server ~lîschen
+Server ~l√∂schen
 Be~enden
 ~Voreinstellungen
 Server ~verwalten
@@ -17,17 +17,17 @@ Autom. ~neu verbinden
 ~Standardsortierung
 nach Name
 nach Datum
-nach Grî·e
+nach Gr√∂√üe
 keine
 ~Index
 ~Hilfe
 ~Systeminformation
 Handy~FTP im Web
-ö~ber
+√ú~ber
 Sort.
 Verzeichnis anlegen
 Umbenennen
-Lîschen
+L√∂schen
 Datei betrachten
 Warteschlange speichern
 Warteschlange laden
@@ -45,19 +45,19 @@ Von lokalem Verzeichnis getrennt.
 Laufwerk %c:
 Lokales Verzeichnis empfangen.
 Mit lokalem Verzeichnis verbunden.
-Grî·e
+Gr√∂√üe
 Zeit
 Datum
 Fehler beim Anlegen des Containers!
 Ziel
 Verzeichnis
-Grî·e
+Gr√∂√üe
 Zeit
 Datum
-öber HandyFTP
+√úber HandyFTP
 Voreinstellungen
 Allgemein
-ôffne alle Server
+√ñffne alle Server
 Passiv-FTP
 Zeige Passwort
 URLs sichern
@@ -69,17 +69,17 @@ Bandbreiten-Begrenzung
 Lokale
 Ok
 Abbrechen
-IPS server ist nicht untÑtig.
-IPS server ist nicht untÑtig.
-IPS server ist nicht untÑtig.
+IPS server ist nicht unt√§tig.
+IPS server ist nicht unt√§ig.
+IPS server ist nicht unt√§ig.
 Benutzer
 Adresse
-AktivitÑt
-untÑtig
+Aktivit√§t
+unt√§tig
 Socket
 Konnte IPS Server nicht validieren.
 IPS Administration
-Schlie·en
+Schlie√üen
 Benutzer trennen
 Herunterfahren
 Neustarten
@@ -92,7 +92,7 @@ Benenne \"%s\" um in \"%s\"
 Systeminformation
 HandyFTP:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\n
 System:\r\n\r\nFarbtiefe: %lu\r\n
-Bildschirmbreite: %d\r\nBildschirmhîhe: %d\r\n\r\n
+Bildschirmbreite: %d\r\nBildschirmh√∂he: %d\r\n\r\n
 Dynamic Windows:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\nBetriebssystem:\r\n\r\nSystem: %s\r\nVersion: %d.%d
 \r\nStand: %d
 Sendevorgang begonnen...
@@ -101,20 +101,20 @@ Empfang begonnen...
 versandt
 empfangen
 Von entferntem Verzeichnis getrennt.
-öbertragung abgeschlossen. %d bytes empfangen in %d Sekunden (%.2fK/s).
-Timeout Åberschritten beim Warten auf UntÑtigkeit des Servers.
+√úbertragung abgeschlossen. %d bytes empfangen in %d Sekunden (%.2fK/s).
+Timeout √ºberschritten beim Warten auf Unt√§tigkeit des Servers.
 Versuche Verbindung herzustellen... Bitte warten.
-Kann Servername nicht auflîsen.
+Kann Servername nicht aufl√∂sen.
 Konnte keine Verbindung herstellen.
 Verbunden mit %s auf Port %d.
 Verbunden.
 Sende QUIT-Nachricht an entfernten Server...
 Verbindung mit %s auf Port %d geschlossen.
-Warte auf UntÑtigkeit des Ziels. (%ds)
+Warte auf Unt√§tigkeit des Ziels. (%ds)
 Zielserver nicht gefunden!
 Konnte lokale Datei \"%s\" nicht finden.
 Fehler beim Anbinden an Port der Datenverbindung.
-Mîglicherweise falsche Seitenkennung empfangen.
+M√∂glicherweise falsche Seitenkennung empfangen.
 Konnte lokale Datei \"%s\" nicht finden.
 Dieser Server ist ausgelastet.
 Wechsle Arbeitsverzeichnis zu \"%s\".
@@ -122,15 +122,15 @@ Fataler FXP-Fehler! (THRDFXP) Abbruch.
 Benutze Servertyp \"%s\" (%d)
 Konnte Servertypen nicht laden, trenne.
 Server gibt \"%s\" als Arbeitsverzeichnis an.
-%s meldet Dateiname als nicht verfÅgbar.
+%s meldet Dateiname als nicht verf√ºgbar.
 %s meldet lokalen Fehler bei der Bearbeitung.
 %s meldet unzureichenden Speicherplatz.
-%s meldet Datei als nicht verfÅgbar.
+%s meldet Datei als nicht verf√ºgbar.
 %s meldet Seitentyp als unbekannt.
-%s meldet öberschrietung der Speicherplatzbelegung.
-%s meldet Dateiname als unzulÑssig.
+%s meldet √úberschrietung der Speicherplatzbelegung.
+%s meldet Dateiname als unzul√§ssig.
 Wechsle in den passiven Modus.
-FXP-öbertragung erfolgreich abgeschlossen.
+FXP-√úbertragung erfolgreich abgeschlossen.
 Wechsle Arbeitsverzeichnis zu \"%s\".
 Fehler beim Anbinden an den Port der Datenverbindung.
 Abbruch durch anderen Server, erneuter Versuch.
@@ -138,9 +138,9 @@ Fehler beim Herstellen der Verbindung.
 Datenverbindung hergestellt.
 Fataler FXP-Fehler! (STATUSFXPRETR) Abbruch.
 Fataler FXP-Fehler! (STATUSFXPSTOR) Abbruch.
-öbertragung abgeschlossen. %d bytes gesendet in %d Sekunden (%.2fK/s).
-öbertragung abgeschlossen.
-Maximale Anzahl der Versuche erreicht, fahre mit nÑchstem Eintrag fort.
+√úbertragung abgeschlossen. %d bytes gesendet in %d Sekunden (%.2fK/s).
+√úbertragung abgeschlossen.
+Maximale Anzahl der Versuche erreicht, fahre mit n√§chstem Eintrag fort.
 Letzter Reiter kann nicht entfernt werden.
 Fehler beim Erzeugen der Datenpipes! Reitererzeugung abgebrochen.
 Konnte neuen Reiter nicht erzeugen!
@@ -153,49 +153,49 @@ Passwort:
 Verzeichnis:
 Ziel:
 Willkommen bei HandyFTP.
-untÑtig
+unt√§tig
 Server %d
-Konnte Servertypen-Definitionen nicht îffnen.
+Konnte Servertypen-Definitionen nicht √∂ffnen.
 Keine Servertypendefinitionen gefunden! Laufe im lokalen Modus!
 Speichere Warteschlange als
 Lade Warteschlange von
-Sie mÅssen verbunden sein.
+Sie m√ºssen verbunden sein.
 Anzulegendes Verzeichnis
 Benenne \"%s\" um zu
-Lîsche \"%s\"
+L√∂sche \"%s\"
 Warteschlange leer.
 Quelle oder Ziel nicht verbunden.
-Sie mÅssen einen Server wÑhlen, fÅr den die Dateien in die Warteschlange gesetzt werden sollen.
+Sie m√ºssen einen Server w√§hlen, f√ºr den die Dateien in die Warteschlange gesetzt werden sollen.
 Fehler beim Starten des Webbrowser.
-Sind Sie sicher, da· Sie HandyFTP beenden wollen?
+Sind Sie sicher, da√ü Sie HandyFTP beenden wollen?
 Laufwerk 
-Sie mÅssen einen Server wÑhlen, fÅr den die Dateien in die Warteschlange gesetzt werden sollen.
+Sie m√ºssen einen Server w√§hlen, f√ºr den die Dateien in die Warteschlange gesetzt werden sollen.
 Neue Verbindung
-Schlie·e Verbindung
+Schlie√üe Verbindung
 Verbinde
 Trenne
 Beenden
 Aus Warteschlange Entfernen
-Zu Warteschlange HinzufÅgen
+Zu Warteschlange Hinzuf√ºgen
 Warteschlange Leeren
 Server Sichern
-Server Lîschen
+Server L√∂schen
 Aktualisieren
 Voreinstellungen
 Administration
 Hilfe
-öber
+√úber
 Konnte keine Datenverbindung herstellen.
 LOCALE=2 Dansk
 ~Fil
 ~Tilpasning
-~Hjëlp
+~Hj√¶lp
 ~Ny Strop
 Flytte Strop
 ~Verbinde
 ~Trenne
 Server ~sichern
-Server ~lîschen
+Server ~l√∂schen
 Be~enden
 ~Voreinstellungen
 Server ~verwalten
@@ -204,17 +204,17 @@ Autom. ~neu verbinden
 ~Standardsortierung
 Navn
 Dato
-StÌrrelse
+St√∏rrelse
 Ingen
 ~Index
-~Hjëlp
+~Hj√¶lp
 ~Systeminformation
-Handy~FTP pÜ Web
-ö~ber
+Handy~FTP p√• Web
+√ú~ber
 Sort.
 Verzeichnis anlegen
 Umbenennen
-Lîschen
+L√∂schen
 Datei betrachten
 Warteschlange speichern
 Warteschlange laden
@@ -232,19 +232,19 @@ Von lokalem Verzeichnis getrennt.
 Laufwerk %c:
 Lokales Verzeichnis empfangen.
 Mit lokalem Verzeichnis verbunden.
-StÌrrelse
+St√∏rrelse
 Tid
 Dato
 Fehler beim Anlegen des Containers!
 Ziel
 Verzeichnis
-StÌrrelse
+St√∏rrelse
 Tid
 Dato
-öber HandyFTP
+√úber HandyFTP
 Voreinstellungen
 Allgemein
-ôffne alle Server
+√ñffne alle Server
 Passiv-FTP
 Zeige Passwort
 URLs sichern
@@ -256,17 +256,17 @@ Bandbreiten-Begrenzung
 Lokale
 Ok
 Annuller
-IPS server ist nicht untÑtig.
-IPS server ist nicht untÑtig.
-IPS server ist nicht untÑtig.
+IPS server ist nicht unt√§tig.
+IPS server ist nicht unt√§tig.
+IPS server ist nicht unt√§tig.
 Benutzer
 Adresse
-AktivitÑt
-untÑtig
+Aktivit√§t
+unt√§tig
 Socket
 Konnte IPS Server nicht validieren.
 IPS Administration
-Schlie·en
+Schlie√üen
 Benutzer trennen
 Herunterfahren
 Neustarten
@@ -279,7 +279,7 @@ Benenne \"%s\" um in \"%s\"
 Systeminformation
 HandyFTP:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\n
 System:\r\n\r\nFarbtiefe: %lu\r\n
-Bildschirmbreite: %d\r\nBildschirmhîhe: %d\r\n\r\n
+Bildschirmbreite: %d\r\nBildschirmh√∂he: %d\r\n\r\n
 Dynamic Windows:\r\n\r\nVersion: %d.%d.%d\r\nErzeugt am: %s\r\nErzeugt um: %s\r\n\r\nBetriebssystem:\r\n\r\nSystem: %s\r\nVersion: %d.%d
 \r\nStand: %d
 Sendevorgang begonnen...
@@ -288,20 +288,20 @@ Empfang begonnen...
 versandt
 empfangen
 Von entferntem Verzeichnis getrennt.
-öbertragung abgeschlossen. %d bytes empfangen in %d Sekunden (%.2fK/s).
-Timeout Åberschritten beim Warten auf UntÑtigkeit des Servers.
+√úbertragung abgeschlossen. %d bytes empfangen in %d Sekunden (%.2fK/s).
+Timeout √ºberschritten beim Warten auf Unt√§tigkeit des Servers.
 Versuche Verbindung herzustellen... Bitte warten.
-Kann Servername nicht auflîsen.
+Kann Servername nicht aufl√∂sen.
 Konnte keine Verbindung herstellen.
 Verbunden mit %s auf Port %d.
 Verbunden.
 Sende QUIT-Nachricht an entfernten Server...
 Verbindung mit %s auf Port %d geschlossen.
-Warte auf UntÑtigkeit des Ziels. (%ds)
+Warte auf Unt√§tigkeit des Ziels. (%ds)
 Zielserver nicht gefunden!
 Konnte lokale Datei \"%s\" nicht finden.
 Fehler beim Anbinden an Port der Datenverbindung.
-Mîglicherweise falsche Seitenkennung empfangen.
+M√∂glicherweise falsche Seitenkennung empfangen.
 Konnte lokale Datei \"%s\" nicht finden.
 Dieser Server ist ausgelastet.
 Wechsle Arbeitsverzeichnis zu \"%s\".
@@ -309,15 +309,15 @@ Fataler FXP-Fehler! (THRDFXP) Abbruch.
 Benutze Servertyp \"%s\" (%d)
 Konnte Servertypen nicht laden, trenne.
 Server gibt \"%s\" als Arbeitsverzeichnis an.
-%s meldet Dateiname als nicht verfÅgbar.
+%s meldet Dateiname als nicht verf√ºgbar.
 %s meldet lokalen Fehler bei der Bearbeitung.
 %s meldet unzureichenden Speicherplatz.
-%s meldet Datei als nicht verfÅgbar.
+%s meldet Datei als nicht verf√ºgbar.
 %s meldet Seitentyp als unbekannt.
-%s meldet öberschrietung der Speicherplatzbelegung.
-%s meldet Dateiname als unzulÑssig.
+%s meldet √úberschrietung der Speicherplatzbelegung.
+%s meldet Dateiname als unzul√§ssig.
 Wechsle in den passiven Modus.
-FXP-öbertragung erfolgreich abgeschlossen.
+FXP-√úbertragung erfolgreich abgeschlossen.
 Wechsle Arbeitsverzeichnis zu \"%s\".
 Fehler beim Anbinden an den Port der Datenverbindung.
 Abbruch durch anderen Server, erneuter Versuch.
@@ -325,9 +325,9 @@ Fehler beim Herstellen der Verbindung.
 Datenverbindung hergestellt.
 Fataler FXP-Fehler! (STATUSFXPRETR) Abbruch.
 Fataler FXP-Fehler! (STATUSFXPSTOR) Abbruch.
-öbertragung abgeschlossen. %d bytes gesendet in %d Sekunden (%.2fK/s).
-öbertragung abgeschlossen.
-Maximale Anzahl der Versuche erreicht, fahre mit nÑchstem Eintrag fort.
+√úbertragung abgeschlossen. %d bytes gesendet in %d Sekunden (%.2fK/s).
+√úbertragung abgeschlossen.
+Maximale Anzahl der Versuche erreicht, fahre mit n√§chstem Eintrag fort.
 Letzter Reiter kann nicht entfernt werden.
 Fehler beim Erzeugen der Datenpipes! Reitererzeugung abgebrochen.
 Konnte neuen Reiter nicht erzeugen!
@@ -340,37 +340,37 @@ Passwort:
 Verzeichnis:
 Ziel:
 Welkommen til HandyFTP.
-untÑtig
+unt√§tig
 Server %d
-Konnte Servertypen-Definitionen nicht îffnen.
+Konnte Servertypen-Definitionen nicht √∂ffnen.
 Keine Servertypendefinitionen gefunden! Laufe im lokalen Modus!
 Speichere Warteschlange als
 Lade Warteschlange von
-Sie mÅssen verbunden sein.
+Sie m√ºssen verbunden sein.
 Anzulegendes Verzeichnis
 Benenne \"%s\" um zu
-Lîsche \"%s\"
+L√∂sche \"%s\"
 Warteschlange leer.
 Quelle oder Ziel nicht verbunden.
-Sie mÅssen einen Server wÑhlen, fÅr den die Dateien in die Warteschlange gesetzt werden sollen.
+Sie m√ºssen einen Server w√§hlen, f√ºr den die Dateien in die Warteschlange gesetzt werden sollen.
 Fehler beim Starten des Webbrowser.
-Sind Sie sicher, da· Sie HandyFTP beenden wollen?
+Sind Sie sicher, da√ü Sie HandyFTP beenden wollen?
 Laufwerk 
-Sie mÅssen einen Server wÑhlen, fÅr den die Dateien in die Warteschlange gesetzt werden sollen.
+Sie m√ºssen einen Server w√§hlen, f√ºr den die Dateien in die Warteschlange gesetzt werden sollen.
 Neue Verbindung
-Schlie·e Verbindung
+Schlie√üe Verbindung
 Verbinde
 Trenne
 Beenden
 Aus Warteschlange Entfernen
-Zu Warteschlange HinzufÅgen
+Zu Warteschlange Hinzuf√ºgen
 Warteschlange Leeren
 Server Sichern
-Server Lîschen
+Server L√∂schen
 Aktualisieren
 Voreinstellungen
 Administration
-Hjëlp
-öber
+Hj√¶lp
+√úber
 Konnte keine Datenverbindung herstellen.
 

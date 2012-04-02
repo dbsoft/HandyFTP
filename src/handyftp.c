@@ -3445,7 +3445,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 						if(!hostnm)
 						{
-							writeconsole(threadsite, locale_string("Unable to resolve hostname.", 104));
+							writeconsole(threadsite, locale_string("Unable to resolve hostname \"%s\".", 104), threadsite->hostname);
 							setstatustext(threadsite, locale_string("Remote directory, disconnected.", 100));
 						}
 						else
