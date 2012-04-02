@@ -70,8 +70,8 @@ Lokale
 Ok
 Abbrechen
 IPS server ist nicht untätig.
-IPS server ist nicht untäig.
-IPS server ist nicht untäig.
+IPS server ist nicht untätig.
+IPS server ist nicht untätig.
 Benutzer
 Adresse
 Aktivität
