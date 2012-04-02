@@ -2905,7 +2905,7 @@ void info_box(void)
 	HWND infowindow, mainbox, mle, okbutton, buttonbox;
 	UserEntry *param = malloc(sizeof(UserEntry));
 	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER |
-		DW_FCF_MINMAX | DW_FCF_TASKLIST | DW_FCF_DLGBORDER;
+		DW_FCF_MINMAX | DW_FCF_TASKLIST | DW_FCF_DLGBORDER | DW_FCF_COMPOSITED;
 	char buffer[1024];
 	ULONG point = -1;
 	DWEnv env;
