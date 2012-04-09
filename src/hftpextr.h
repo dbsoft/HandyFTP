@@ -1,5 +1,10 @@
 /* $Id: hftpextr.h,v 1.9 2002/12/01 13:56:02 bsmith Exp $ */
 
+#ifndef HFTPEXTR_H
+#define HFTPEXTR_H
+
+#define APP_NAME "HandyFTP"
+
 int DWSIGNAL containerselect(HWND hwnd, char *text, void *data);
 int DWSIGNAL listboxselect(HWND hwnd, int item, void *data);
 int DWSIGNAL containercontextmenu(HWND hwnd, char *text, int x, int y, void *data);
@@ -26,3 +31,5 @@ int DWSIGNAL siteproperties(HWND hwnd, void *data);
 void recurseq(SiteTab *thissite);
 int validatecurrentpage(void);
 void drawq(SiteTab *lsite);
+
+#endif

@@ -158,7 +158,7 @@ void handyftp_crash(int signal)
 {
 	char tmpbuf[1024];
 	sprintf(tmpbuf, locale_string("Crash in %s, line %d of %s. Please report to brian@dbsoft.org", 32), DebugInfo.procname, DebugInfo.linenumb, __FILE__);
-	dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_INFORMATION, tmpbuf);
+	dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_INFORMATION, tmpbuf);
 	dw_exit(0);
 }
 
@@ -301,104 +301,161 @@ void settabs(void)
 	}
 }
 
+typedef struct _saveconfig {
+	char name[20];
+	int type;
+	void *data;
+} SaveConfig;
+
+enum type_list {
+	TYPE_NONE = 0,
+	TYPE_INT,
+	TYPE_ULONG,
+	TYPE_FLOAT,
+	TYPE_BOOLEAN,
+	TYPE_STRING
+};
+
+/* Array to aid in automated configuration saving */
+SaveConfig Config[] = 
+{
+	{ "NOFAIL",				TYPE_BOOLEAN,	&nofail },
+	{ "URLSAVE",			TYPE_BOOLEAN,	&urlsave },
+	{ "AUTOCONNECT",		TYPE_BOOLEAN,	&autoconnect },
+	{ "OPENALL",			TYPE_BOOLEAN,	&openall },
+	{ "REVERSEFXP",			TYPE_BOOLEAN,	&reversefxp },
+	{ "SHOWPASSWORD",		TYPE_BOOLEAN,	&showpassword },
+	{ "OPTIMIZE",			TYPE_BOOLEAN,	&optimize },
+	{ "TIMEOUT",			TYPE_INT,		&ftptimeout },
+	{ "RETRIES",			TYPE_INT,		&retrymax },
+	{ "CACHEMAX",			TYPE_INT,		&cachemax },
+	{ "BANDWIDTH",			TYPE_INT,		&bandwidthlimit },
+	{ "SORT",				TYPE_INT,		&default_sort },
+	{ "LOCALE",				TYPE_INT,		&handyftp_locale },
+	{ "", 0, 0 }
+};
+
 /* Write the handyftp.ini file with all of the current settings */
 void saveconfig(void)
 {
-	SavedSites *tmp;
+	char *tmppath = INIDIR, *inidir, *inipath, *home = dw_user_dir(), *inifile = __TARGET__ ".ini";
+	SavedSites *tmp = SSroot;
+	int x = 0;
 	FILE *f;
-	char *tmppath = INIDIR, *inidir, *inipath, *home = dw_user_dir();
 
 	if(strcmp(INIDIR, ".") == 0)
 	{
-		inipath = strdup("handyftp.ini");
+		inipath = strdup(inifile);
 		inidir = strdup(INIDIR);
 	}
 	else
 	{
+		/* Need space for the filename, directory separator and NULL */
+		int extra = strlen(inifile) + 2;
+        
+		/* If the path is in the home directory... */
 		if(home && tmppath[0] == '~')
 		{
-			inipath = malloc(strlen(home) + strlen(INIDIR) + 14);
-			inidir = malloc(strlen(home) + strlen(INIDIR));
+			/* Fill in both with the retrieved home directory */
+			inipath = calloc(strlen(home) + strlen(INIDIR) + extra, 1);
+			inidir = calloc(strlen(home) + strlen(INIDIR) + 1, 1);
 			strcpy(inipath, home);
 			strcpy(inidir, home);
+			/* Append everything after the tilde */
 			strcat(inipath, &tmppath[1]);
 			strcat(inidir, &tmppath[1]);
 		}
 		else
 		{
-			inipath = malloc(strlen(INIDIR) + 14);
+			/* Otherwise just copy the entire directory */
+			inipath = calloc(strlen(INIDIR) + extra, 1);
 			strcat(inipath, INIDIR);
 			inidir = strdup(INIDIR);
 		}
+		/* Add the separator and filename */
 		strcat(inipath, DIRSEP);
-		strcat(inipath, "handyftp.ini");
+		strcat(inipath, __TARGET__ ".ini");
 	}
 
-	tmp = SSroot;
-
+	/* Try to open the file for writing */
 	f=fopen(inipath, FOPEN_WRITE_TEXT);
 
+	/* If we couldn't open it... */
 	if(f==NULL)
 	{
+		/*  If the ini direcotry isn't the current directory... */
 		if(strcmp(INIDIR, ".") != 0)
 		{
+			/* Try to create the directory */
 			makedir(inidir);
+			/* Then try to open it again */
 			f=fopen(inipath, FOPEN_WRITE_TEXT);
 		}
+		/* If it still failed... */
 		if(f==NULL)
 		{
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not save settings. Inipath = \"%s\"", 34), inipath);
+			/* Show an error message */
+			dw_messagebox(APP_NAME, DW_MB_ERROR | DW_MB_OK, "Could not save settings. Inipath = \"%s\"", inipath);
 			free(inipath);
 			free(inidir);
 			return;
 		}
 	}
 
+	/* Free the temporary memory */
 	free(inipath);
 	free(inidir);
 
-	if(nofail)
-		fprintf(f, "NOFAIL=TRUE\n");
-	else
-		fprintf(f, "NOFAIL=FALSE\n");
+	/* Loop through all saveable settings */
+	while(Config[x].type)
+	{
+		switch(Config[x].type)
+		{
+			/* Handle saving integers */
+			case TYPE_INT:
+			{
+				int *var = (int *)Config[x].data;
 
-	if(urlsave)
-		fprintf(f, "URLSAVE=TRUE\n");
-	else
-		fprintf(f, "URLSAVE=FALSE\n");
+				fprintf(f, "%s=%d\n", Config[x].name, *var);
+				break;
+			}
+			/* Handle saving booleans */
+			case TYPE_BOOLEAN:
+			{
+				int *var = (int *)Config[x].data;
 
-	if(autoconnect)
-		fprintf(f, "AUTOCONNECT=TRUE\n");
-	else
-		fprintf(f, "AUTOCONNECT=FALSE\n");
+				fprintf(f, "%s=%s\n", Config[x].name, *var ? "TRUE" : "FALSE");
+				break;
+			}
+			/* Handle saving unsigned long integers */
+			case TYPE_ULONG:
+			{
+				unsigned long *var = (unsigned long *)Config[x].data;
 
-	if(openall)
-		fprintf(f, "OPENALL=TRUE\n");
-	else
-		fprintf(f, "OPENALL=FALSE\n");
+				fprintf(f, "%s=%lu\n", Config[x].name, *var);
+				break;
+			}
+			/* Handle saving strings */
+			case TYPE_STRING:
+			{
+				char **str = (char **)Config[x].data;
 
-	if(reversefxp)
-		fprintf(f, "REVERSEFXP=TRUE\n");
-	else
-		fprintf(f, "REVERSEFXP=FALSE\n");
+				fprintf(f, "%s=%s\n", Config[x].name, *str);
+				break;
+			}
+			/* Handle saving floating point */
+			case TYPE_FLOAT:
+			{
+				float *var = (float *)Config[x].data;
 
-	if(showpassword)
-		fprintf(f, "SHOWPASSWORD=TRUE\n");
-	else
-		fprintf(f, "SHOWPASSWORD=FALSE\n");
+				fprintf(f, "%s=%f\n", Config[x].name, *var);
+				break;
+			}
+		}
+		x++;
+	}
 
-	if(optimize)
-		fprintf(f, "OPTIMIZE=TRUE\n");
-	else
-		fprintf(f, "OPTIMIZE=FALSE\n");
-
-	fprintf(f, "TIMEOUT=%d\n", ftptimeout);
-	fprintf(f, "RETRIES=%d\n", retrymax);
-	fprintf(f, "CACHEMAX=%d\n", cachemax);
-	fprintf(f, "BANDWIDTH=%d\n", bandwidthlimit);
-	fprintf(f, "SORT=%d\n", default_sort);
-	fprintf(f, "LOCALE=%d\n", handyftp_locale);
-
+	/* Save HandyFTP specific saved sites list */
 	while (tmp != NULL)
 	{
 		fprintf(f, "HOSTTITLE=%s\n", tmp->hosttitle);
@@ -409,6 +466,7 @@ void saveconfig(void)
 		fprintf(f, "PASSWORD=%s\n", tmp->password);
 		tmp = tmp->next;
 	}
+
 	fclose(f);
 }
 
@@ -582,7 +640,7 @@ void loadqueue(SiteTab *thissite, char *filename)
 
 		if(strcmp(buf, thissite->hosttitle) != 0)
 		{
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Saved host \"%s\" is not the same!", 35), buf);
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Saved host \"%s\" is not the same!", 35), buf);
 			fclose(fp);
 			return;
 		}
@@ -1719,7 +1777,7 @@ void setdir(SiteTab *lsite)
 	titles[2] = locale_string("Date", 47);
 
 	if(dw_filesystem_setup(lsite->ldir, flags, titles, 3))
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 }
 
 /* Configures the columns of the queue listing on the right */
@@ -1739,7 +1797,7 @@ void setqueue(SiteTab *lsite)
 	titles[4] = locale_string("Date", 53);
 
 	if(dw_filesystem_setup(lsite->rqueue, flags, titles, 5))
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 }
 
 /* Clears all items in the queue list */
@@ -2351,7 +2409,7 @@ void DWSIGNAL IPS_kill_user(HWND window, void *data)
 		}
 	}
 	else
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("IPS site is not idle.", 69));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("IPS site is not idle.", 69));
 }
 
 void DWSIGNAL IPS_restart(HWND window, void *data)
@@ -2362,7 +2420,7 @@ void DWSIGNAL IPS_restart(HWND window, void *data)
 		sendthread(THRDRAW, IPS_page);
 	}
 	else
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("IPS site is not idle.", 70));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("IPS site is not idle.", 70));
 }
 
 void DWSIGNAL IPS_shutdown(HWND window, void *data)
@@ -2373,7 +2431,7 @@ void DWSIGNAL IPS_shutdown(HWND window, void *data)
 		sendthread(THRDRAW, IPS_page);
 	}
 	else
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("IPS site is not idle.", 71));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("IPS site is not idle.", 71));
 }
 
 /* IPS Administration dialog */
@@ -2405,7 +2463,7 @@ void IPS(void)
 
 	if(validatecurrentpage()==FALSE || site[(IPS_page = currentpage)]->connected == FALSE)
 	{
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not validate IPS site.", 77));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Could not validate IPS site.", 77));
 		return;
 	}
 
@@ -2444,7 +2502,7 @@ void IPS(void)
 	dw_box_pack_start(xbox, container, 300, 200, TRUE,TRUE, 4);
 
 	if(dw_container_setup(container, flags, titles, 5, 2))
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 
 	param->page = currentpage;
 	param->window = entrywindow;
@@ -2486,7 +2544,7 @@ void DWSIGNAL administration_ok(HWND window, void *data)
 		if(state)
 			IPS();
 		else
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_INFORMATION, "Currently only IPS is supported.");
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_INFORMATION, "Currently only IPS is supported.");
 	}
 }
 
@@ -2767,7 +2825,7 @@ void user_query(char *entrytext, int page, char *filename, void *okfunctionname,
 	UserEntry *param = malloc(sizeof(UserEntry));
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER;
 
-	entrywindow = dw_window_new(HWND_DESKTOP, "HandyFTP", flStyle);
+	entrywindow = dw_window_new(HWND_DESKTOP, APP_NAME, flStyle);
 
 	mainbox = dw_box_new(BOXVERT, 10);
 
@@ -3322,7 +3380,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			/* Lets hope it doesn't get here. */
 			dw_main_sleep(1);
 			dw_beep(1000*(threadsite->page+1),100);
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, "maxfd %d, controlfd %d datafd %d listenfd %d pipe0 %d pipe1 %d tpipe0 %d tpipe1 %d page %d errno %d", maxfd, threadsite->controlfd, threadsite->datafd, ftd->listenfd, threadsite->pipefd[0], threadsite->pipefd[1], threadsite->tpipefd[0], threadsite->tpipefd[1], threadsite->page, errno);
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, "maxfd %d, controlfd %d datafd %d listenfd %d pipe0 %d pipe1 %d tpipe0 %d tpipe1 %d page %d errno %d", maxfd, threadsite->controlfd, threadsite->datafd, ftd->listenfd, threadsite->pipefd[0], threadsite->pipefd[1], threadsite->tpipefd[0], threadsite->tpipefd[1], threadsite->page, errno);
 		}
 	} while(selectres < 0);
 
@@ -3383,7 +3441,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		else
 		{
 			set_status(threadsite, STATUSIDLE);
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Timeout expired while waiting for destination to become idle.", 102));
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Timeout expired while waiting for destination to become idle.", 102));
 		}
 	}
 
@@ -3583,7 +3641,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					if(!ftd->destsite || failed == TRUE)
 					{
 						if(failed == FALSE)
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Destination site not found!", 111));
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Destination site not found!", 111));
 						ftd->destsite = NULL;
 					}
 					else
@@ -3632,7 +3690,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 								if((ftd->localfile = fopen(lfile, FOPEN_READ_BINARY)) == NULL)
 								{
-									dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not open local file, \"%s\"", 112), lfile);
+									dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Could not open local file, \"%s\"", 112), lfile);
 									set_status(threadsite, STATUSIDLE);
 								}
 								else
@@ -3770,7 +3828,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				set_status(threadsite, STATUSRECEIVING);
 				if(!ftd->destsite || !ftd->destsite->currentqueue)
 				{
-					dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Possibly incorrect page id received.", 114));
+					dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Possibly incorrect page id received.", 114));
 					sendthread(THRDABORT, sendpage);
 					set_status(threadsite, STATUSIDLE);
 					ftd->originalcommand = -1;
@@ -3820,7 +3878,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 
 						if(ftd->localfile == NULL)
 						{
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not open local file, \"%s\"", 115), lfile);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Could not open local file, \"%s\"", 115), lfile);
 							sendthread(THRDABORT, sendpage);
 							set_status(threadsite, STATUSIDLE);
 							ftd->originalcommand = -1;
@@ -3936,7 +3994,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 #endif
 			if(threadsite->status != STATUSIDLE)
 			{
-				dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("This site is busy.", 116));
+				dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("This site is busy.", 116));
 				break;
 			}
 
@@ -4016,7 +4074,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				}
 				else
 				{
-					dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Fatal FXP error! (THRDFXP) Aborting.", 118));
+					dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Fatal FXP error! (THRDFXP) Aborting.", 118));
 					sendthread(THRDABORT, threadsite->page);
 				}
 			}
@@ -4338,49 +4396,49 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						} else if(strncmp(sitecode, "450", 3) == 0)
 						{
 							/* File unavailable */
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("%s says Filename unavailable.", 122), threadsite->hosttitle);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("%s says Filename unavailable.", 122), threadsite->hosttitle);
 							set_status(threadsite, STATUSNEXT);
 							if(ftd->destsite)
 								sendthread(THRDABORT, ftd->destsite->page);
 						} else if(strncmp(sitecode, "451", 3) == 0)
 						{
 							/* Local error in processing */
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("%s says Local error in processing.", 123), threadsite->hosttitle);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("%s says Local error in processing.", 123), threadsite->hosttitle);
 							set_status(threadsite, STATUSNEXT);
 							if(ftd->destsite)
 								sendthread(THRDABORT, ftd->destsite->page);
 						} else if(strncmp(sitecode, "452", 3) == 0)
 						{
 							/* Insufficient storage space */
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("%s says Insufficient storage space.", 124), threadsite->hosttitle);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("%s says Insufficient storage space.", 124), threadsite->hosttitle);
 							set_status(threadsite, STATUSNEXT);
 							if(ftd->destsite)
 								sendthread(THRDABORT, ftd->destsite->page);
 						} else if(strncmp(sitecode, "550", 3) == 0)
 						{
 							/* File unavailable */
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("%s says File unavailable.", 125), threadsite->hosttitle);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("%s says File unavailable.", 125), threadsite->hosttitle);
 							set_status(threadsite, STATUSNEXT);
 							if(ftd->destsite)
 								sendthread(THRDABORT, ftd->destsite->page);
 						} else if(strncmp(sitecode, "551", 3) == 0)
 						{
 							/* Page type unknown */
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("%s says Page type unknown.", 126), threadsite->hosttitle);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("%s says Page type unknown.", 126), threadsite->hosttitle);
 							set_status(threadsite, STATUSNEXT);
 							if(ftd->destsite)
 								sendthread(THRDABORT, ftd->destsite->page);
 						} else if(strncmp(sitecode, "552", 3) == 0)
 						{
 							/* Exceeded storage allocation */
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("%s says Exceeded storage allocation.", 127), threadsite->hosttitle);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("%s says Exceeded storage allocation.", 127), threadsite->hosttitle);
 							set_status(threadsite, STATUSNEXT);
 							if(ftd->destsite)
 								sendthread(THRDABORT, ftd->destsite->page);
 						} else if(strncmp(sitecode, "553", 3) == 0)
 						{
 							/* Filename not allowed */
-							dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("%s says Filename not allowed.", 128), threadsite->hosttitle);
+							dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("%s says Filename not allowed.", 128), threadsite->hosttitle);
 							set_status(threadsite, STATUSNEXT);
 							if(ftd->destsite)
 								sendthread(THRDABORT, ftd->destsite->page);
@@ -4671,7 +4729,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				}
 				else
 				{
-					dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Fatal FXP error! (STATUSFXPRETR) Aborting.", 136));
+					dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Fatal FXP error! (STATUSFXPRETR) Aborting.", 136));
 					if(ftd->destsite)
 						sendthread(THRDABORT, ftd->destsite->page);
 					sendthread(THRDABORT, threadsite->page);
@@ -4696,7 +4754,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				}
 				else
 				{
-					dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Fatal FXP error! (STATUSFXPSTOR) Aborting.", 137));
+					dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Fatal FXP error! (STATUSFXPSTOR) Aborting.", 137));
 					if(ftd->destsite)
 						sendthread(THRDABORT, ftd->destsite->page);
 					sendthread(THRDABORT, threadsite->page);
@@ -5153,7 +5211,7 @@ void remove_tab(void)
 
 	if (countpages() == 1)
 	{
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("You cannot remove the last tab.", 141));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("You cannot remove the last tab.", 141));
 		return;
 	}
 
@@ -5250,7 +5308,7 @@ void new_tab(void *data)
 			sockclose(site[thispage]->tpipefd[1]);
 		free(site[thispage]);
 		site[thispage]=NULL;
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error creating data pipes! tab creation aborted.", 142));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error creating data pipes! tab creation aborted.", 142));
 		return;
 	}
 
@@ -5269,7 +5327,7 @@ void new_tab(void *data)
 
 	if(!(site[thispage]->hwnd = dw_box_new(BOXVERT, 2)))
 	{
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not create new tab!", 143));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Could not create new tab!", 143));
 		currentpage = previouspage;
 		return;
 	}
@@ -5638,128 +5696,186 @@ void savetitle(void)
 	dw_free(buffer);
 }
 
+#define INI_BUFFER 256
+
 /* Generic function to parse information from a config file */
-void handyftp_getline(FILE *f, char *entry, char *entrydata)
+void ini_getline(FILE *f, char *entry, char *entrydata)
 {
-	char in[256];
-	int z;
+	/* Allocate zeroed buffer from the stack */
+	char in[INI_BUFFER] = { 0 };
 
-	memset(in, 0, 256);
-	
-	if(fgets(in, 255, f))
+	/* Try to read a line into the buffer */
+	if(fgets(in, INI_BUFFER - 1, f))
 	{
-		if(in[strlen(in)-1] == '\n')
-			in[strlen(in)-1] = 0;
+		int len = strlen(in);
 
+		/* Strip off any trailing newlines */
+		if(len > 0 && in[len-1] == '\n')
+			in[len-1] = 0;
+
+		/* Skip over comment lines starting with # */
 		if(in[0] != '#')
 		{
-			for(z=0;z<strlen(in);z++)
+			/* Locate = in the line */
+			char *equalsign = strchr(in, '=');
+
+			/* If the = was found... */
+			if(equalsign)
 			{
-				if(in[z] == '=')
-				{
-					in[z] = 0;
-					strcpy(entry, in);
-					strcpy(entrydata, &in[z+1]);
-					return;
-				}
+				/* Replace = with NULL terminator */
+				*equalsign = 0;
+				/* Copy before the = into entry */
+				strcpy(entry, in);
+				/* And after the = into entrydata */
+				strcpy(entrydata, ++equalsign);
+				return;
 			}
 		}
 	}
-	strcpy(entry, "");
-	strcpy(entrydata, "");
+	/* NULL terminate both variables */
+	entrydata[0] = entry[0] = 0;
 }
 
 /* Load the HandyFTP.ini file from disk setting all the necessary flags */
 void loadconfig(void)
 {
-	char entry[256], entrydata[256];
-	FILE *f;
+	char *tmppath = INIDIR, *inipath, *home = dw_user_dir(), *inifile = __TARGET__ ".ini";
+	char entry[INI_BUFFER], entrydata[INI_BUFFER];
 	SavedSites *currentsite = SSroot;
-	char *tmppath = INIDIR, *inipath, *home = dw_user_dir();
+	FILE *f;
 
 	if(strcmp(INIDIR, ".") == 0)
-		inipath = strdup("handyftp.ini");
+		inipath = strdup(inifile);
 	else
 	{
+		/* Need space for the filename, directory separator and NULL */
+		int extra = strlen(inifile) + 2;
+
+		/* If the path is in the home directory... */
 		if(home && tmppath[0] == '~')
 		{
-			inipath = malloc(strlen(home) + strlen(INIDIR) + 14);
+			/* Fill it in with the retrieved home directory */
+			inipath = calloc(strlen(home) + strlen(INIDIR) + extra, 1);
 			strcpy(inipath, home);
+			/* Append everything after the tilde */
 			strcat(inipath, &tmppath[1]);
 		}
 		else
 		{
-			inipath = malloc(strlen(INIDIR) + 14);
-			strcat(inipath, INIDIR);
+			/* Otherwise just copy the entire directory */
+			inipath = calloc(strlen(INIDIR) + extra, 1);
+			strcpy(inipath, INIDIR);
 		}
+		/* Add the separator and filename */
 		strcat(inipath, DIRSEP);
-		strcat(inipath, "handyftp.ini");
+		strcat(inipath, inifile);
 	}
 
+	/* Try to open the file for reading */
 	f = fopen(inipath, FOPEN_READ_TEXT);
 
+	/* Free the temporary memory */
 	free(inipath);
 
-	if(f==NULL)
-		return;
-
-	while(!feof(f))
+	/* If we successfully opened the ini file */
+	if(f)
 	{
-		handyftp_getline(f, entry, entrydata);
-		if(strcasecmp(entry, "nofail")==0 && strcasecmp(entrydata, "true") == 0)
-			nofail = TRUE;
-		if(strcasecmp(entry, "urlsave")==0 && strcasecmp(entrydata, "true") == 0)
-			urlsave = TRUE;
-		if(strcasecmp(entry, "autoconnect")==0 && strcasecmp(entrydata, "true") == 0)
-			autoconnect = TRUE;
-		if(strcasecmp(entry, "openall")==0 && strcasecmp(entrydata, "true") == 0)
-			openall = TRUE;
-		if(strcasecmp(entry, "reversefxp")==0 && strcasecmp(entrydata, "false") == 0)
-			reversefxp = FALSE;
-		if(strcasecmp(entry, "showpassword")==0 && strcasecmp(entrydata, "true") == 0)
-			showpassword = TRUE;
-		if(strcasecmp(entry, "optimize")==0 && strcasecmp(entrydata, "false") == 0)
-			optimize = FALSE;
-		if(strcasecmp(entry, "timeout")==0)
-			ftptimeout = atoi(entrydata);
-		if(strcasecmp(entry, "retries")==0)
-			retrymax = atoi(entrydata);
-		if(strcasecmp(entry, "cachemax")==0)
-			cachemax = atoi(entrydata);
-		if(strcasecmp(entry, "bandwidth")==0)
-			bandwidthlimit = atoi(entrydata);
-		if(strcasecmp(entry, "sort")==0)
-			default_sort = atoi(entrydata);
-		if(strcasecmp(entry, "locale")==0)
-			handyftp_locale = atoi(entrydata);
-		if(currentsite)
+		/* Loop through the file */
+		while(!feof(f))
 		{
-			if(strcasecmp(entry, "hostname")==0)
-				currentsite->hostname = strdup(entrydata);
-			if(strcasecmp(entry, "url")==0)
-				currentsite->url = strdup(entrydata);
-			if(strcasecmp(entry, "username")==0)
-				currentsite->username = strdup(entrydata);
-			if(strcasecmp(entry, "password")==0)
-				currentsite->password = strdup(entrydata);
-			if(strcasecmp(entry, "port")==0)
-				currentsite->port =  atoi(entrydata);
-		}
-		if(strcasecmp(entry, "hosttitle")==0)
-		{
-			if(!currentsite)
-				currentsite = SSroot = (SavedSites *)malloc(sizeof(SavedSites));
-			else
-			{
-				currentsite->next = (SavedSites *)malloc(sizeof(SavedSites));
-				currentsite = currentsite->next;
-			}
-			currentsite->hosttitle = strdup(entrydata);
-			currentsite->next = NULL;
-		}
+			int x = 0;
+			
+			ini_getline(f, entry, entrydata);
 
+			/* If we have a site... */
+			if(currentsite)
+			{
+				/* Check the HandyFTP saved site specific lines */
+				if(strcasecmp(entry, "hostname")==0)
+					currentsite->hostname = strdup(entrydata);
+				if(strcasecmp(entry, "url")==0)
+					currentsite->url = strdup(entrydata);
+				if(strcasecmp(entry, "username")==0)
+					currentsite->username = strdup(entrydata);
+				if(strcasecmp(entry, "password")==0)
+					currentsite->password = strdup(entrydata);
+				if(strcasecmp(entry, "port")==0)
+					currentsite->port = atoi(entrydata);
+			}
+			/* If we get a hosttitle line, create a new saved site */
+			if(strcasecmp(entry, "hosttitle")==0)
+			{
+				/* Allocate a new SavedSite at root or next entry */
+				if(!currentsite)
+					currentsite = SSroot = (SavedSites *)calloc(sizeof(SavedSites), 1);
+				else
+				{
+					currentsite->next = (SavedSites *)calloc(sizeof(SavedSites), 1);
+					currentsite = currentsite->next;
+				}
+				/* Fill in the host title with the data from this line */
+				currentsite->hosttitle = strdup(entrydata);
+				currentsite->next = NULL;
+			}
+
+			/* Cycle through the possible settings */
+			while(Config[x].type)
+			{
+				/* If this line has a setting we are looking for */
+				if(strcasecmp(entry, Config[x].name)==0)
+				{
+					switch(Config[x].type)
+					{
+						/* Load an integer setting */
+						case TYPE_INT:
+						{
+							int *var = (int *)Config[x].data;
+
+							*var = atoi(entrydata);
+							break;
+						}
+						/* Load an boolean setting */
+						case TYPE_BOOLEAN:
+						{
+							int *var = (int *)Config[x].data;
+
+							if(strcasecmp(entrydata, "true")==0)
+								*var = TRUE;
+							else
+								*var = FALSE;
+							break;
+						}
+						/* Load an unsigned long integer setting */
+						case TYPE_ULONG:
+						{
+							unsigned long *var = (unsigned long *)Config[x].data;
+
+							sscanf(entrydata, "%lu", var);
+							break;
+						}
+						/* Load an string setting */
+						case TYPE_STRING:
+						{
+							char **str = (char **)Config[x].data;
+
+							*str = strdup(entrydata);
+							break;
+						}
+						/* Load an floating point setting */
+						case TYPE_FLOAT:
+						{
+							float *var = (float *)Config[x].data;
+
+							*var = atof(entrydata);
+							break;
+						}
+					}
+				}
+				x++;
+			}
+		}
+		fclose(f);
 	}
-	fclose(f);
 }
 
 /* Check the current directory for .typ files and load them into memory for use */
@@ -5776,7 +5892,7 @@ void loadsitetypes(void)
 
 	if(!(dir = opendir(typdir)))
 	{
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Could not open site type files.", 155));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Could not open site type files.", 155));
 		return;
 	}
 
@@ -5791,10 +5907,10 @@ void loadsitetypes(void)
 		if(instring(ent->d_name, ".typ") == TRUE && (f = fopen(tmppath, FOPEN_READ_TEXT))!=NULL)
 		{
 			if(!currenttype)
-				STroot = currenttype = (SiteTypes *)malloc(sizeof(SiteTypes));
+				STroot = currenttype = (SiteTypes *)calloc(sizeof(SiteTypes), 1);
 			else
 			{
-				currenttype->next = (SiteTypes *)malloc(sizeof(SiteTypes));
+				currenttype->next = (SiteTypes *)calloc(sizeof(SiteTypes), 1);
 				currenttype = currenttype->next;
 			}
 			currenttype->next = NULL;
@@ -5804,17 +5920,17 @@ void loadsitetypes(void)
 				currenttype->translation[z] = NULL;
 			while(!feof(f))
 			{
-				handyftp_getline(f, entry, entrydata);
+				ini_getline(f, entry, entrydata);
 				if(strcasecmp(entry, "type")==0)
 					currenttype->type = strdup(entrydata);
 
 				if(strcasecmp(entry, "id") == 0)
 				{
 					if(!currenttype->siteids)
-						currenttype->siteids = currentid = (SiteIds *)malloc(sizeof(SiteIds));
+						currenttype->siteids = currentid = (SiteIds *)calloc(sizeof(SiteIds), 1);
 					else
 					{
-						currentid->next = (SiteIds *)malloc(sizeof(SiteIds));
+						currentid->next = (SiteIds *)calloc(sizeof(SiteIds), 1);
 						currentid = currentid->next;
 					}
 					currentid->next = NULL;
@@ -5896,7 +6012,7 @@ void loadsitetypes(void)
 	}
 	closedir(dir);
 	if(!currenttype)
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("No Site Type files found! Running in local mode!", 156));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("No Site Type files found! Running in local mode!", 156));
 }
 
 /* This gets called to recursively queue directories */
@@ -6045,7 +6161,7 @@ int DWSIGNAL contextmenus(HWND hwnd, void *data)
 	if(validatecurrentpage())
 	{
 		if(site[currentpage]->connected == FALSE)
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("You must be connected.", 159));
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("You must be connected.", 159));
 		else
 		{
 			switch(DW_POINTER_TO_INT(data))
@@ -6207,14 +6323,14 @@ int DWSIGNAL flushtab(HWND hwnd, void *data)
 		SiteTab *dest;
 
 		if(!site[currentpage]->queue)
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_INFORMATION, locale_string("Nothing queued.", 163));
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_INFORMATION, locale_string("Nothing queued.", 163));
 		else
 		{
 			dest = findsite(site[currentpage]->queue->site);
 			if(site[currentpage] && site[currentpage]->connected == TRUE && dest && dest->connected == TRUE)
 				sendthread(THRDFLUSH, currentpage);
 			else
-				dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Source or destination not connected.", 164));
+				dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Source or destination not connected.", 164));
 		}
 	}
 	return FALSE;
@@ -6271,7 +6387,7 @@ int DWSIGNAL addtoqtab(HWND hwnd, void *data)
 
 		if(!tmpptr || strcmp(tmpptr, "") == 0)
 		{
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_INFORMATION, locale_string("You need to select a site to queue the files to.", 165));
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_INFORMATION, locale_string("You need to select a site to queue the files to.", 165));
 		}
 		else
 		{
@@ -6342,7 +6458,7 @@ int DWSIGNAL generalhelp(HWND hwnd, void *data)
 		sprintf(url, templ, path);
 
 		if(dw_browse(url)<0)
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
 
 		free(url);
 	}
@@ -6362,7 +6478,7 @@ int DWSIGNAL contentshelp(HWND hwnd, void *data)
 		sprintf(url, templ, path);
 
 		if(dw_browse(url)<0)
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
 
 		free(url);
 	}
@@ -6381,7 +6497,7 @@ int DWSIGNAL sysinfotab(HWND hwnd, void *data)
 int DWSIGNAL handyftphome(HWND hwnd, void *data)
 {
 	if(dw_browse("http://handyftp.netlabs.org/")<0)
-		dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
+		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error starting web browser.", 166));
 	return FALSE;
 }
 
@@ -6438,7 +6554,7 @@ int DWSIGNAL deleteevent(HWND hwnd, void *data)
 
 	if(validatecurrentpage())
 	{
-		if(dw_messagebox("HandyFTP", DW_MB_YESNO | DW_MB_QUESTION, locale_string("Are you sure you want to exit HandyFTP?", 167)))
+		if(dw_messagebox(APP_NAME, DW_MB_YESNO | DW_MB_QUESTION, locale_string("Are you sure you want to exit HandyFTP?", 167)))
 		{
 			for(z=0;z<CONNECTION_LIMIT;z++)
 				if(alive[z] == TRUE)
@@ -6558,7 +6674,7 @@ int DWSIGNAL containerselect(HWND hwnd, char *text, void *data)
 	if(text && validatecurrentpage())
 	{
 		if(site[currentpage]->status != STATUSIDLE)
-			dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_ERROR, "Current site is busy.");
+			dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, "Current site is busy.");
 		else
 		{
 			i = finddirindex(text, currentpage);
@@ -6653,7 +6769,7 @@ int DWSIGNAL containerselect(HWND hwnd, char *text, void *data)
 
 				if(!tmpptr || strcmp(tmpptr, "") == 0)
 				{
-					dw_messagebox("HandyFTP", DW_MB_OK | DW_MB_INFORMATION, locale_string("You need to select a site to queue the files to.", 169));
+					dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_INFORMATION, locale_string("You need to select a site to queue the files to.", 169));
 				}
 				else
 				{
@@ -6704,7 +6820,7 @@ void handyftp_init(void)
 
 	locale_init(msgbuf, handyftp_locale);
 
-	hwndFrame = dw_window_new(HWND_DESKTOP, "HandyFTP", flStyle);
+	hwndFrame = dw_window_new(HWND_DESKTOP, APP_NAME, flStyle);
 
 	dw_window_set_icon(hwndFrame, DW_RESOURCE(MAIN_FRAME));
     
