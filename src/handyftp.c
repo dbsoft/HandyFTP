@@ -1,6 +1,6 @@
 /* $Id: handyftp.c,v 1.269 2005/05/20 11:32:41 bsmith Exp $ */
 
-#ifdef __UNIX__
+#if defined(__UNIX__) || defined(__MAC__)
 #include "config.h"
 #endif
 #include "dwcompat.h"
