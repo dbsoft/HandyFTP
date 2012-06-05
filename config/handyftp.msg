@@ -1,4 +1,4 @@
-MESSAGES=186
+MESSAGES=187
 LOCALE=1 Deutsch
 ~Datei
 ~Optionen
@@ -186,6 +186,7 @@ Administration
 Hilfe
 Über
 Konnte keine Datenverbindung herstellen.
+Dateiname
 LOCALE=2 Dansk
 ~Fil
 ~Tilpasning
@@ -373,4 +374,4 @@ Administration
 Hjælp
 Über
 Konnte keine Datenverbindung herstellen.
-
+Filnavn

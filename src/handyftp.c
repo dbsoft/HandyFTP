@@ -1779,6 +1779,7 @@ void setdir(SiteTab *lsite)
 	titles[1] = locale_string("Time", 46);
 	titles[2] = locale_string("Date", 47);
 
+	dw_filesystem_set_column_title(lsite->ldir, locale_string("Filename", 186));
 	if(dw_filesystem_setup(lsite->ldir, flags, titles, 3))
 		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 }
@@ -1799,6 +1800,7 @@ void setqueue(SiteTab *lsite)
 	titles[3] = locale_string("Time", 52);
 	titles[4] = locale_string("Date", 53);
 
+	dw_filesystem_set_column_title(lsite->rqueue, locale_string("Filename", 186));
 	if(dw_filesystem_setup(lsite->rqueue, flags, titles, 5))
 		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Error Creating Container!", 48));
 }
