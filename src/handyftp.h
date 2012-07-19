@@ -80,6 +80,7 @@
 #define CSTATUS 305
 #define PERCENT 304
 #define ST_DIRECTORY 307
+#define CSTATUSMORE 308
 #define PB_CHANGE 309
 #define LDIR 276
 #define QUEUE 330

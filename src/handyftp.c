@@ -5486,7 +5486,7 @@ void new_tab(void *data)
 
 	dw_box_pack_start(controlbox, stext, 300, -1, TRUE, FALSE, 2);
 
-	site[thispage]->cmorestatus = stext = dw_status_text_new(locale_string("Idle", 153), CSTATUS);
+	site[thispage]->cmorestatus = stext = dw_status_text_new(locale_string("Idle", 153), CSTATUSMORE);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
