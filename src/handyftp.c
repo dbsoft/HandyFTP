@@ -2140,7 +2140,7 @@ void about(void)
 {
 	HWND infowindow, mainbox, logo, okbutton, buttonbox, stext, mle;
 	UserEntry *param = malloc(sizeof(UserEntry));
-	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER;
+	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
 	ULONG point = -1;
 	char *greets = "Thanks to the OS/2 Netlabs, OS2.org, Narayan Desai, Terje Flaaronning, " \
 		"Geoff Freimark, Vidas Simkus, Jeff LeClere, Valerie Smith, Gene Akins, " \
@@ -2227,7 +2227,7 @@ void preferences(void)
 	HWND entrywindow, mainbox, hbox, cancelbutton, okbutton, buttonbox,
 		xbox, stext, *handles = malloc(10 * sizeof(HWND));
 	UserEntry *param = malloc(sizeof(UserEntry));
-	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER;
+	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
 
 	if(in_preferences)
 	{
@@ -2445,7 +2445,7 @@ void IPS(void)
 	HWND entrywindow, mainbox, closebutton, killbutton, shutdownbutton, restartbutton,
 		container, xbox, *handles = malloc(6 * sizeof(HWND));
 	UserEntry *param = malloc(sizeof(UserEntry));
-	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER;
+	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER | DW_FCF_TEXTURED;
 	char *titles[5] = { "User",	"Address", "Activity", "Idle", "Socket" };
 	unsigned long flags[5] = {  DW_CFA_STRING | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 								DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
@@ -2559,7 +2559,7 @@ void administrate(void)
 	HWND entrywindow, mainbox, cancelbutton, okbutton, buttonbox,
 		xbox, *handles = malloc(6 * sizeof(HWND));
 	UserEntry *param = malloc(sizeof(UserEntry));
-	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER;
+	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
 
 	if(in_administration)
 	{
@@ -2828,7 +2828,7 @@ void user_query(char *entrytext, int page, char *filename, void *okfunctionname,
 {
 	HWND entrywindow, mainbox, entryfield, cancelbutton, okbutton, buttonbox, stext;
 	UserEntry *param = malloc(sizeof(UserEntry));
-	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER;
+	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
 
 	entrywindow = dw_window_new(HWND_DESKTOP, APP_NAME, flStyle);
 
@@ -2967,7 +2967,7 @@ void info_box(void)
 {
 	HWND infowindow, mainbox, mle, okbutton, buttonbox;
 	UserEntry *param = malloc(sizeof(UserEntry));
-	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER |
+	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER | DW_FCF_TEXTURED |
 		DW_FCF_MINMAX | DW_FCF_TASKLIST | DW_FCF_DLGBORDER | DW_FCF_COMPOSITED;
 	char buffer[1024];
 	ULONG point = -1;
@@ -6816,7 +6816,7 @@ void handyftp_init(void)
 	HWND mainbox, toolbox, tempbutton, menuitem;
 	HMENUI menu;
 	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER |
-		DW_FCF_MINMAX | DW_FCF_TASKLIST | DW_FCF_DLGBORDER;
+		DW_FCF_MINMAX | DW_FCF_TASKLIST | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
 	int z = 0, m = 0;
 	char msgbuf[1025];
     
