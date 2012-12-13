@@ -6987,6 +6987,7 @@ int main(int argc, char *argv[])
 		dw_window_set_icon(hwndFrame, DW_RESOURCE(MAIN_FRAME));
 
 		dw_signal_connect(hwndFrame, DW_SIGNAL_DELETE, DW_SIGNAL_FUNC(deleteevent), NULL);
+		dw_signal_connect(DW_DESKTOP, DW_SIGNAL_DELETE, DW_SIGNAL_FUNC(deleteevent), NULL);
 
 		new_tab(NULL);
 		pagescreated = 1;
