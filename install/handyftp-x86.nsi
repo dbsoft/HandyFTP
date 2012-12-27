@@ -9,8 +9,8 @@
 ; General
 
   ; Name and file
-  Name "HandyFTP 1.0b3"
-  OutFile "hftp10b3win.exe"
+  Name "HandyFTP"
+  OutFile "hftp10b4win.exe"
 
   ; Default installation folder
   InstallDir "$PROGRAMFILES\HandyFTP"
