@@ -6588,6 +6588,8 @@ int DWSIGNAL containercontextmenu(HWND hwnd, char *text, int x, int y, void *dat
 
 	if(validatecurrentpage())
 	{
+		char *oldcontexttext = contexttext;
+        
 		if(hwnd == site[currentpage]->ldir)
 		{
 			hwndMenu = dw_menu_new(0L);
@@ -6639,7 +6641,14 @@ int DWSIGNAL containercontextmenu(HWND hwnd, char *text, int x, int y, void *dat
 			}
 		}
 
-		contexttext = text;
+		/* Make a copy of the text for safety ...
+		 * since it may be freed when the row is removed
+		 * from the container control.
+		 */
+		contexttext = text ? strdup(text) : NULL;
+		/* Free the old memory */
+		if(oldcontexttext)
+			free(oldcontexttext);
 
 		dw_menu_item_set_state(hwndMenu, IDP_SORTF, abs(site[currentpage]->sort) == SORT_FILE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
 		dw_menu_item_set_state(hwndMenu, IDP_SORTS, abs(site[currentpage]->sort) == SORT_SIZE ? DW_MIS_CHECKED : DW_MIS_UNCHECKED);
