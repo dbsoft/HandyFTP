@@ -6859,7 +6859,7 @@ void handyftp_init(void)
 
 			m++;
 
-			dw_signal_connect(tempbutton, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(mainFunctions[z]), (void *)mainItems[z]);
+			dw_signal_connect(tempbutton, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(mainFunctions[z]), DW_UINT_TO_POINTER(mainItems[z]));
 			dw_box_pack_start(toolbox, tempbutton, 30, 30, FALSE, FALSE, 0);
 		}
 		else
