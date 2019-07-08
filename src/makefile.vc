@@ -78,7 +78,7 @@ clean:
 # Create a zip file for use with Nullsoft's Install system
 # Requires NSIS and makensis to be in the PATH     
 installer:
-    rd /s /q ..\install\package
+    -rd /s /q ..\install\package
     md ..\install\package
     copy handyftp.exe ..\install\package
     copy $(DWINCDIR)\dw.dll ..\install\package
