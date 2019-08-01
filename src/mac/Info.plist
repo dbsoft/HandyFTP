@@ -18,5 +18,10 @@
 	<string>0.1</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+	    <key>NSAllowsArbitraryLoadsInWebContent</key>
+	    <true/>
+	</dict>
 </dict>
 </plist>
