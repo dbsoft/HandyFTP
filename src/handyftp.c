@@ -2190,9 +2190,6 @@ void about(void)
 	dw_box_pack_start(mainbox, mle, 130, 150, TRUE, TRUE, 2);
 
 	dw_mle_set_editable(mle, FALSE);
-#if __WIN32__
-	dw_window_set_color(mle, DW_CLR_BLACK, DW_CLR_WHITE);
-#endif
 	dw_mle_set_word_wrap(mle, TRUE);
 
 	/* Buttons */
@@ -2984,9 +2981,6 @@ void info_box(void)
 	dw_box_pack_start(mainbox, mle, 130, 350, TRUE, TRUE, 4);
 
 	dw_mle_set_editable(mle, FALSE);
-#if __WIN32__
-	dw_window_set_color(mle, DW_CLR_BLACK, DW_CLR_WHITE);
-#endif
 
 	/* Buttons */
 	buttonbox = dw_box_new(BOXHORZ, 0);
