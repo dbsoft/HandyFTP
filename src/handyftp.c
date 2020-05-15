@@ -1140,7 +1140,7 @@ SiteTypes *getsitetype(int id)
 	return NULL;
 }
 
-/* Attempt to determin which SiteType information would be most
+/* Attempt to determine which SiteType information would be most
  * appropriate for decoding the FTP listing information.
  */
 int determinesitetype(char *banner)
@@ -3240,6 +3240,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		{
 			if(threadsite->status != STATUSTRANSMIT && ftd->received >= threadsite->sent)
 			{
+			   HWND notification;
+			   
 				if(strcasecmp(threadsite->hostname, "local") == 0)
 				{
 					time_t curtime = time(NULL);
@@ -3262,6 +3264,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					if(curtime-ftd->mytimer == 0)
 						curtime++;
 					writeconsole(threadsite, locale_string("Transfer completed. %lld bytes received in %d seconds (%.2fK/s).", 101), ftd->received, (int)(curtime - ftd->mytimer), (double)((ftd->received-ftd->filesize)/1024)/((long)curtime-ftd->mytimer));
+					notification = dw_notification_new("Transfer completed.", NULL, locale_string("Transfer completed. %lld bytes received in %d seconds (%.2fK/s).", 101), ftd->received, (int)(curtime - ftd->mytimer), (double)((ftd->received-ftd->filesize)/1024)/((long)curtime-ftd->mytimer));
+					dw_notification_send(notification);
 					ftd->currentqueuesize = 0;
 					setstatustext(threadsite, locale_string("Local directory, connected.", 44));
 				}
@@ -4797,6 +4801,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			
 			if(ftd->transferdone == TRUE && ftd->transmitted >= threadsite->sent)
 			{
+			   HWND notification;
+			   
 				if(threadsite->datafd)
 					sockclose(threadsite->datafd);
 				if(ftd->listenfd)
@@ -4806,6 +4812,9 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				if(curtime-ftd->mytimer == 0)
 					curtime++;
 				writeconsole(threadsite, locale_string("Transfer completed. %lld bytes sent in %d seconds (%.2fK/s).", 138), threadsite->sent, (int)(curtime - ftd->mytimer), (double)((threadsite->sent-ftd->filesize)/1024)/((long)(curtime-ftd->mytimer)));
+			   notification = dw_notification_new("Transfer completed.", NULL, locale_string("Transfer completed. %lld bytes sent in %d seconds (%.2fK/s).", 138), threadsite->sent, (int)(curtime - ftd->mytimer), (double)((threadsite->sent-ftd->filesize)/1024)/((long)(curtime-ftd->mytimer)));
+			   dw_notification_send(notification);
+				
 				setstatustext(threadsite, locale_string("Remote directory, connected.", 38));
 				dw_percent_set_pos(threadsite->percent, 0);
 			}
@@ -6953,6 +6962,10 @@ int main(int argc, char *argv[])
 {
 	int cx, cy;
 
+   /* Set the application ID so notifications will work */
+   dw_app_id_set("org.dbsoft.handyftp", NULL);
+   
+   /* Then initialize Dynamic Windows */
 	dw_init(TRUE, argc, argv);
 
 #ifdef __MAC__
