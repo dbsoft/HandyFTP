@@ -6,6 +6,8 @@
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>HandyFTP</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.dbsoft.handyftp</string>
 	<key>CFBundleIconFile</key>
 	<string>HandyFTP</string>
 	<key>CFBundleInfoDictionaryVersion</key>
