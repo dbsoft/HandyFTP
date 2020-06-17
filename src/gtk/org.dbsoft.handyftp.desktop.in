@@ -2,7 +2,7 @@
 [Desktop Entry]
 Name=HandyFTP
 Exec=@prefix@/bin/handyftp 
-Icon=@prefix@/share/pixmaps/handyftp.png
+Icon=@prefix@/share/pixmaps/handyftp/handyftp.png
 Terminal=false
 MultipleArgs=false
 Type=Application
