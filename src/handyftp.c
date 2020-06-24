@@ -6968,7 +6968,7 @@ int main(int argc, char *argv[])
 	int cx, cy;
 
 	/* Set the application ID so notifications will work */
-	dw_app_id_set("org.dbsoft.handyftp", NULL);
+	dw_app_id_set("org.dbsoft.handyftp", "HandyFTP");
 
 	/* Then initialize Dynamic Windows */
 	dw_init(TRUE, argc, argv);
