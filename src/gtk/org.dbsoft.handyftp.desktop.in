@@ -1,0 +1,9 @@
+
+[Desktop Entry]
+Name=HandyFTP
+Exec=@prefix@/bin/handyftp 
+Icon=@prefix@/share/pixmaps/handyftp/handyftp.png
+Terminal=false
+MultipleArgs=false
+Type=Application
+Categories=Application;Network;X-Red-Hat-Base;

@@ -61,9 +61,9 @@ install:
 	$(MKDIR) -p $(PREFIX)/share/pixmaps/$(TARGET)
 	$(CP) -f gtk/*.png $(PREFIX)/share/pixmaps/$(TARGET)
 	$(MKDIR) -p $(PREFIX)/share/gnome/apps/Internet/$(DISPLAYNAME)
-	$(INSTALL) gtk/HandyFTP.desktop $(PREFIX)/share/gnome/apps/Internet/$(DISPLAYNAME)
-	$(INSTALL) gtk/HandyFTP.desktop $(PREFIX)/share/applications/
-	$(INSTALL) gtk/Readme.desktop $(PREFIX)/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(INSTALL) gtk/org.dbsoft.handyftp.desktop $(PREFIX)/share/gnome/apps/Internet/$(DISPLAYNAME)
+	$(MKDIR) -p $(PREFIX)/share/applications/
+	$(INSTALL) gtk/org.dbsoft.handyftp.desktop $(PREFIX)/share/applications/
 	$(INSTALL) ../readme.txt $(PREFIX)/share/$(TARGET)
         
 resources.o: gtk/resources.c

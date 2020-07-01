@@ -108,4 +108,7 @@ AC_SUBST(MKDIR)
 
 AC_SUBST(ARCH)
 
-AC_OUTPUT(Makefile:Makefile.in)
+AC_CONFIG_FILES([
+Makefile
+gtk/org.dbsoft.handyftp.desktop ])
+AC_OUTPUT
