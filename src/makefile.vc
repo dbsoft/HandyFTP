@@ -13,7 +13,11 @@ TARGET=handyftp
 #
 !if "$(TARGET_CPU)" == ""
 !if "$(VSCMD_ARG_TGT_ARCH)" == ""
+!if "$(PLATFORM)" == ""
 TARGET_CPU=x86
+!else
+TARGET_CPU=$(PLATFORM)
+!endif
 !else
 TARGET_CPU=$(VSCMD_ARG_TGT_ARCH)
 !endif
