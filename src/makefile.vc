@@ -7,6 +7,17 @@
 
 TARGET=handyftp
 
+# Configure alternate compiler based on Clang/LLVM
+!if "$(CLANG)" == "Y"
+WLIB=llvm-lib.exe
+CC=clang-cl.exe
+LINK=lld-link.exe
+!else
+WLIB=lib.exe
+CC=cl.exe
+LINK=link.exe
+!endif
+
 #
 # Configure settings for the target platform
 #	Default to x86 if not specified
@@ -50,13 +61,11 @@ VER_REV=0
 
 !include Version
 
-CC = cl
-CFLAGS = -c $(PLATFORM_DEF) -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR) -DVER_MAJ=$(VER_MAJ) -D VER_MIN=$(VER_MIN) -DVER_REV=$(VER_REV) 
+CFLAGS = -c $(PLATFORM_DEF) -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR) -DVER_MAJ=$(VER_MAJ) -D VER_MIN=$(VER_MIN) -DVER_REV=$(VER_REV) -D_CRT_SECURE_NO_WARNINGS
 LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\dw.lib $(DWLIBDIR)\dwcompat.lib
 RES = 
 LINKFLAGS = -machine:$(TARGET_CPU) -manifest $(LINK_DEBUG)
 DLLLINKFLAGS = -dll
-LINK = link
 DEFFILE = handyftp.def
 
 OBJS =	handyftp.obj \
@@ -106,7 +115,7 @@ $(OBJS)
 $(LIBS)
 handyftpw.res
 <<
-	mt.exe /manifest handyftp.exe.manifest win\handyftp.exe.$(TARGET_CPU).manifest /outputresource:handyftp.exe;1
+	mt.exe -manifest handyftp.exe.manifest win\handyftp.exe.$(TARGET_CPU).manifest -outputresource:handyftp.exe;1
         
 .c.obj:
 	$(CC) $(CFLAGS) $(CFLAGS_DEBUG) $*.c
