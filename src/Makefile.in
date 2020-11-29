@@ -5,10 +5,12 @@
 CC = @CC@
 RM = @RM@
 CP = @CP@
+GRC = @GRC@
 MAKE = @MAKE@
 MKDIR = @MKDIR@
 INSTALL = @INSTALL@
 PREFIX = @prefix@
+GRESOURCE = @GRESOURCE@
 TARGET = handyftp
 DISPLAYNAME = HandyFTP
 
@@ -32,7 +34,14 @@ $(OBJECTS):
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<
 
 resources.o:
+ifeq ($(GRESOURCE),enabled)
+	-chmod +x gtk/resources.sh
+	-gtk/resources.sh
+	$(GRC) --generate-source --target=gresources.c gtk/handyftp.gresource.xml
+	$(CC) $(CFLAGS) $(INCLUDES) -c gresources.c -o resources.o
+else
 	$(CC) $(CFLAGS) $(INCLUDES) -c gtk/resources.c
+endif
 
 $(TARGET):  $(OBJECTS) resources.o
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(TARGET) $(OBJECTS) resources.o $(LDFLAGS) $(LIBS)
@@ -44,10 +53,12 @@ installer: $(TARGET)
 	-mac/installer.sh "$(DISPLAYNAME)" "$(TARGET)"
 	                
 clean: 
-	$(RM) $(OBJECTS) resources.o $(TARGET)
+	$(RM) $(OBJECTS) resources.o gresources.c $(TARGET)
+	$(RM) -rf resources/
 
 distclean: 
-	$(RM) $(OBJECTS) resources.o $(TARGET) *~ os2/*~ win/*~ gtk/*~ config.cache config.log config.status Makefile config.h
+	$(RM) $(OBJECTS) resources.o gresources.c $(TARGET) *~ os2/*~ win/*~ gtk/*~ config.cache config.log config.status Makefile config.h
+	$(RM) -rf resources/
 
 install:
 	$(RM) -rf $(PREFIX)/share/$(TARGET)
@@ -66,7 +77,7 @@ install:
 	$(INSTALL) gtk/org.dbsoft.handyftp.desktop $(PREFIX)/share/applications/
 	$(INSTALL) ../readme.txt $(PREFIX)/share/$(TARGET)
         
-resources.o: gtk/resources.c
+resources.o: gtk/resources.c gtk/handyftp.gresource.xml
 handyftp.o: handyftp.c handyftp.h hftpextr.h site.h config.h
 datetime.o: datetime.c datetime.h
 
