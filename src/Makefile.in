@@ -10,7 +10,7 @@ MAKE = @MAKE@
 MKDIR = @MKDIR@
 INSTALL = @INSTALL@
 PREFIX = @prefix@
-GRESOURCE = @GRESOURCE@
+RESOURCE = @RESOURCE@
 TARGET = handyftp
 DISPLAYNAME = HandyFTP
 
@@ -33,18 +33,17 @@ all: $(TARGET)
 $(OBJECTS):
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<
 
-resources.o:
-ifeq ($(GRESOURCE),enabled)
+gresources.o:
 	-chmod +x gtk/resources.sh
 	-gtk/resources.sh
 	$(GRC) --generate-source --target=gresources.c gtk/handyftp.gresource.xml
-	$(CC) $(CFLAGS) $(INCLUDES) -c gresources.c -o resources.o
-else
-	$(CC) $(CFLAGS) $(INCLUDES) -c gtk/resources.c
-endif
+	$(CC) $(CFLAGS) $(INCLUDES) -c gresources.c
 
-$(TARGET):  $(OBJECTS) resources.o
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(TARGET) $(OBJECTS) resources.o $(LDFLAGS) $(LIBS)
+resources.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c gtk/resources.c
+
+$(TARGET):  $(OBJECTS) $(RESOURCE)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(TARGET) $(OBJECTS) $(RESOURCE) $(LDFLAGS) $(LIBS)
 	-chmod +x mac/finishup.sh
 	-mac/finishup.sh "$(DISPLAYNAME)" "$(TARGET)"
 
@@ -53,15 +52,14 @@ installer: $(TARGET)
 	-mac/installer.sh "$(DISPLAYNAME)" "$(TARGET)"
 	                
 clean: 
-	$(RM) $(OBJECTS) resources.o gresources.c $(TARGET)
-	$(RM) -rf resources/
+	$(RM) $(OBJECTS) resources.o gresources.c gresources.o $(TARGET)
+	$(RM) -r resources/
 
-distclean: 
-	$(RM) $(OBJECTS) resources.o gresources.c $(TARGET) *~ os2/*~ win/*~ gtk/*~ config.cache config.log config.status Makefile config.h
-	$(RM) -rf resources/
+distclean: clean
+	$(RM) *~ os2/*~ win/*~ gtk/*~ config.cache config.log config.status Makefile config.h
 
 install:
-	$(RM) -rf $(PREFIX)/share/$(TARGET)
+	$(RM) -r $(PREFIX)/share/$(TARGET)
 	$(MKDIR)  $(PREFIX)/share/$(TARGET)
 	$(CP) -f ../config/*.typ $(PREFIX)/share/$(TARGET)
 	$(CP) -f ../config/handyftp.msg $(PREFIX)/share/$(TARGET)
@@ -77,7 +75,8 @@ install:
 	$(INSTALL) gtk/org.dbsoft.handyftp.desktop $(PREFIX)/share/applications/
 	$(INSTALL) ../readme.txt $(PREFIX)/share/$(TARGET)
         
-resources.o: gtk/resources.c gtk/handyftp.gresource.xml
+resources.o: gtk/resources.c
+gresources.o: gtk/handyftp.gresource.xml
 handyftp.o: handyftp.c handyftp.h hftpextr.h site.h config.h
 datetime.o: datetime.c datetime.h
 
