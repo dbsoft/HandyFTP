@@ -2982,6 +2982,13 @@ void info_box(void)
 
 	dw_mle_set_editable(mle, FALSE);
 
+#ifdef __WIN32__
+	if(dw_feature_get(DW_FEATURE_DARK_MODE) >= DW_DARK_MODE_FULL)
+		dw_window_set_color(mle, DW_CLR_WHITE, DW_CLR_DARKGRAY);
+	else
+		dw_window_set_color(mle, DW_CLR_BLACK, DW_CLR_PALEGRAY);
+#endif
+
 	/* Buttons */
 	buttonbox = dw_box_new(BOXHORZ, 0);
 
@@ -6966,6 +6973,10 @@ void handyftp_init(void)
 int main(int argc, char *argv[])
 {
 	int cx, cy;
+
+	/* Enable full dark mode on platforms that support it */
+	if(getenv("DW_DARK_MODE"))
+		dw_feature_set(DW_FEATURE_DARK_MODE, DW_DARK_MODE_FULL);
 
 	/* Set the application ID so notifications will work */
 	dw_app_id_set("org.dbsoft.handyftp", "HandyFTP");
