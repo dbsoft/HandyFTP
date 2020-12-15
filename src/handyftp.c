@@ -2982,13 +2982,6 @@ void info_box(void)
 
 	dw_mle_set_editable(mle, FALSE);
 
-#ifdef __WIN32__
-	if(dw_feature_get(DW_FEATURE_DARK_MODE) >= DW_DARK_MODE_FULL)
-		dw_window_set_color(mle, DW_CLR_WHITE, DW_CLR_DARKGRAY);
-	else
-		dw_window_set_color(mle, DW_CLR_BLACK, DW_CLR_PALEGRAY);
-#endif
-
 	/* Buttons */
 	buttonbox = dw_box_new(BOXHORZ, 0);
 
