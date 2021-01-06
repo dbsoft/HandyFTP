@@ -1,4 +1,4 @@
-HandyFTP 1.0 beta 3
+HandyFTP 1.0 beta 4
 
 These clients have not been thoroughly tested, they are under development, I am
 dropping the latest binaries and source code every couple of days.  They
@@ -23,31 +23,16 @@ and the HandyFTP Mercurial repository at:
 
 http://hg.dbsoft.org/HandyFTP/
 
-Changes since 1.0b2:
+Changes since 1.0b3:
 
-Boatloads considering it has been 8 years since the last release.
+All the Dynamic Windows changes since version 2.5.
 
-Rewrote the splitbar code.  It now works on all platforms and is
-accurate, unlike before. :)
+Dark Mode support on Mac, and experimental Dark Mode support on Windows 10.
 
-Renamed the "Reverse FXP" option "Passive FTP."  Which puts the remote
-server into passive mode, causing HandyFTP to create active connections.
+Domain socket support on Windows 10.  Separate build without domain sockets
+is available for other versions of Windows.
 
-Passive FTP option now applies to FXP, Download *and* Upload.
-
-Translations into German and Danish.
-
-Added sorting of the directory list.
-
-Added quit confirmation dialog.
-
-Heavily optimized the redraw code on OS/2 and Windows.
-
-Added code to rename tabs so they have unique names, so you can't get
-conflicting tab names.  If you have a duplicate tab such as "Local"
-a new local tab will be named "Local #2" and so on.
-
-Finally readded the open all code and got it working.
+Notification support on Mac 10.8, Windows 8, GLib 2.40 and later versions.
 
 End:
 
