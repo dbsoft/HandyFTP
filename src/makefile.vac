@@ -56,17 +56,13 @@ installer:
     copy $(DWINCPATH)\dw.dll ..\install\package
     copy $(DWINCPATH)\dwcompat.dll ..\install\package
     copy ..\readme.txt ..\install\package
-    copy ..\readme.txt ..\install\scripts
+    copy ..\install\scripts\license.txt ..\install\package
     copy ..\config\* ..\install\package
     xcopy /s ..\help\* ..\install\package
     rm -f ..\install\handyftp.ace ..\install\misc.ace
-    cd ..\install\package
-    ace2 -r a ..\handyftp.ace *
-    cd ..\scripts
-    ace2 a ..\misc.ace *
-    cd ..
-    copy $(SFXPATH)\sfx.exe .\sfx.exe
-    packinst handyftp.cfg
+    cd ..\install
+    wic -a hftpos2.exe 1 -cpackage -r * -U -s handyftp.wis
+    cd ..\src
 
 handyftp.obj: handyftp.c handyftp.h hftpextr.h site.h
 datetime.obj: datetime.c datetime.h
