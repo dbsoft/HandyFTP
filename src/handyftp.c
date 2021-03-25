@@ -6963,7 +6963,7 @@ void handyftp_init(void)
 }
 
 /* The main entry point.  Notice we don't use WinMain() on Windows */
-int main(int argc, char *argv[])
+int dwmain(int argc, char *argv[])
 {
 	int cx, cy;
 

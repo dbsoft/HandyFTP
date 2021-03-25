@@ -73,8 +73,7 @@ DLLLINKFLAGS = -dll
 DEFFILE = handyftp.def
 
 OBJS =	handyftp.obj \
-	datetime.obj \
-	winmain.obj
+	datetime.obj
 	
 all: handyftp.exe
 
