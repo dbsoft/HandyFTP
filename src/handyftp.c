@@ -2995,7 +2995,13 @@ void info_box(void)
 
 	param->window = infowindow;
 
-	sprintf(buffer, locale_string("HandyFTP:\r\n\r\nVersion: %d.%d.%d\r\nBuild date: %s\r\nBuild time: %s\r\n\r\n", 90), VER_MAJ, VER_MIN, VER_REV, __DATE__, __TIME__);
+	sprintf(buffer, locale_string("HandyFTP:\r\n\r\nVersion: %d.%d.%d\r\nBuild date: %s\r\nBuild time: %s\r\n\r\n", 90),
+#ifndef VER_MAJ
+		 1, 0, 0,
+#else
+		 VER_MAJ, VER_MIN, VER_REV,
+#endif
+		 __DATE__, __TIME__);
 	point = dw_mle_import(mle, buffer, point);
 
 	sprintf(buffer, locale_string("System:\r\n\r\nColor depth: %lu\r\n", 91), dw_color_depth_get());
