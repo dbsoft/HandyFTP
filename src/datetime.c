@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dw.h>
-#include <dwcompat.h>
+#include "dw.h"
+#include "dwcompat.h"
 #include "datetime.h"
 
 int instring(char *in, char *this)
