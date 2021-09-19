@@ -354,7 +354,7 @@ void saveconfig(void)
 	else
 	{
 		/* Need space for the filename, directory separator and NULL */
-		int extra = strlen(inifile) + 2;
+		size_t extra = strlen(inifile) + 2;
         
 		/* If the path is in the home directory... */
 		if(home && tmppath[0] == '~')
@@ -575,9 +575,8 @@ void savequeue(SiteTab *thissite, char *filename)
 /* Removes the newline char from a string */
 void trimnewline(char *buf)
 {
-	int len;
+	size_t len = strlen(buf);
 
-	len = strlen(buf);
 	if(len > 0 && buf[len-1] == '\n')
 		buf[len-1] = 0;
 }
@@ -770,7 +769,7 @@ void addtocache(SiteTab *lsite)
 int findincache(SiteTab *lsite)
 {
 	DirCache *tmp;
-	int len1;
+	size_t len1;
 
 	if(!lsite->cache)
 		return FALSE;
@@ -783,7 +782,7 @@ int findincache(SiteTab *lsite)
 	tmp = lsite->cache;
 	while(tmp != NULL)
 	{
-		int len2 = strlen(tmp->url);
+		size_t len2 = strlen(tmp->url);
 
 		if(len2 > 0 && (tmp->url[len2-1] == '/' || tmp->url[len2-1] == '\\'))
 			len2--;
@@ -1059,7 +1058,7 @@ int writeconsole(SiteTab *lsite, char *format, ...) {
 	dw_listbox_set_top(lsite->server, t-1);
 
 
-	return strlen(outbuf);
+	return (int)strlen(outbuf);
 }
 
 /* Set the text on the status line of the specified page */
@@ -1073,7 +1072,7 @@ int setstatustext(SiteTab *lsite, char *format, ...) {
 
 	dw_window_set_text(lsite->cstatus, outbuf);
 
-	return strlen(outbuf);
+	return (int)strlen(outbuf);
 }
 
 /* Set the text on the secondary status line of the specified page */
@@ -1087,7 +1086,7 @@ int setmorestatustext(SiteTab *lsite, char *format, ...) {
 
 	dw_window_set_text(lsite->cmorestatus, outbuf);
 
-	return strlen(outbuf);
+	return (int)strlen(outbuf);
 }
 
 /* Remove commas from a string so that atoi() will be correct */
@@ -1980,7 +1979,7 @@ SiteTab *findsite(char *title)
 }
 
 /* Return true if the passed title exists on a page other than pageid */
-int testtitle(char *title, int pageid)
+int testtitle(char *title, unsigned long pageid)
 {
 	int z;
 	char *buffer;
@@ -2075,11 +2074,11 @@ void DWSIGNAL preferences_ok(HWND window, void *data)
 			openall = dw_checkbox_get(handles[0]);
 			reversefxp = dw_checkbox_get(handles[1]);
 			showpassword = dw_checkbox_get(handles[2]);
-			ftptimeout = dw_spinbutton_get_pos(handles[3]);
-			retrymax = dw_spinbutton_get_pos(handles[4]);
-			cachemax = dw_spinbutton_get_pos(handles[5]);
+			ftptimeout = (int)dw_spinbutton_get_pos(handles[3]);
+			retrymax = (int)dw_spinbutton_get_pos(handles[4]);
+			cachemax = (int)dw_spinbutton_get_pos(handles[5]);
 			urlsave = dw_checkbox_get(handles[6]);
-			bandwidthlimit = dw_spinbutton_get_pos(handles[7]);
+			bandwidthlimit = (int)dw_spinbutton_get_pos(handles[7]);
 			optimize = dw_checkbox_get(handles[8]);
 			handyftp_locale = dw_listbox_selected(handles[9]);
 			saveconfig();
@@ -2132,7 +2131,7 @@ void updatecurrentsettings(int page)
 		free(propsite->url);
 	propsite->url = strdup(tempbuffer);
 	dw_free(tempbuffer);
-	propsite->port = dw_spinbutton_get_pos(propsite->port_num);
+	propsite->port = (int)dw_spinbutton_get_pos(propsite->port_num);
 }
 
 /* Create the about box */
@@ -2141,7 +2140,7 @@ void about(void)
 	HWND infowindow, mainbox, logo, okbutton, buttonbox, stext, mle;
 	UserEntry *param = malloc(sizeof(UserEntry));
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
-	ULONG point = -1;
+	int point = -1;
 	char *greets = "Thanks to the OS/2 Netlabs, OS2.org, Narayan Desai, Terje Flaaronning, " \
 		"Geoff Freimark, Vidas Simkus, Jeff LeClere, Valerie Smith, Gene Akins, " \
 		"Bob McLennan, Samuel Audet, Colten Edwards, Achim Hasenmueller, " \
@@ -2682,7 +2681,8 @@ Directory *finddir(int index, int page)
 /* Normalizes a path to the appropriate platform */
 void make_local(char *buf, char *dirsep)
 {
-	int z, len = strlen(buf);
+	int z;
+	size_t len = strlen(buf);
 
 	for(z=0;z<len;z++)
 	{
@@ -2738,8 +2738,8 @@ void addtoq(int index, int page)
 			{
 				if(site[page]->queuing)
 				{
-					int startlen = strlen(site[page]->queuing);
-					int currlen = strlen(site[page]->url);
+					size_t startlen = strlen(site[page]->queuing);
+					size_t currlen = strlen(site[page]->url);
 
 					/* Normalize the paths (minus the ending / or \) */
 					if(site[page]->url[currlen-1] == '/' || site[page]->url[currlen-1] == '\\')
@@ -2751,7 +2751,7 @@ void addtoq(int index, int page)
 					/* If we aren't in the initial directory */
 					if(currlen > startlen)
 					{
-						int destlen = strlen(destsite->url);
+						size_t destlen = strlen(destsite->url);
 
 						if(destsite->url[destlen-1] == '/' || destsite->url[destlen-1] == '\\')
 							destlen--;
@@ -2967,7 +2967,7 @@ void info_box(void)
 	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER | DW_FCF_TEXTURED |
 		DW_FCF_MINMAX | DW_FCF_TASKLIST | DW_FCF_DLGBORDER | DW_FCF_COMPOSITED;
 	char buffer[1024];
-	ULONG point = -1;
+	int point = -1;
 	DWEnv env;
 
 	infowindow = dw_window_new(HWND_DESKTOP, locale_string("System Information", 89), flStyle);
@@ -3042,7 +3042,7 @@ void info_box(void)
 /* Generic function for updating the transfer statistics on the status line */
 void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_received, long long total_size, time_t curtime, time_t mytimer, time_t *lastupdate, long long filesize)
 {
-	unsigned long sliderpos = 0;
+	unsigned int sliderpos = 0;
 	long double myrate = 0;
 
 	if((curtime - mytimer) != 0)
@@ -3094,7 +3094,7 @@ void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_rece
 		}
 		if(total_size != 0)
 		{
-			sliderpos = (int)(((long double)sent_or_received/(long double)total_size)*100);
+			sliderpos = (unsigned int)(((long double)sent_or_received/(long double)total_size)*100);
 			if(sliderpos)
 				dw_percent_set_pos(threadsite->percent, sliderpos);
 		}
@@ -3119,7 +3119,8 @@ union ip4_32 {
 void getipport(char *buffer, union ip4_32 *ip, union ip4_32 *port)
 {
 	char *buf2;
-	int z, pos=0, num=0, len = strlen(buffer);
+	int z, pos=0, num=0;
+	size_t len = strlen(buffer);
 
 	buf2 = malloc(len+1);
 	strcpy(buf2, buffer);
@@ -3192,7 +3193,7 @@ typedef struct _ftpdata {
 	char *filename;
 	int transferdone;
 	int thissitetype;
-	int transbufsize;
+	size_t transbufsize;
 	int laststatus;
 	int in_200;
 	unsigned long long received;
@@ -3224,7 +3225,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	fd_set readset, writeset;
 	struct sockaddr_in server, client;
 	char cmd;
-	int amnt, selectres, maxfd = 0, exitthread = FALSE;
+	size_t amnt;
+	int selectres, maxfd = 0, exitthread = FALSE;
 
 	do {
 
@@ -4112,7 +4114,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 			if(contexttext)
 			{
 				int filetype = findfiletype(contexttext, threadsite);
-				int result = -1;
+				size_t result = -1;
 
 				if(filetype == DIRFILE || filetype == DIRLINK)
 				{
@@ -4190,7 +4192,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 	{
 		char controlbuffer[1025] = "";
 		static char nexttime[513] = "";
-		int z, gah, start;
+		int z, start;
+		size_t gah;
 
 		start = 0;
 		strncpy(controlbuffer, nexttime, 512);
@@ -4223,7 +4226,8 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						int z, count = 0;
 						char *adminbuf = &controlbuffer[start];
 						char *user = NULL, *addr = NULL, *act = NULL, *sock = NULL, *last = &adminbuf[1];
-						int idle = 0, len = strlen(adminbuf);
+						int idle = 0;
+						size_t len = strlen(adminbuf);
 
 						if(strncmp(adminbuf, "200", 3) == 0)
 						{
@@ -4546,7 +4550,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				}
 			} else if(threadsite->status == STATUSLOGIN)
 			{
-				int result;
+				size_t result;
 				
 				if(strcmp(threadsite->username, "") == 0)
 					result = socksprint(threadsite->controlfd, "USER anonymous\r\n");
@@ -4556,7 +4560,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 					set_status(threadsite, STATUSPASSWORD);
 			} else if(threadsite->status == STATUSPASSWORD)
 			{
-				int result;
+				size_t result;
 				
 				if(strcmp(threadsite->password, "") == 0)
 					result = socksprint(threadsite->controlfd, "PASS handyftp@netlabs.org\r\n");
@@ -4805,7 +4809,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		time_t curtime = time(NULL);
 		if(threadsite->status == STATUSTRANSMIT)
 		{
-			int amt;
+			size_t amt;
 			
 			if(ftd->transferdone == TRUE && ftd->transmitted >= threadsite->sent)
 			{
@@ -4909,7 +4913,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				{
 					if(ftd->destsite && ftd->destsite->tpipefd[1])
 					{
-						int amt;
+						size_t amt;
 						
 						/* Empty the transmission buffer */
 						while(ftd->transbufsize > 0 &&
@@ -4997,7 +5001,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		{
 			if(!feof(ftd->localfile))
 			{
-				int amt = 0;
+				size_t amt = 0;
 				
 				amnt = fread(ftd->transbuf, 1, 4096, ftd->localfile);
 				
@@ -5047,7 +5051,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 		}
 		if(threadsite->status == STATUSDATA)
 		{
-			int amt;
+			size_t amt;
 			
 			/* Empty the transmission buffer */
 			while(ftd->transbufsize > 0 &&
@@ -5238,7 +5242,7 @@ void remove_tab(void)
 
 	alive[thispage] = FALSE;
 
-	dw_notebook_page_destroy(hwndNBK, site[thispage]->pageid);
+	dw_notebook_page_destroy(hwndNBK, (unsigned int)site[thispage]->pageid);
 
 	sendthread(THRDEXIT, thispage);
 	site[thispage] = NULL;
@@ -5556,7 +5560,7 @@ void new_tab(void *data)
 	}
 
 	DBUG_POINT("new_tab");
-	dw_notebook_page_set(hwndNBK, site[thispage]->pageid);
+	dw_notebook_page_set(hwndNBK, (unsigned int)site[thispage]->pageid);
 
 	newpage = thispage;
 
@@ -5726,7 +5730,7 @@ void ini_getline(FILE *f, char *entry, char *entrydata)
 	/* Try to read a line into the buffer */
 	if(fgets(in, INI_BUFFER - 1, f))
 	{
-		int len = strlen(in);
+		size_t len = strlen(in);
 
 		/* Strip off any trailing newlines */
 		if(len > 0 && in[len-1] == '\n')
@@ -5768,7 +5772,7 @@ void loadconfig(void)
 	else
 	{
 		/* Need space for the filename, directory separator and NULL */
-		int extra = strlen(inifile) + 2;
+		size_t extra = strlen(inifile) + 2;
 
 		/* If the path is in the home directory... */
 		if(home && tmppath[0] == '~')
@@ -6044,7 +6048,7 @@ void recurseq(SiteTab *thissite)
 	{
 		if(tmp->type == DIRDIR)
 		{
-			int urllen = strlen(tmp->srcdirectory);
+			size_t urllen = strlen(tmp->srcdirectory);
 			char *tmpptr, *newdir = malloc(urllen + strlen(tmp->srcfilename) + 2);
 
 			if(!thissite->queuing)
@@ -6089,7 +6093,8 @@ void recurseq(SiteTab *thissite)
 /* Make a DOS style path into something a web browser can handle. */
 void urlify(char *buf)
 {
-	int z, len = strlen(buf);
+	int z;
+	size_t len = strlen(buf);
 
 	for(z=0;z<len;z++)
 	{
@@ -6107,7 +6112,7 @@ int validatecurrentpage(void)
 
 	if(pagescreated && hwndNBK)
 	{
-		currentpageid = dw_notebook_page_get(hwndNBK);
+		currentpageid = (int)dw_notebook_page_get(hwndNBK);
 	}
 
 	for(z=0;z<CONNECTION_LIMIT;z++)
@@ -6723,7 +6728,7 @@ int DWSIGNAL containerselect(HWND hwnd, char *text, void *data)
 				}
 				else if(strcmp(dir->entry, "..") == 0)
 				{
-					for(i=strlen(buffer);i>-1;i--)
+					for(i=(int)strlen(buffer);i>-1;i--)
 					{
 						if(buffer[i] == '/' || buffer[i] == '\\')
 						{
@@ -6994,7 +6999,7 @@ int dwmain(int argc, char *argv[])
 	loadconfig();
 	loadsitetypes();
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	cx = dw_screen_width();
 	cy = dw_screen_height();

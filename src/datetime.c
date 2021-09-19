@@ -7,7 +7,8 @@
 
 int instring(char *in, char *this)
 {
-	int thislen, inlen, z;
+	size_t thislen, inlen;
+	int z;
 
 	thislen = strlen(this);
 	inlen = strlen(in);
