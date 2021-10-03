@@ -3112,7 +3112,7 @@ typedef struct _ip {
 
 union ip4_32 {
 	IP4 ip4;
-	uint32_t ip32;
+	in_addr_t ip32;
 };
 
 /* Parses out IP information from a string returned from the server */
