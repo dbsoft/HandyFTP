@@ -3112,7 +3112,7 @@ typedef struct _ip {
 
 union ip4_32 {
 	IP4 ip4;
-	unsigned long ip32;
+	uint32_t ip32;
 };
 
 /* Parses out IP information from a string returned from the server */
@@ -3499,7 +3499,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 				else
 				{
 					struct sockaddr_in si;
-					int ipaddr = 0;
+					in_addr_t ipaddr = 0;
 					socklen_t sisize;
 
 					dw_mutex_unlock(h);
@@ -3520,7 +3520,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 							setstatustext(threadsite, locale_string("Remote directory, disconnected.", 100));
 						}
 						else
-							ipaddr = *((unsigned long *)hostnm->h_addr);
+							ipaddr = *((in_addr_t *)hostnm->h_addr);
 					}
 
 					if(ipaddr && ipaddr != -1)
