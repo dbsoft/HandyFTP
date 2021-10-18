@@ -2263,7 +2263,7 @@ void preferences(void)
 	dw_spinbutton_set_limits(handles[3], 60L, 0L);
 	dw_spinbutton_set_pos(handles[3], ftptimeout);
 
-	dw_box_pack_start(hbox, handles[3], 60, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handles[3], -1, -1, FALSE, TRUE, 1);
 
 	/* Second Line */
 	hbox = dw_box_new(BOXHORZ, 0);
@@ -2287,7 +2287,7 @@ void preferences(void)
 	dw_spinbutton_set_limits(handles[4], 60L, 0L);
 	dw_spinbutton_set_pos(handles[4], retrymax);
 
-	dw_box_pack_start(hbox, handles[4], 60, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handles[4], -1, -1, FALSE, TRUE, 1);
 
 	/* Third Line */
 	hbox = dw_box_new(BOXHORZ, 0);
@@ -2311,7 +2311,7 @@ void preferences(void)
 	dw_spinbutton_set_limits(handles[5], 100L, 0L);
 	dw_spinbutton_set_pos(handles[5], cachemax);
 
-	dw_box_pack_start(hbox, handles[5], 60, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handles[5], -1, -1, FALSE, TRUE, 1);
 
 	/* Fourth Line */
 	hbox = dw_box_new(BOXHORZ, 0);
@@ -2335,7 +2335,7 @@ void preferences(void)
 	dw_spinbutton_set_limits(handles[7], 1000L, 0L);
 	dw_spinbutton_set_pos(handles[7], bandwidthlimit);
 
-	dw_box_pack_start(hbox, handles[7], 60, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handles[7], -1, -1, FALSE, TRUE, 1);
 
 	/* Fifth Line */
 	hbox = dw_box_new(BOXHORZ, 0);
@@ -5405,8 +5405,8 @@ void new_tab(void *data)
 	dw_spinbutton_set_limits(site[thispage]->port_num, 65535L, 0L);
 	dw_spinbutton_set_pos(site[thispage]->port_num, 21);
 
-	dw_box_pack_start(controlbox, site[thispage]->port_num, 65, -1, FALSE, TRUE, 0);
-    dw_window_set_tooltip(site[thispage]->port_num, "TCP/IP port number from 0 to 65535");
+	dw_box_pack_start(controlbox, site[thispage]->port_num, -1, -1, FALSE, TRUE, 0);
+	dw_window_set_tooltip(site[thispage]->port_num, "TCP/IP port number from 0 to 65535");
 
 	stext = dw_text_new(locale_string("Username:", 148), 0);
 
