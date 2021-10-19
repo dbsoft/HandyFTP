@@ -2199,7 +2199,7 @@ void about(void)
 	okbutton = dw_button_new("Ok", 1001L);
 
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
-	dw_box_pack_start(buttonbox, okbutton, 50, 40, FALSE, FALSE, 2);
+	dw_box_pack_start(buttonbox, okbutton, -1, -1, FALSE, FALSE, 2);
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
 
 	param->window = infowindow;
@@ -2990,7 +2990,7 @@ void info_box(void)
 	okbutton = dw_button_new(locale_string("Ok", 67), 1001L);
 
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
-	dw_box_pack_start(buttonbox, okbutton, 50, 40, FALSE, FALSE, 2);
+	dw_box_pack_start(buttonbox, okbutton, -1, -1, FALSE, FALSE, 2);
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
 
 	param->window = infowindow;
