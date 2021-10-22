@@ -2138,8 +2138,8 @@ void updatecurrentsettings(int page)
 void about(void)
 {
 	HWND infowindow, mainbox, logo, okbutton, buttonbox, stext, mle;
-	UserEntry *param = malloc(sizeof(UserEntry));
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
+	UserEntry *param;
 	int point = -1;
 	char *greets = "Thanks to the OS/2 Netlabs, OS2.org, Narayan Desai, Terje Flaaronning, " \
 		"Geoff Freimark, Vidas Simkus, Jeff LeClere, Valerie Smith, Gene Akins, " \
@@ -2202,6 +2202,7 @@ void about(void)
 	dw_box_pack_start(buttonbox, okbutton, -1, -1, FALSE, FALSE, 2);
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
 
+	param = malloc(sizeof(UserEntry));
 	param->window = infowindow;
 	param->data = NULL;
 	param->busy = &in_about;
@@ -2220,10 +2221,9 @@ void about(void)
 /* Create the preferences dialog */
 void preferences(void)
 {
-	HWND entrywindow, mainbox, hbox, cancelbutton, okbutton, buttonbox,
-		xbox, stext, *handles = malloc(10 * sizeof(HWND));
-	UserEntry *param = malloc(sizeof(UserEntry));
+	HWND entrywindow, mainbox, hbox, cancelbutton, okbutton, buttonbox, xbox, stext, *handles;
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
+	UserEntry *param;
 
 	if(in_preferences)
 	{
@@ -2231,6 +2231,8 @@ void preferences(void)
 		return;
 	}
 
+	handles = malloc(10 * sizeof(HWND));
+	
 	in_preferences = entrywindow = dw_window_new(HWND_DESKTOP, locale_string("Preferences", 55), flStyle);
 
 	xbox = dw_box_new(BOXVERT, 5);
@@ -2380,6 +2382,7 @@ void preferences(void)
 	/* Padding to compensate for the button box on the left. */
 	dw_box_pack_start(buttonbox, 0, 40, 30, TRUE, TRUE, 4);
 
+	param = malloc(sizeof(UserEntry));
 	param->page = currentpage;
 	param->window = entrywindow;
 	param->filename = NULL;
@@ -5391,7 +5394,7 @@ void new_tab(void *data)
 
 	site[thispage]->host_name = dw_entryfield_new("", EF_HOSTNAME);
 
-	dw_box_pack_start(controlbox, site[thispage]->host_name, 160, 22, TRUE, FALSE, 0);
+	dw_box_pack_start(controlbox, site[thispage]->host_name, 160, -1, TRUE, TRUE, 0);
     dw_window_set_tooltip(site[thispage]->host_name, "Internet name or address of the server; or local.");
 
 	stext = dw_text_new(locale_string("Port:", 147), 0);
