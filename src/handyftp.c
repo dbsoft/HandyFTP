@@ -2067,23 +2067,29 @@ void DWSIGNAL preferences_ok(HWND window, void *data)
 
 	if(param)
 	{
-		HWND *handles = (HWND *)param->data;
+		HWND handle = dw_window_get_data(param->window, "openall");
 
-		if(handles)
-		{
-			openall = dw_checkbox_get(handles[0]);
-			reversefxp = dw_checkbox_get(handles[1]);
-			showpassword = dw_checkbox_get(handles[2]);
-			ftptimeout = (int)dw_spinbutton_get_pos(handles[3]);
-			retrymax = (int)dw_spinbutton_get_pos(handles[4]);
-			cachemax = (int)dw_spinbutton_get_pos(handles[5]);
-			urlsave = dw_checkbox_get(handles[6]);
-			bandwidthlimit = (int)dw_spinbutton_get_pos(handles[7]);
-			optimize = dw_checkbox_get(handles[8]);
-			handyftp_locale = dw_listbox_selected(handles[9]);
-			saveconfig();
-			free(handles);
-		}
+		if(handle)
+			openall = dw_checkbox_get(handle);
+		if((handle = dw_window_get_data(param->window, "reversefxp")))
+			reversefxp = dw_checkbox_get(handle);
+		if((handle = dw_window_get_data(param->window, "showpassword")))
+			showpassword = dw_checkbox_get(handle);
+		if((handle = dw_window_get_data(param->window, "ftptimeout")))
+			ftptimeout = (int)dw_spinbutton_get_pos(handle);
+		if((handle = dw_window_get_data(param->window, "retrymax")))
+			retrymax = (int)dw_spinbutton_get_pos(handle);
+		if((handle = dw_window_get_data(param->window, "cachemax")))
+			cachemax = (int)dw_spinbutton_get_pos(handle);
+		if((handle = dw_window_get_data(param->window, "urlsave")))
+			urlsave = dw_checkbox_get(handle);
+		if((handle = dw_window_get_data(param->window, "bandwidthlimit")))
+			bandwidthlimit = (int)dw_spinbutton_get_pos(handle);
+		if((handle = dw_window_get_data(param->window, "optimize")))
+			optimize = dw_checkbox_get(handle);
+		if((handle = dw_window_get_data(param->window, "locale")))
+			handyftp_locale = dw_listbox_selected(handle);
+		saveconfig();
 
 		if(param->busy)
 			*param->busy = 0;
@@ -2164,11 +2170,11 @@ void about(void)
 
 	in_about = infowindow = dw_window_new(HWND_DESKTOP, locale_string("About HandyFTP", 54), flStyle);
 
-	mainbox = dw_box_new(BOXVERT, 5);
+	mainbox = dw_box_new(DW_VERT, 5);
 
 	dw_box_pack_start(infowindow, mainbox, 0, 0, TRUE, TRUE, 0);
 
-	buttonbox = dw_box_new(BOXHORZ, 0);
+	buttonbox = dw_box_new(DW_HORZ, 0);
 
 	dw_box_pack_start(mainbox, buttonbox, 0, 0, TRUE, FALSE, 0);
 
@@ -2192,7 +2198,7 @@ void about(void)
 	dw_mle_set_word_wrap(mle, TRUE);
 
 	/* Buttons */
-	buttonbox = dw_box_new(BOXHORZ, 0);
+	buttonbox = dw_box_new(DW_HORZ, 0);
 
 	dw_box_pack_start(mainbox, buttonbox, 0, 0, TRUE, TRUE, 0);
 
@@ -2218,10 +2224,179 @@ void about(void)
 	dw_window_show(infowindow);
 }
 
+/* Create a box containing all the checkbox type preferences */
+HWND preferences_checkboxes(HWND box)
+{
+	HWND handle, vbox = dw_box_new(DW_VERT, 0);
+
+	dw_box_pack_start(box, vbox, 0, 0, TRUE, TRUE, 0);
+
+	/* Open All Servers */
+	handle = dw_checkbox_new(locale_string("Open all servers", 57), 0);
+	dw_checkbox_set(handle, openall);
+
+	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+
+	dw_window_set_data(in_preferences, "openall", handle);
+
+	/* Passive FTP/Reverse FXP */
+	handle = dw_checkbox_new(locale_string("Passive FTP", 58), 0);
+	dw_checkbox_set(handle, reversefxp);
+
+	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+
+	dw_window_set_data(in_preferences, "reversefxp", handle);
+
+	/* Show Password */
+	handle = dw_checkbox_new(locale_string("Show password", 59), 0);
+	dw_checkbox_set(handle, showpassword);
+
+	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+
+	dw_window_set_data(in_preferences, "showpassword", handle);
+
+	/* Save URLs */
+	handle = dw_checkbox_new(locale_string("Save URLs", 60), 0);
+	dw_checkbox_set(handle, urlsave);
+
+	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+
+	dw_window_set_data(in_preferences, "urlsave", handle);
+
+	/* Optimize Columns */
+	handle = dw_checkbox_new(locale_string("Optimize columns", 61), 0);
+	dw_checkbox_set(handle, optimize);
+
+	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+
+	dw_window_set_data(in_preferences, "optimize", handle);
+
+	return vbox;
+}
+
+/* Create the locale which is extra wide */
+HWND preferences_locale(HWND box)
+{
+	HWND handle, stext, hbox = dw_box_new(DW_HORZ, 0);
+
+	dw_box_pack_start(box, hbox, 0, 0, TRUE, FALSE, 0);
+
+	stext = dw_text_new(locale_string("Locale", 66), 0);
+
+	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
+
+	dw_box_pack_start(hbox, stext, -1, -1, FALSE, TRUE, 0);
+
+	/* Locale */
+	handle = dw_combobox_new("", 100L);
+
+	dw_listbox_append(handle, "English");
+	dw_listbox_append(handle, "Deutsch");
+	dw_listbox_append(handle, "Dansk");
+
+	dw_listbox_select(handle, handyftp_locale, TRUE);
+
+	dw_box_pack_start(hbox, handle, -1, -1, TRUE, TRUE, 0);
+
+	dw_window_set_data(in_preferences, "locale", handle);
+
+	return hbox;
+}
+
+/* Create a box containing all the spinbutton type preferences */
+HWND preferences_spinbuttons(HWND box)
+{
+	HWND stext, handle, hbox, vbox = dw_box_new(DW_VERT, 0);
+
+	dw_box_pack_start(box, vbox, 0, 0, TRUE, TRUE, 0);
+
+	hbox = dw_box_new(DW_HORZ, 0);
+
+	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, TRUE, 0);
+
+	stext = dw_text_new(locale_string("Timeout", 62), 0);
+
+	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
+
+	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+
+	/* Timeout */
+	handle = dw_spinbutton_new("", 100L);
+
+	dw_spinbutton_set_limits(handle, 60L, 0L);
+	dw_spinbutton_set_pos(handle, ftptimeout);
+
+	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+
+	dw_window_set_data(in_preferences, "ftptimeout", handle);
+	hbox = dw_box_new(DW_HORZ, 0);
+
+	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, FALSE, 0);
+
+	stext = dw_text_new(locale_string("Retries", 63), 0);
+
+	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
+
+	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+
+	/* Retries */
+	handle = dw_spinbutton_new("", 100L);
+
+	dw_spinbutton_set_limits(handle, 60L, 0L);
+	dw_spinbutton_set_pos(handle, retrymax);
+
+	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+
+	dw_window_set_data(in_preferences, "retrymax", handle);
+
+	hbox = dw_box_new(DW_HORZ, 0);
+
+	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, FALSE, 0);
+
+	stext = dw_text_new(locale_string("Cache Limit", 64), 0);
+
+	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
+
+	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+
+	/* Cache limit */
+	handle = dw_spinbutton_new("", 100L);
+
+	dw_spinbutton_set_limits(handle, 100L, 0L);
+	dw_spinbutton_set_pos(handle, cachemax);
+
+	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+
+	dw_window_set_data(in_preferences, "cachemax", handle);
+
+	hbox = dw_box_new(DW_HORZ, 0);
+
+	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, FALSE, 0);
+
+	stext = dw_text_new(locale_string("Bandwidth Limit", 65), 0);
+
+	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
+
+	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+
+	/* Bandwidth limit */
+	handle = dw_spinbutton_new("", 100L);
+
+	dw_spinbutton_set_limits(handle, 1000L, 0L);
+	dw_spinbutton_set_pos(handle, bandwidthlimit);
+
+	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+
+	dw_window_set_data(in_preferences, "bandwidthlimit", handle);
+
+	preferences_locale(vbox);
+	return vbox;
+}
+
 /* Create the preferences dialog */
 void preferences(void)
 {
-	HWND entrywindow, mainbox, hbox, cancelbutton, okbutton, buttonbox, xbox, stext, *handles;
+	HWND entrywindow, mainbox, paddedbox, cancelbutton, okbutton, buttonbox, hbox;
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
 	UserEntry *param;
 
@@ -2231,145 +2406,28 @@ void preferences(void)
 		return;
 	}
 
-	handles = malloc(10 * sizeof(HWND));
-	
 	in_preferences = entrywindow = dw_window_new(HWND_DESKTOP, locale_string("Preferences", 55), flStyle);
 
-	xbox = dw_box_new(BOXVERT, 5);
+	paddedbox = dw_box_new(DW_VERT, 5);
 
-	dw_box_pack_start(entrywindow, xbox, 0, 0, TRUE, TRUE, 0);
+	dw_box_pack_start(entrywindow, paddedbox, 0, 0, TRUE, TRUE, 0);
 
-	mainbox = dw_groupbox_new(BOXVERT, 8, locale_string("General", 56));
+	mainbox = dw_groupbox_new(DW_VERT, 8, locale_string("General", 56));
 
-	dw_box_pack_start(xbox, mainbox, 0, 0, TRUE, FALSE, 0);
+	dw_box_pack_start(paddedbox, mainbox, 0, 0, TRUE, FALSE, 0);
 
-	/* First Line */
-	hbox = dw_box_new(BOXHORZ, 0);
-
-	dw_box_pack_start(mainbox, hbox, 0, 0, TRUE, FALSE, 0);
-
-	handles[0] = dw_checkbox_new(locale_string("Open all servers", 57), 0);
-	dw_checkbox_set(handles[0],openall);
-
-	dw_box_pack_start(hbox, handles[0], 40, -1, TRUE, TRUE, 0);
-
-	stext = dw_text_new(locale_string("Timeout", 62), 0);
-
-	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
-
-	dw_box_pack_start(hbox, stext, 120, -1, FALSE, TRUE, 0);
-
-	/* Timeout */
-	handles[3] = dw_spinbutton_new("", 100L);
-
-	dw_spinbutton_set_limits(handles[3], 60L, 0L);
-	dw_spinbutton_set_pos(handles[3], ftptimeout);
-
-	dw_box_pack_start(hbox, handles[3], -1, -1, FALSE, TRUE, 1);
-
-	/* Second Line */
-	hbox = dw_box_new(BOXHORZ, 0);
+	hbox = dw_box_new(DW_HORZ, 0);
 
 	dw_box_pack_start(mainbox, hbox, 0, 0, TRUE, FALSE, 0);
 
-	handles[1] = dw_checkbox_new(locale_string("Passive FTP", 58), 0);
-	dw_checkbox_set(handles[1],reversefxp);
-
-	dw_box_pack_start(hbox, handles[1], 40, -1, TRUE, TRUE, 0);
-
-	stext = dw_text_new(locale_string("Retries", 63), 0);
-
-	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
-
-	dw_box_pack_start(hbox, stext, 120, -1, FALSE, TRUE, 0);
-
-	/* Retries */
-	handles[4] = dw_spinbutton_new("", 100L);
-
-	dw_spinbutton_set_limits(handles[4], 60L, 0L);
-	dw_spinbutton_set_pos(handles[4], retrymax);
-
-	dw_box_pack_start(hbox, handles[4], -1, -1, FALSE, TRUE, 1);
-
-	/* Third Line */
-	hbox = dw_box_new(BOXHORZ, 0);
-
-	dw_box_pack_start(mainbox, hbox, 0, 0, TRUE, FALSE, 0);
-
-	handles[2] = dw_checkbox_new(locale_string("Show password", 59), 0);
-	dw_checkbox_set(handles[2],showpassword);
-
-	dw_box_pack_start(hbox, handles[2], 40, -1, TRUE, TRUE, 0);
-
-	stext = dw_text_new(locale_string("Cache Limit", 64), 0);
-
-	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
-
-	dw_box_pack_start(hbox, stext, 120, -1, FALSE, TRUE, 0);
-
-	/* Cache limit */
-	handles[5] = dw_spinbutton_new("", 100L);
-
-	dw_spinbutton_set_limits(handles[5], 100L, 0L);
-	dw_spinbutton_set_pos(handles[5], cachemax);
-
-	dw_box_pack_start(hbox, handles[5], -1, -1, FALSE, TRUE, 1);
-
-	/* Fourth Line */
-	hbox = dw_box_new(BOXHORZ, 0);
-
-	dw_box_pack_start(mainbox, hbox, 0, 0, TRUE, FALSE, 0);
-
-	handles[6] = dw_checkbox_new(locale_string("Save URLs", 60), 0);
-	dw_checkbox_set(handles[6],urlsave);
-
-	dw_box_pack_start(hbox, handles[6], 40, -1, TRUE, TRUE, 0);
-
-	stext = dw_text_new(locale_string("Bandwidth Limit", 65), 0);
-
-	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
-
-	dw_box_pack_start(hbox, stext, 120, -1, FALSE, TRUE, 0);
-
-	/* Bandwidth limit */
-	handles[7] = dw_spinbutton_new("", 100L);
-
-	dw_spinbutton_set_limits(handles[7], 1000L, 0L);
-	dw_spinbutton_set_pos(handles[7], bandwidthlimit);
-
-	dw_box_pack_start(hbox, handles[7], -1, -1, FALSE, TRUE, 1);
-
-	/* Fifth Line */
-	hbox = dw_box_new(BOXHORZ, 0);
-
-	dw_box_pack_start(mainbox, hbox, 0, 0, TRUE, FALSE, 0);
-
-	handles[8] = dw_checkbox_new(locale_string("Optimize columns", 61), 0);
-	dw_checkbox_set(handles[8],optimize);
-
-	dw_box_pack_start(hbox, handles[8], 40, -1, TRUE, TRUE, 0);
-
-	stext = dw_text_new(locale_string("Locale", 66), 0);
-
-	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
-
-	dw_box_pack_start(hbox, stext, 70, -1, FALSE, TRUE, 0);
-
-	/* Locale */
-	handles[9] = dw_combobox_new("", 100L);
-
-	dw_listbox_append(handles[9], "English");
-	dw_listbox_append(handles[9], "Deutsch");
-	dw_listbox_append(handles[9], "Dansk");
-
-	dw_listbox_select(handles[9], handyftp_locale, TRUE);
-
-	dw_box_pack_start(hbox, handles[9], 110, -1, FALSE, TRUE, 0);
+	/* Put the checkboxes and spinbuttons in a horizontal box */
+	preferences_checkboxes(hbox);
+	preferences_spinbuttons(hbox);
 
 	/* Buttons */
-	buttonbox = dw_box_new(BOXHORZ, 5);
+	buttonbox = dw_box_new(DW_HORZ, 5);
 
-	dw_box_pack_start(xbox, buttonbox, 0, 0, TRUE, TRUE, 2);
+	dw_box_pack_start(paddedbox, buttonbox, 0, 0, TRUE, TRUE, 2);
 
 	okbutton = dw_button_new(locale_string("Ok", 67), 1001L);
 
@@ -2382,11 +2440,9 @@ void preferences(void)
 	/* Padding to compensate for the button box on the left. */
 	dw_box_pack_start(buttonbox, 0, 40, 30, TRUE, TRUE, 4);
 
-	param = malloc(sizeof(UserEntry));
+	param = calloc(1, sizeof(UserEntry));
 	param->page = currentpage;
 	param->window = entrywindow;
-	param->filename = NULL;
-	param->data = (void *)handles;
 	param->busy = &in_preferences;
 
 	dw_signal_connect(okbutton, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(preferences_ok), (void *)param);
@@ -2441,9 +2497,7 @@ void DWSIGNAL IPS_shutdown(HWND window, void *data)
 /* IPS Administration dialog */
 void IPS(void)
 {
-	HWND entrywindow, mainbox, closebutton, killbutton, shutdownbutton, restartbutton,
-		container, xbox, *handles = malloc(6 * sizeof(HWND));
-	UserEntry *param = malloc(sizeof(UserEntry));
+	HWND entrywindow, mainbox, closebutton, killbutton, shutdownbutton, restartbutton, container, xbox;
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER | DW_FCF_TEXTURED;
 	char *titles[5] = { "User",	"Address", "Activity", "Idle", "Socket" };
 	unsigned long flags[5] = {  DW_CFA_STRING | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
@@ -2451,7 +2505,7 @@ void IPS(void)
 								DW_CFA_STRING | DW_CFA_LEFT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 								DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR,
 								DW_CFA_ULONG | DW_CFA_RIGHT | DW_CFA_HORZSEPARATOR | DW_CFA_SEPARATOR };
-
+	UserEntry *param;
 
 	titles[0] = locale_string("User", 72);
 	titles[1] = locale_string("Address", 73);
@@ -2471,14 +2525,16 @@ void IPS(void)
 		return;
 	}
 
+	param = calloc(1, sizeof(UserEntry));
+
 	in_IPS = entrywindow = dw_window_new(HWND_DESKTOP, locale_string("IPS Administration", 78), flStyle);
 
-	xbox = dw_box_new(BOXHORZ, 0);
+	xbox = dw_box_new(DW_HORZ, 0);
 
 	dw_box_pack_start(entrywindow, xbox, 0, 0, TRUE, TRUE, 0);
 
 	/* Buttons */
-	mainbox = dw_box_new(BOXVERT,0);
+	mainbox = dw_box_new(DW_VERT,0);
 
 	dw_box_pack_start(xbox, mainbox, 0, 0, FALSE, TRUE, 4);
 
@@ -2501,7 +2557,9 @@ void IPS(void)
 	/* Pack in some blank space */
 	dw_box_pack_start(mainbox, 0, 10, 10, TRUE, TRUE, 0);
 
-	IPS_handle = handles[0] = container = dw_container_new(0L, FALSE);
+	IPS_handle = container = dw_container_new(0L, FALSE);
+
+	dw_window_set_data(in_IPS, "IPS", IPS_handle);
 
 	dw_box_pack_start(xbox, container, 300, 200, TRUE,TRUE, 4);
 
@@ -2510,8 +2568,6 @@ void IPS(void)
 
 	param->page = currentpage;
 	param->window = entrywindow;
-	param->filename = NULL;
-	param->data = (void *)handles;
 	param->busy = &in_IPS;
 
 	dw_signal_connect(killbutton, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(IPS_kill_user), (void *)param);
@@ -2533,14 +2589,11 @@ void DWSIGNAL administration_ok(HWND window, void *data)
 
 	if(param)
 	{
-		HWND *handles = param->data;
+		HWND handle = dw_window_get_data(param->window, "IPS");
 		int state = 0;
 
-		if(param->data)
-		{
-			state = dw_checkbox_get(handles[0]);
-			free(param->data);
-		}
+		if(handle)
+			state = dw_checkbox_get(handle);
 		dw_window_destroy(param->window);
 		if(param->busy)
 			*param->busy = 0;
@@ -2555,10 +2608,9 @@ void DWSIGNAL administration_ok(HWND window, void *data)
 /* Create the site administration dialog */
 void administrate(void)
 {
-	HWND entrywindow, mainbox, cancelbutton, okbutton, buttonbox,
-		xbox, *handles = malloc(6 * sizeof(HWND));
-	UserEntry *param = malloc(sizeof(UserEntry));
+	HWND entrywindow, mainbox, cancelbutton, okbutton, buttonbox, xbox, IPS, handle;
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
+	UserEntry *param;
 
 	if(in_administration)
 	{
@@ -2566,29 +2618,35 @@ void administrate(void)
 		return;
 	}
 
+	param = calloc(1, sizeof(UserEntry));
+
 	in_administration = entrywindow = dw_window_new(HWND_DESKTOP, locale_string("Administration", 83), flStyle);
 
-	xbox = dw_box_new(BOXVERT, 5);
+	xbox = dw_box_new(DW_VERT, 5);
 
 	dw_box_pack_start(entrywindow, xbox, 0, 0, TRUE, TRUE, 0);
 
-	mainbox = dw_groupbox_new(BOXVERT, 8, locale_string("Site Type", 84));
+	mainbox = dw_groupbox_new(DW_VERT, 8, locale_string("Site Type", 84));
 
 	dw_box_pack_start(xbox, mainbox, 0, 0, TRUE, TRUE, 0);
 
-	handles[0] = dw_radiobutton_new(locale_string("InetPowerServer", 85), 0);
+	IPS = dw_radiobutton_new(locale_string("InetPowerServer", 85), 0);
 
-	dw_box_pack_start(mainbox, handles[0], 50, 20, TRUE, TRUE, 4);
+	dw_box_pack_start(mainbox, IPS, 50, 20, TRUE, TRUE, 4);
 
-	handles[1] = dw_radiobutton_new(locale_string("Other", 86), 0);
+	dw_window_set_data(in_administration, "IPS", IPS);
 
-	dw_box_pack_start(mainbox, handles[1], 50, 20, TRUE, TRUE, 4);
+	handle = dw_radiobutton_new(locale_string("Other", 86), 0);
+
+	dw_box_pack_start(mainbox, handle, 50, 20, TRUE, TRUE, 4);
+
+	dw_window_set_data(in_administration, "other", handle);
 
 	/* Pack in some blank space */
 	dw_box_pack_start(mainbox, 0, 50, 40, TRUE, TRUE, 4);
 
 	/* Buttons */
-	buttonbox = dw_box_new(BOXHORZ, 10);
+	buttonbox = dw_box_new(DW_HORZ, 10);
 
 	dw_box_pack_start(xbox, buttonbox, 0, 0, TRUE, TRUE, 2);
 
@@ -2605,8 +2663,6 @@ void administrate(void)
 
 	param->page = currentpage;
 	param->window = entrywindow;
-	param->filename = NULL;
-	param->data = (void *)handles;
 	param->busy = &in_administration;
 
 	dw_signal_connect(okbutton, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(administration_ok), (void *)param);
@@ -2619,7 +2675,7 @@ void administrate(void)
 	/* OS/2 (and possibly Windows) don't like setting the
 	 * button's check state before it's laid out.
 	 */
-	dw_checkbox_set(handles[0],1);
+	dw_checkbox_set(IPS, TRUE);
 }
 
 /* Remove a user selection from a container (queue or directory) */
@@ -2827,12 +2883,12 @@ void removefromq(int index, int page)
 void user_query(char *entrytext, int page, char *filename, void *okfunctionname, void *cancelfunctionname)
 {
 	HWND entrywindow, mainbox, entryfield, cancelbutton, okbutton, buttonbox, stext;
-	UserEntry *param = malloc(sizeof(UserEntry));
 	ULONG flStyle = DW_FCF_TITLEBAR | DW_FCF_DLGBORDER | DW_FCF_TEXTURED;
+	UserEntry *param= calloc(1, sizeof(UserEntry));
 
 	entrywindow = dw_window_new(HWND_DESKTOP, APP_NAME, flStyle);
 
-	mainbox = dw_box_new(BOXVERT, 10);
+	mainbox = dw_box_new(DW_VERT, 10);
 
 	dw_box_pack_start(entrywindow, mainbox, 0, 0, TRUE, TRUE, 0);
 
@@ -2849,7 +2905,7 @@ void user_query(char *entrytext, int page, char *filename, void *okfunctionname,
 	dw_box_pack_start(mainbox, entryfield, 130, 20, TRUE, TRUE, 4);
 
 	/* Buttons */
-	buttonbox = dw_box_new(BOXHORZ, 10);
+	buttonbox = dw_box_new(DW_HORZ, 10);
 
 	dw_box_pack_start(mainbox, buttonbox, 0, 0, TRUE, TRUE, 0);
 
@@ -2863,8 +2919,6 @@ void user_query(char *entrytext, int page, char *filename, void *okfunctionname,
 	param->window = entrywindow;
 	param->entryfield = entryfield;
 	param->filename = filename;
-	param->data = NULL;
-	param->busy = NULL;
 
 	dw_box_pack_start(buttonbox, cancelbutton, 130, 30, TRUE, TRUE, 2);
 
@@ -2966,16 +3020,16 @@ void DWSIGNAL rename_ok(HWND window, void *data)
 void info_box(void)
 {
 	HWND infowindow, mainbox, mle, okbutton, buttonbox;
-	UserEntry *param = malloc(sizeof(UserEntry));
 	ULONG flStyle = DW_FCF_SYSMENU | DW_FCF_TITLEBAR | DW_FCF_SIZEBORDER | DW_FCF_TEXTURED |
 		DW_FCF_MINMAX | DW_FCF_TASKLIST | DW_FCF_DLGBORDER | DW_FCF_COMPOSITED;
+	UserEntry *param = calloc(1, sizeof(UserEntry));
 	char buffer[1024];
 	int point = -1;
 	DWEnv env;
 
 	infowindow = dw_window_new(HWND_DESKTOP, locale_string("System Information", 89), flStyle);
 
-	mainbox = dw_box_new(BOXVERT, 5);
+	mainbox = dw_box_new(DW_VERT, 5);
 
 	dw_box_pack_start(infowindow, mainbox, 0, 0, TRUE, TRUE, 0);
 
@@ -2986,7 +3040,7 @@ void info_box(void)
 	dw_mle_set_editable(mle, FALSE);
 
 	/* Buttons */
-	buttonbox = dw_box_new(BOXHORZ, 0);
+	buttonbox = dw_box_new(DW_HORZ, 0);
 
 	dw_box_pack_start(mainbox, buttonbox, 0, 0, TRUE, FALSE, 0);
 
@@ -3030,9 +3084,6 @@ void info_box(void)
 		}
 
 	}
-
-	param->data = NULL;
-	param->busy = NULL;
 
 	dw_signal_connect(okbutton, DW_SIGNAL_CLICKED, DW_SIGNAL_FUNC(generic_cancel), (void *)param);
 
@@ -5351,7 +5402,7 @@ void new_tab(void *data)
 	site[thispage]->queuing = NULL;
 	site[thispage]->sort = default_sort;
 
-	if(!(site[thispage]->hwnd = dw_box_new(BOXVERT, 2)))
+	if(!(site[thispage]->hwnd = dw_box_new(DW_VERT, 2)))
 	{
 		dw_messagebox(APP_NAME, DW_MB_OK | DW_MB_ERROR, locale_string("Could not create new tab!", 143));
 		currentpage = previouspage;
@@ -5369,7 +5420,7 @@ void new_tab(void *data)
 	dw_notebook_page_set_status_text(hwndNBK, site[thispage]->pageid, locale_string("Page 1 of 1", 144));
 
 	/* Control line #1 */
-	controlbox = dw_box_new(BOXHORZ, 1);
+	controlbox = dw_box_new(DW_HORZ, 1);
 
 	dw_box_pack_start(pagebox, controlbox, 0, 0, TRUE, FALSE, 0);
 
@@ -5435,7 +5486,7 @@ void new_tab(void *data)
 	dw_box_pack_start(controlbox, site[thispage]->pass_word, 160, -1, TRUE, TRUE, 0);
 
 	/* Control line #2 */
-	controlbox = dw_box_new(BOXHORZ, 1);
+	controlbox = dw_box_new(DW_HORZ, 1);
 
 	dw_box_pack_start(pagebox, controlbox, 0, 0, TRUE, FALSE, 0);
 
@@ -5467,9 +5518,9 @@ void new_tab(void *data)
 	
 	site[thispage]->rqueue = rcontainer = dw_container_new(QUEUE, TRUE);
 
-	splitbar = dw_splitbar_new(BOXHORZ, lcontainer, rcontainer, 0);
+	splitbar = dw_splitbar_new(DW_HORZ, lcontainer, rcontainer, 0);
 
-	percentbox = dw_box_new(BOXVERT, 0);
+	percentbox = dw_box_new(DW_VERT, 0);
 
 	site[thispage]->percent = percent = dw_percent_new(PERCENT);
 
@@ -5491,13 +5542,13 @@ void new_tab(void *data)
 
 	dw_box_pack_start(percentbox, status, 600, 45, TRUE, TRUE, 0);
 
-	vsplitbar = dw_splitbar_new(BOXVERT, splitbar, percentbox, 0);
+	vsplitbar = dw_splitbar_new(DW_VERT, splitbar, percentbox, 0);
 
 	dw_splitbar_set(vsplitbar, 80.0);
 
 	dw_box_pack_start(pagebox, vsplitbar, 100, 100, TRUE, TRUE, 0);
 
-	controlbox = dw_box_new(BOXHORZ, 0);
+	controlbox = dw_box_new(DW_HORZ, 0);
 
 	dw_box_pack_start(pagebox, controlbox, 0, 0, TRUE, FALSE, 0);
 
@@ -6860,11 +6911,11 @@ void handyftp_init(void)
 
 	dw_window_set_icon(hwndFrame, DW_RESOURCE(MAIN_FRAME));
     
-	mainbox = dw_box_new(BOXVERT, 0);
+	mainbox = dw_box_new(DW_VERT, 0);
 
 	dw_box_pack_start(hwndFrame, mainbox, 0, 0, TRUE, TRUE, 0);
 
-	toolbox = dw_box_new(BOXHORZ, 1);
+	toolbox = dw_box_new(DW_HORZ, 1);
 
 	dw_box_pack_start(mainbox, toolbox, 0, 0, TRUE, FALSE, 0);
 
