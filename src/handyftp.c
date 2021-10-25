@@ -2281,7 +2281,7 @@ HWND preferences_locale(HWND box)
 
 	dw_box_pack_start(box, hbox, 0, 0, TRUE, FALSE, 0);
 
-	stext = dw_text_new(locale_string("Locale", 66), 0);
+	stext = dw_text_new(locale_string("Locale: ", 66), 0);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
@@ -2314,7 +2314,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, TRUE, 0);
 
-	stext = dw_text_new(locale_string("Timeout", 62), 0);
+	stext = dw_text_new(locale_string("Timeout: ", 62), 0);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
@@ -2333,7 +2333,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, FALSE, 0);
 
-	stext = dw_text_new(locale_string("Retries", 63), 0);
+	stext = dw_text_new(locale_string("Retries: ", 63), 0);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
@@ -2353,7 +2353,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, FALSE, 0);
 
-	stext = dw_text_new(locale_string("Cache Limit", 64), 0);
+	stext = dw_text_new(locale_string("Cache Limit: ", 64), 0);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
@@ -2373,7 +2373,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, FALSE, 0);
 
-	stext = dw_text_new(locale_string("Bandwidth Limit", 65), 0);
+	stext = dw_text_new(locale_string("Bandwidth Limit: ", 65), 0);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
