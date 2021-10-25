@@ -2067,27 +2067,27 @@ void DWSIGNAL preferences_ok(HWND window, void *data)
 
 	if(param)
 	{
-		HWND handle = dw_window_get_data(param->window, "openall");
+		HWND handle = (HWND)dw_window_get_data(param->window, "openall");
 
 		if(handle)
 			openall = dw_checkbox_get(handle);
-		if((handle = dw_window_get_data(param->window, "reversefxp")))
+		if((handle = (HWND)dw_window_get_data(param->window, "reversefxp")))
 			reversefxp = dw_checkbox_get(handle);
-		if((handle = dw_window_get_data(param->window, "showpassword")))
+		if((handle = (HWND)dw_window_get_data(param->window, "showpassword")))
 			showpassword = dw_checkbox_get(handle);
-		if((handle = dw_window_get_data(param->window, "ftptimeout")))
+		if((handle = (HWND)dw_window_get_data(param->window, "ftptimeout")))
 			ftptimeout = (int)dw_spinbutton_get_pos(handle);
-		if((handle = dw_window_get_data(param->window, "retrymax")))
+		if((handle = (HWND)dw_window_get_data(param->window, "retrymax")))
 			retrymax = (int)dw_spinbutton_get_pos(handle);
-		if((handle = dw_window_get_data(param->window, "cachemax")))
+		if((handle = (HWND)dw_window_get_data(param->window, "cachemax")))
 			cachemax = (int)dw_spinbutton_get_pos(handle);
-		if((handle = dw_window_get_data(param->window, "urlsave")))
+		if((handle = (HWND)dw_window_get_data(param->window, "urlsave")))
 			urlsave = dw_checkbox_get(handle);
-		if((handle = dw_window_get_data(param->window, "bandwidthlimit")))
+		if((handle = (HWND)dw_window_get_data(param->window, "bandwidthlimit")))
 			bandwidthlimit = (int)dw_spinbutton_get_pos(handle);
-		if((handle = dw_window_get_data(param->window, "optimize")))
+		if((handle = (HWND)dw_window_get_data(param->window, "optimize")))
 			optimize = dw_checkbox_get(handle);
-		if((handle = dw_window_get_data(param->window, "locale")))
+		if((handle = (HWND)dw_window_get_data(param->window, "locale")))
 			handyftp_locale = dw_listbox_selected(handle);
 		saveconfig();
 
@@ -2237,7 +2237,7 @@ HWND preferences_checkboxes(HWND box)
 
 	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
 
-	dw_window_set_data(in_preferences, "openall", handle);
+	dw_window_set_data(in_preferences, "openall", DW_POINTER(handle));
 
 	/* Passive FTP/Reverse FXP */
 	handle = dw_checkbox_new(locale_string("Passive FTP", 58), 0);
@@ -2245,7 +2245,7 @@ HWND preferences_checkboxes(HWND box)
 
 	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
 
-	dw_window_set_data(in_preferences, "reversefxp", handle);
+	dw_window_set_data(in_preferences, "reversefxp", DW_POINTER(handle));
 
 	/* Show Password */
 	handle = dw_checkbox_new(locale_string("Show password", 59), 0);
@@ -2253,7 +2253,7 @@ HWND preferences_checkboxes(HWND box)
 
 	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
 
-	dw_window_set_data(in_preferences, "showpassword", handle);
+	dw_window_set_data(in_preferences, "showpassword", DW_POINTER(handle));
 
 	/* Save URLs */
 	handle = dw_checkbox_new(locale_string("Save URLs", 60), 0);
@@ -2261,7 +2261,7 @@ HWND preferences_checkboxes(HWND box)
 
 	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
 
-	dw_window_set_data(in_preferences, "urlsave", handle);
+	dw_window_set_data(in_preferences, "urlsave", DW_POINTER(handle));
 
 	/* Optimize Columns */
 	handle = dw_checkbox_new(locale_string("Optimize columns", 61), 0);
@@ -2269,7 +2269,7 @@ HWND preferences_checkboxes(HWND box)
 
 	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
 
-	dw_window_set_data(in_preferences, "optimize", handle);
+	dw_window_set_data(in_preferences, "optimize", DW_POINTER(handle));
 
 	return vbox;
 }
@@ -2298,7 +2298,7 @@ HWND preferences_locale(HWND box)
 
 	dw_box_pack_start(hbox, handle, -1, -1, TRUE, TRUE, 0);
 
-	dw_window_set_data(in_preferences, "locale", handle);
+	dw_window_set_data(in_preferences, "locale", DW_POINTER(handle));
 
 	return hbox;
 }
@@ -2328,7 +2328,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
 
-	dw_window_set_data(in_preferences, "ftptimeout", handle);
+	dw_window_set_data(in_preferences, "ftptimeout", DW_POINTER(handle));
 	hbox = dw_box_new(DW_HORZ, 0);
 
 	dw_box_pack_start(vbox, hbox, 0, 0, TRUE, FALSE, 0);
@@ -2347,7 +2347,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
 
-	dw_window_set_data(in_preferences, "retrymax", handle);
+	dw_window_set_data(in_preferences, "retrymax", DW_POINTER(handle));
 
 	hbox = dw_box_new(DW_HORZ, 0);
 
@@ -2367,7 +2367,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
 
-	dw_window_set_data(in_preferences, "cachemax", handle);
+	dw_window_set_data(in_preferences, "cachemax", DW_POINTER(handle));
 
 	hbox = dw_box_new(DW_HORZ, 0);
 
@@ -2387,7 +2387,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
 
-	dw_window_set_data(in_preferences, "bandwidthlimit", handle);
+	dw_window_set_data(in_preferences, "bandwidthlimit", DW_POINTER(handle));
 
 	preferences_locale(vbox);
 	return vbox;
@@ -2559,7 +2559,7 @@ void IPS(void)
 
 	IPS_handle = container = dw_container_new(0L, FALSE);
 
-	dw_window_set_data(in_IPS, "IPS", IPS_handle);
+	dw_window_set_data(in_IPS, "IPS", DW_POINTER(IPS_handle));
 
 	dw_box_pack_start(xbox, container, 300, 200, TRUE,TRUE, 4);
 
@@ -2589,7 +2589,7 @@ void DWSIGNAL administration_ok(HWND window, void *data)
 
 	if(param)
 	{
-		HWND handle = dw_window_get_data(param->window, "IPS");
+		HWND handle = (HWND)dw_window_get_data(param->window, "IPS");
 		int state = 0;
 
 		if(handle)
@@ -2634,13 +2634,13 @@ void administrate(void)
 
 	dw_box_pack_start(mainbox, IPS, 50, 20, TRUE, TRUE, 4);
 
-	dw_window_set_data(in_administration, "IPS", IPS);
+	dw_window_set_data(in_administration, "IPS", DW_POINTER(IPS));
 
 	handle = dw_radiobutton_new(locale_string("Other", 86), 0);
 
 	dw_box_pack_start(mainbox, handle, 50, 20, TRUE, TRUE, 4);
 
-	dw_window_set_data(in_administration, "other", handle);
+	dw_window_set_data(in_administration, "other", DW_POINTER(handle));
 
 	/* Pack in some blank space */
 	dw_box_pack_start(mainbox, 0, 50, 40, TRUE, TRUE, 4);
