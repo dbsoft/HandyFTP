@@ -3157,7 +3157,8 @@ void update_eta(SiteTab *threadsite, int send_or_receive, long long sent_or_rece
 }
 
 typedef struct _ip {
-#ifdef _BIG_ENDIAN
+	/* Can't just check for _BIG_ENDIAN, Android has it defined but _BYTE_ORDER = _LITTLE_ENDIAN */
+#if defined(_BIG_ENDIAN) && (!defined(_BYTE_ORDER) || (defined(_BYTE_ORDER) && _BYTE_ORDER == _BIG_ENDIAN))
 	unsigned char ip4, ip3, ip2, ip1;
 #else
 	unsigned char ip1, ip2, ip3, ip4;
