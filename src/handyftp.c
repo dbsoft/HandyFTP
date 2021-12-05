@@ -3645,6 +3645,7 @@ int FTPIteration(SiteTab *threadsite, int threadtab, HMTX h, FTPData *ftd)
 						}
 
 						sockclose(threadsite->controlfd);
+						threadsite->controlfd = 0;
 						writeconsole(threadsite, locale_string("Closed connection to %s port %d.", 109), threadsite->hostname, threadsite->port);
 					}
 
