@@ -2205,7 +2205,7 @@ void about(void)
 	okbutton = dw_button_new("Ok", 1001L);
 
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
-	dw_box_pack_start(buttonbox, okbutton, -1, -1, FALSE, FALSE, 2);
+	dw_box_pack_start(buttonbox, okbutton, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, FALSE, 2);
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
 
 	param = malloc(sizeof(UserEntry));
@@ -2235,7 +2235,7 @@ HWND preferences_checkboxes(HWND box)
 	handle = dw_checkbox_new(locale_string("Open all servers", 57), 0);
 	dw_checkbox_set(handle, openall);
 
-	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(vbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	dw_window_set_data(in_preferences, "openall", DW_POINTER(handle));
 
@@ -2243,7 +2243,7 @@ HWND preferences_checkboxes(HWND box)
 	handle = dw_checkbox_new(locale_string("Passive FTP", 58), 0);
 	dw_checkbox_set(handle, reversefxp);
 
-	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(vbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	dw_window_set_data(in_preferences, "reversefxp", DW_POINTER(handle));
 
@@ -2251,7 +2251,7 @@ HWND preferences_checkboxes(HWND box)
 	handle = dw_checkbox_new(locale_string("Show password", 59), 0);
 	dw_checkbox_set(handle, showpassword);
 
-	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(vbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	dw_window_set_data(in_preferences, "showpassword", DW_POINTER(handle));
 
@@ -2259,7 +2259,7 @@ HWND preferences_checkboxes(HWND box)
 	handle = dw_checkbox_new(locale_string("Save URLs", 60), 0);
 	dw_checkbox_set(handle, urlsave);
 
-	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(vbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	dw_window_set_data(in_preferences, "urlsave", DW_POINTER(handle));
 
@@ -2267,7 +2267,7 @@ HWND preferences_checkboxes(HWND box)
 	handle = dw_checkbox_new(locale_string("Optimize columns", 61), 0);
 	dw_checkbox_set(handle, optimize);
 
-	dw_box_pack_start(vbox, handle, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(vbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	dw_window_set_data(in_preferences, "optimize", DW_POINTER(handle));
 
@@ -2285,7 +2285,7 @@ HWND preferences_locale(HWND box)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(hbox, stext, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(hbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 0);
 
 	/* Locale */
 	handle = dw_combobox_new("", 100L);
@@ -2296,7 +2296,7 @@ HWND preferences_locale(HWND box)
 
 	dw_listbox_select(handle, handyftp_locale, TRUE);
 
-	dw_box_pack_start(hbox, handle, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(hbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	dw_window_set_data(in_preferences, "locale", DW_POINTER(handle));
 
@@ -2318,7 +2318,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(hbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	/* Timeout */
 	handle = dw_spinbutton_new("", 100L);
@@ -2326,7 +2326,7 @@ HWND preferences_spinbuttons(HWND box)
 	dw_spinbutton_set_limits(handle, 60L, 0L);
 	dw_spinbutton_set_pos(handle, ftptimeout);
 
-	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 1);
 
 	dw_window_set_data(in_preferences, "ftptimeout", DW_POINTER(handle));
 	hbox = dw_box_new(DW_HORZ, 0);
@@ -2337,7 +2337,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(hbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	/* Retries */
 	handle = dw_spinbutton_new("", 100L);
@@ -2345,7 +2345,7 @@ HWND preferences_spinbuttons(HWND box)
 	dw_spinbutton_set_limits(handle, 60L, 0L);
 	dw_spinbutton_set_pos(handle, retrymax);
 
-	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 1);
 
 	dw_window_set_data(in_preferences, "retrymax", DW_POINTER(handle));
 
@@ -2357,7 +2357,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(hbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	/* Cache limit */
 	handle = dw_spinbutton_new("", 100L);
@@ -2365,7 +2365,7 @@ HWND preferences_spinbuttons(HWND box)
 	dw_spinbutton_set_limits(handle, 100L, 0L);
 	dw_spinbutton_set_pos(handle, cachemax);
 
-	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 1);
 
 	dw_window_set_data(in_preferences, "cachemax", DW_POINTER(handle));
 
@@ -2377,7 +2377,7 @@ HWND preferences_spinbuttons(HWND box)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(hbox, stext, -1, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(hbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	/* Bandwidth limit */
 	handle = dw_spinbutton_new("", 100L);
@@ -2385,7 +2385,7 @@ HWND preferences_spinbuttons(HWND box)
 	dw_spinbutton_set_limits(handle, 1000L, 0L);
 	dw_spinbutton_set_pos(handle, bandwidthlimit);
 
-	dw_box_pack_start(hbox, handle, -1, -1, FALSE, TRUE, 1);
+	dw_box_pack_start(hbox, handle, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 1);
 
 	dw_window_set_data(in_preferences, "bandwidthlimit", DW_POINTER(handle));
 
@@ -3047,7 +3047,7 @@ void info_box(void)
 	okbutton = dw_button_new(locale_string("Ok", 67), 1001L);
 
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
-	dw_box_pack_start(buttonbox, okbutton, -1, -1, FALSE, FALSE, 2);
+	dw_box_pack_start(buttonbox, okbutton, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, FALSE, 2);
 	dw_box_pack_start(buttonbox, 0, 50, 30, TRUE, FALSE, 0);
 
 	param->window = infowindow;
@@ -5430,62 +5430,62 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 0);
 
 	site[thispage]->host_title = hostcombo = dw_combobox_new("Local", HOST_TITLE);
 
 	dw_signal_connect(hostcombo, DW_SIGNAL_LIST_SELECT, DW_SIGNAL_FUNC(listboxselect), NULL);
 
-	dw_box_pack_start(controlbox, hostcombo, 200, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(controlbox, hostcombo, 200, DW_SIZE_AUTO, TRUE, TRUE, 0);
     dw_window_set_tooltip(hostcombo, "Name of the site on this tab, pick from saved sites here.");
 
 	stext = dw_text_new(locale_string("Hostname:", 146), 0);
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, stext, DW_SIZE_AUTO,DW_SIZE_AUTO, FALSE, TRUE, 0);
 
 	site[thispage]->host_name = dw_entryfield_new("", EF_HOSTNAME);
 
-	dw_box_pack_start(controlbox, site[thispage]->host_name, 160, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(controlbox, site[thispage]->host_name, 160, DW_SIZE_AUTO, TRUE, TRUE, 0);
     dw_window_set_tooltip(site[thispage]->host_name, "Internet name or address of the server; or local.");
 
 	stext = dw_text_new(locale_string("Port:", 147), 0);
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 0);
 
 	site[thispage]->port_num = dw_spinbutton_new("", SPB_PORT);
 
 	dw_spinbutton_set_limits(site[thispage]->port_num, 65535L, 0L);
 	dw_spinbutton_set_pos(site[thispage]->port_num, 21);
 
-	dw_box_pack_start(controlbox, site[thispage]->port_num, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, site[thispage]->port_num, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 0);
 	dw_window_set_tooltip(site[thispage]->port_num, "TCP/IP port number from 0 to 65535");
 
 	stext = dw_text_new(locale_string("Username:", 148), 0);
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, -1, 22, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, stext, DW_SIZE_AUTO, 22, FALSE, TRUE, 0);
 
 	site[thispage]->user_name = dw_entryfield_new("", EF_USERNAME);
 
-	dw_box_pack_start(controlbox, site[thispage]->user_name, 160, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(controlbox, site[thispage]->user_name, 160, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	stext = dw_text_new(locale_string("Password:", 149), 0);
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 0);
 
 	if(showpassword)
 		site[thispage]->pass_word = dw_entryfield_new("", EF_PASSWORD);
 	else
 		site[thispage]->pass_word = dw_entryfield_password_new("", EF_PASSWORD);
 
-	dw_box_pack_start(controlbox, site[thispage]->pass_word, 160, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(controlbox, site[thispage]->pass_word, 160, DW_SIZE_AUTO, TRUE, TRUE, 0);
 
 	/* Control line #2 */
 	controlbox = dw_box_new(DW_HORZ, 1);
@@ -5496,24 +5496,24 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 0);
 
 	site[thispage]->directory = dw_entryfield_new("", EF_DIRECTORY);
 
 	dw_entryfield_set_limit(site[thispage]->directory, URL_LIMIT);
 
-	dw_box_pack_start(controlbox, site[thispage]->directory, 240, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(controlbox, site[thispage]->directory, 240, DW_SIZE_AUTO, TRUE, TRUE, 0);
     dw_window_set_tooltip(site[thispage]->directory, "Path on the current site, displayed below if connected.");
 
 	stext = dw_text_new(locale_string("Destination:", 151), 0);
 
 	dw_window_set_style(stext, DW_DT_CENTER | DW_DT_VCENTER, DW_DT_CENTER | DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, -1, -1, FALSE, TRUE, 0);
+	dw_box_pack_start(controlbox, stext, DW_SIZE_AUTO, DW_SIZE_AUTO, FALSE, TRUE, 0);
 
 	site[thispage]->destsite = destcombo = dw_combobox_new("", SITE);
 
-	dw_box_pack_start(controlbox, destcombo, 240, -1, TRUE, TRUE, 0);
+	dw_box_pack_start(controlbox, destcombo, 240, DW_SIZE_AUTO, TRUE, TRUE, 0);
     dw_window_set_tooltip(destcombo, "Destination tab to add files to the transfer queue displayed below.");
 
 	site[thispage]->ldir = lcontainer = dw_container_new(LDIR, TRUE);
@@ -5558,13 +5558,13 @@ void new_tab(void *data)
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 300, -1, TRUE, FALSE, 2);
+	dw_box_pack_start(controlbox, stext, 300, DW_SIZE_AUTO, TRUE, FALSE, 2);
 
 	site[thispage]->cmorestatus = stext = dw_status_text_new(locale_string("Idle", 153), CSTATUSMORE);
 
 	dw_window_set_style(stext, DW_DT_VCENTER, DW_DT_VCENTER);
 
-	dw_box_pack_start(controlbox, stext, 300, -1, TRUE, FALSE, 2);
+	dw_box_pack_start(controlbox, stext, 300, DW_SIZE_AUTO, TRUE, FALSE, 2);
 
 	alive[thispage] = TRUE;
 
