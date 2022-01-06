@@ -1,6 +1,6 @@
 Copyright Information About HandyFTP.
 
-Copyright (C) 1999-2021 Brian Smith <brian@dbsoft.org>
+Copyright (C) 1999-2022 Brian Smith <brian@dbsoft.org>
 
 By using this product you accept that the authors hold no responsibility for damage from use of this product.
 
