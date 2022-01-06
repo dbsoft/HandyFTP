@@ -4,7 +4,7 @@
       PACKAGEID="Brian Smith\HandyFTP\Base package\1\0\4"
       TARGET="?:\Programs\HandyFTP"
       SELECT
-      TITLE="HandyFTP 1.0b4"
+      TITLE="HandyFTP 1.0b5"
       CREATEOBJECT="WPProgram|HandyFTP|<WP_DESKTOP>|EXENAME=$(1)\HANDYFTP.EXE;OBJECTID=<HANDYFTP>;"
       >Graphical FTP and FXP client for OS/2 PM.</PCK>
 </HEAD>

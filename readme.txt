@@ -1,4 +1,4 @@
-HandyFTP 1.0 beta 4
+HandyFTP 1.0 beta 5
 
 These clients have not been thoroughly tested, they are under development, I am
 dropping the latest binaries and source code every couple of days.  They
@@ -23,16 +23,11 @@ and the HandyFTP Mercurial repository at:
 
 http://hg.dbsoft.org/HandyFTP/
 
-Changes since 1.0b3:
+Changes since 1.0b4:
 
-All the Dynamic Windows changes since version 2.5.
+All the Dynamic Windows changes since version 3.1.
 
-Dark Mode support on Mac, and experimental Dark Mode support on Windows 10.
-
-Domain socket support on Windows 10.  Separate build without domain sockets
-is available for other versions of Windows.
-
-Notification support on Mac 10.8, Windows 8, GLib 2.40 and later versions.
+Support for iOS, Android and GTK4.
 
 End:
 
