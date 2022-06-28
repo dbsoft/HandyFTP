@@ -1,8 +1,8 @@
 # HandyFTP Makefile
 
 # Edit this as necessary.
-#DWLIBPATH=..\..\dwindows\lib
-#DWINCPATH=..\..\dwindows
+#DWLIBPATH=\work\netlabs\dwindows
+#DWINCPATH=\work\netlabs\dwindows
 #SFXPATH=..\install
 
 TARGET=handyftp
@@ -47,14 +47,14 @@ handyftp.exe:  $(OBJECTS)
 clean: 
 	rm -f $(OBJECTS) handyftp.exe handyftp.res HG.REV
 
-# Create an installer using Installer/2...
-# Packinst and ace2 need to be in the path...
+# Create an installer using WarpIn...
+# wic needs to be in the path...
 installer:
     rm -rf ..\install\package
     md ..\install\package
     copy handyftp.exe ..\install\package
-    copy $(DWINCPATH)\dw.dll ..\install\package
-    copy $(DWINCPATH)\dwcompat.dll ..\install\package
+    copy $(DWLIBPATH)\dw.dll ..\install\package
+    copy $(DWLIBPATH)\dwcompat.dll ..\install\package
     copy ..\readme.txt ..\install\package
     copy ..\install\scripts\license.txt ..\install\package
     copy ..\config\* ..\install\package

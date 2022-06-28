@@ -2,7 +2,7 @@
 
 # Either add environment variables for DWLIBDIR and DWINCDIR or
 # Uncomment and change these as needed
-#DWLIBDIR=\netlabs\dwindows\lib
+#DWLIBDIR=\netlabs\dwindows
 #DWINCDIR=\netlabs\dwindows
 
 TARGET=handyftp
@@ -66,7 +66,7 @@ VER_REV=0
 CRT_FLAGS = -D_CRT_SECURE_NO_DEPRECATE -D_CRT_SECURE_NO_WARNING -D_WINSOCK_DEPRECATED_NO_WARNINGS
 
 CFLAGS = -c $(PLATFORM_DEF) -D__WIN32__ -DMSVC -D__TARGET__=\"$(TARGET)\" -I. -I$(DWINCDIR) -DVER_MAJ=$(VER_MAJ) -D VER_MIN=$(VER_MIN) -DVER_REV=$(VER_REV) $(CRT_FLAGS)
-LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\dw.lib $(DWLIBDIR)\dwcompat.lib
+LIBS = wsock32.lib kernel32.lib user32.lib comctl32.lib gdi32.lib advapi32.lib shell32.lib comdlg32.lib $(DWLIBDIR)\$(TARGET_CPU)\dw.lib $(DWLIBDIR)\$(TARGET_CPU)\dwcompat.lib
 RES = 
 LINKFLAGS = -machine:$(TARGET_CPU) -manifest $(LINK_DEBUG)
 DLLLINKFLAGS = -dll
@@ -97,8 +97,8 @@ installer:
     -rd /s /q ..\install\package
     md ..\install\package
     copy handyftp.exe ..\install\package
-    copy $(DWINCDIR)\dw.dll ..\install\package
-    copy $(DWINCDIR)\dwcompat.dll ..\install\package
+    copy $(DWLIBDIR)\$(TARGET_CPU)\dw.dll ..\install\package
+    copy $(DWLIBDIR)\$(TARGET_CPU)\dwcompat.dll ..\install\package
     copy ..\readme.txt ..\install\package
     copy ..\config\* ..\install\package
     xcopy /s ..\help\* ..\install\package
