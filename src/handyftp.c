@@ -551,8 +551,18 @@ void freequeue(Queue *queue)
 void savequeue(SiteTab *thissite, char *filename)
 {
 	FILE *fp;
+#ifdef __ANDROID__
+	int fd = -1;
 
-	if((fp = fopen(filename, "w")) != NULL)
+	if(strstr(filename, "://"))
+	{
+		fd = dw_file_open(filename, O_WRONLY);
+		fp = fdopen(fd, "w");
+	}
+	else
+#endif
+		fp = fopen(filename, "w");
+	if(fp != NULL)
 	{
 		Queue *tmp = thissite->queue;
 
@@ -570,6 +580,10 @@ void savequeue(SiteTab *thissite, char *filename)
 		}
 		fclose(fp);
 	}
+#ifdef __ANDROID__
+	if(fd != -1)
+		close(fd);
+#endif
 }
 
 /* Removes the newline char from a string */
@@ -633,10 +647,20 @@ void site_unref(SiteTab *site)
 /* Load the contents of the saved queue to the site queue */
 void loadqueue(SiteTab *thissite, char *filename)
 {
+	char buf[1001] = {0};
 	FILE *fp;
-	char buf[1001] = "";
+#ifdef __ANDROID__
+	int fd = -1;
 
-	if((fp = fopen(filename, "r")) != NULL && fgets(buf, 1000, fp) != NULL)
+	if(strstr(filename, "://"))
+	{
+		fd = dw_file_open(filename, O_RDONLY);
+		fp = fdopen(fd, "r");
+	}
+	else
+#endif
+		fp = fopen(filename, "r");
+	if(fp != NULL && fgets(buf, 1000, fp) != NULL)
 	{
 		trimnewline(buf);
 
@@ -646,7 +670,6 @@ void loadqueue(SiteTab *thissite, char *filename)
 			fclose(fp);
 			return;
 		}
-
 
 		while(!feof(fp))
 		{
@@ -709,6 +732,10 @@ void loadqueue(SiteTab *thissite, char *filename)
 	}
 	if(fp)
 		fclose(fp);
+#ifdef __ANDROID__
+	if(fd != -1)
+		close(fd);
+#endif
 }
 
 /* Adds a directory listing to the current cache, removing
