@@ -7065,6 +7065,11 @@ int dwmain(int argc, char *argv[])
 	if(getenv("DW_DARK_MODE"))
 		dw_feature_set(DW_FEATURE_DARK_MODE, DW_DARK_MODE_FULL);
 
+#ifdef DW_MOBILE
+    /* Enable extra container display on Mobile platforms */
+    dw_feature_set(DW_FEATURE_CONTAINER_MODE, DW_CONTAINER_MODE_EXTRA);
+#endif
+
 	/* Set the application ID so notifications will work */
 	dw_app_id_set("org.dbsoft.handyftp", "HandyFTP");
 
