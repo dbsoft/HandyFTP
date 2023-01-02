@@ -29,7 +29,7 @@ FunctionEnd
 
   ; Name and file
   Name "HandyFTP"
-  OutFile "hftp10b5win64.exe"
+  OutFile "hftp10b6win64.exe"
 
   ; Default installation folder
   InstallDir "$PROGRAMFILES64\HandyFTP"

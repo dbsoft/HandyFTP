@@ -1,4 +1,4 @@
-HandyFTP 1.0 beta 5
+HandyFTP 1.0 beta 6
 
 These clients have not been thoroughly tested, they are under development, I am
 dropping the latest binaries and source code every couple of days.  They
@@ -23,11 +23,10 @@ and the HandyFTP Mercurial repository at:
 
 http://hg.dbsoft.org/HandyFTP/
 
-Changes since 1.0b4:
+Changes since 1.0b5:
 
-All the Dynamic Windows changes since version 3.1.
-
-Support for iOS, Android and GTK4.
+All the Dynamic Windows changes since version 3.2.
+Display all file information on iOS and Android as extra instead of abbreviated.
 
 End:
 
